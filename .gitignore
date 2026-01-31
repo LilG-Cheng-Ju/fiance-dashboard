@@ -1,2 +1,5 @@
 .env
-.pfx
+*.pfx
+*.db
+
+__pycache__/
