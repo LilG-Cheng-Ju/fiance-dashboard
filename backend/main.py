@@ -14,19 +14,17 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI(title="My Wealth Manager")
 
 # ==========================================
-# Pydantic Schemas (資料傳輸物件 DTO)
+# Pydantic Schemas
 # ==========================================
 
 # --- Transaction Schemas ---
 class TransactionCreate(BaseModel):
-    # 這是前端要傳給後端的「動作」
     asset_id: int
     transaction_type: models.TransactionType
     amount: float = Field(..., description="變動金額 (存錢為正，花費為負，買股票為負)")
     quantity_change: float = Field(0.0, description="數量變動 (例如股數)")
     price_at_transaction: Optional[float] = None
     note: Optional[str] = None
-    # 這裡可以不用傳 balance_after，後端會算
 
 class TransactionResponse(BaseModel):
     id: int
@@ -34,7 +32,7 @@ class TransactionResponse(BaseModel):
     transaction_type: models.TransactionType
     amount: float
     quantity_change: float
-    balance_after: float # 讓前端知道這筆交易後剩多少錢
+    balance_after: float
     note: Optional[str]
     transaction_date: datetime
 
@@ -47,8 +45,8 @@ class AssetCreate(BaseModel):
     asset_type: models.AssetType
     currency: str = "TWD"
     initial_balance: float = 0.0 # 初始金額
-    initial_quantity: float = 0.0 # 初始數量 (例如已有 100 股)
-    meta_data: Optional[Dict[str, Any]] = {} # 彈性欄位
+    initial_quantity: float = 0.0 # 初始數量
+    meta_data: Optional[Dict[str, Any]] = {}
 
 class AssetResponse(BaseModel):
     id: int
@@ -58,9 +56,6 @@ class AssetResponse(BaseModel):
     current_value: float
     quantity: float
     meta_data: Optional[Dict[str, Any]]
-    
-    # 可以在這裡回傳最近一筆交易，方便前端顯示 (Optional)
-    # last_transaction: Optional[TransactionResponse] = None
 
     class Config:
         orm_mode = True

@@ -12,7 +12,6 @@ class AssetType(str, enum.Enum):
     BANK = "BANK"           # 銀行存款
     STOCK = "STOCK"         # 股票
     CRYPTO = "CRYPTO"       # 加密貨幣
-    REAL_ESTATE = "REAL_ESTATE" # 房產
     GOLD = "GOLD"           # 黃金
     LIABILITY = "LIABILITY" # 負債
 
@@ -66,8 +65,6 @@ class Transaction(Base):
 
     note = Column(String, nullable=True)
 
-    # 交易日期 (建議用 utcnow，但看你需求，這裡先用 now)
     transaction_date = Column(DateTime, default=datetime.now)
     
-    # 關聯回 Asset
     asset = relationship("Asset", back_populates="transactions")

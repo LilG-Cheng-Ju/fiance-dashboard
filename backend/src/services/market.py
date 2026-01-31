@@ -3,8 +3,8 @@ from src.utils import TTLCache
 
 SUPPORTED_CURRENCIES = {"TWD", "JPY", "SGD", "USD", "KRW", "CNY", "RMB", "EUR", "GBP", "AUD", "CAD"}
 
-stock_cache = TTLCache(ttl_seconds=60)   # 股價變動快，存 1 分鐘
-rate_cache = TTLCache(ttl_seconds=300)   # 匯率變動慢，存 5 分鐘
+stock_cache = TTLCache(ttl_seconds=60)
+rate_cache = TTLCache(ttl_seconds=300)
 
 def get_stock_data(ticker: str, region: str = "US") -> dict:
     """
@@ -84,8 +84,6 @@ def get_exchange_rate(from_curr: str, to_curr: str) -> float:
     if from_curr == to_curr:
         return 1.0
 
-    # 3. 取得兩者對 USD 的匯率
-    # Yahoo 的格式通常是 "TWD=X" 代表 USD -> TWD 的匯率
     try:
         usd_to_from = 1.0
         if from_curr != "USD":
