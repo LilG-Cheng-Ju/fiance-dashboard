@@ -9,7 +9,7 @@ from src.database import Base
 
 
 class AssetType(str, enum.Enum):
-    BANK = "BANK"           # 銀行存款
+    CASH = "CASH"           
     STOCK = "STOCK"         # 股票
     CRYPTO = "CRYPTO"       # 加密貨幣
     GOLD = "GOLD"           # 黃金
@@ -38,6 +38,8 @@ class Asset(Base):
     currency = Column(String(3), default="TWD", nullable=False)
 
     quantity = Column(Float, default=0.0)
+    
+    symbol = Column(String, nullable=True)
 
     meta_data = Column(JSON, default={}) 
 

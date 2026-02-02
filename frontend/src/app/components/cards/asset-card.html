@@ -1,0 +1,41 @@
+<div class="card-container type-{{ asset().asset_type.toLowerCase() }}">
+  
+  <div class="card-header">
+    <div class="name-group">
+      <h3 class="asset-name">{{ asset().name }}</h3>
+      @if (asset().asset_type === 'STOCK') {
+        <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">
+          {{ asset().symbol }}
+        </span>
+      }
+    </div>
+    
+    <span class="status-badge">
+      {{ asset().asset_type }}
+    </span>
+  </div>
+
+  <div class="card-body">
+    <div class="balance-group">
+      <span class="currency">{{ asset().currency }}</span>
+      <span class="amount">{{ asset().current_value | number:'1.0-0' }}</span>
+    </div>
+    @if (asset().asset_type === 'STOCK' && asset().unit_price) {
+      <div class="details-row">
+        <span class="detail-item">
+          <i class="icon-share"></i> {{ asset().quantity | number }} 股
+        </span>
+        
+        <span class="divider">/</span>
+
+        <span class="detail-item">
+          @ {{ asset().unit_price | number:'1.2-2' }}
+        </span>
+
+        </div>
+    }
+  </div>
+
+  <div class="bg-decoration"></div>
+
+</div>

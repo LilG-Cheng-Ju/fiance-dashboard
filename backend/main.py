@@ -1,17 +1,29 @@
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
-
 from src import database, models
 from src.services import market
 
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="My Wealth Manager")
+
+origins = [
+    "http://localhost:4200",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,      # 允許 Angular 的網址
+    allow_credentials=True,
+    allow_methods=["*"],        # 允許所有方法 (GET, POST, DELETE...)
+    allow_headers=["*"],        # 允許所有 Header
+)
 
 # ==========================================
 # Pydantic Schemas
@@ -44,6 +56,7 @@ class AssetCreate(BaseModel):
     name: str
     asset_type: models.AssetType
     currency: str = "TWD"
+    symbol: Optional[str] = None
     initial_balance: float = 0.0 # 初始金額
     initial_quantity: float = 0.0 # 初始數量
     meta_data: Optional[Dict[str, Any]] = {}
@@ -55,6 +68,7 @@ class AssetResponse(BaseModel):
     currency: str
     current_value: float
     quantity: float
+    symbol: Optional[str]
     meta_data: Optional[Dict[str, Any]]
 
     class Config:
@@ -79,6 +93,7 @@ def create_asset(asset_in: AssetCreate, db: Session = Depends(database.get_db)):
     db_asset = models.Asset(
         name=asset_in.name,
         asset_type=asset_in.asset_type,
+        symbol=asset_in.symbol,
         currency=asset_in.currency,
         current_value=asset_in.initial_balance,
         quantity=asset_in.initial_quantity,
@@ -102,6 +117,16 @@ def create_asset(asset_in: AssetCreate, db: Session = Depends(database.get_db)):
         db.commit()
 
     return db_asset
+
+@app.delete("/assets/{asset_id}")
+def delete_asset(asset_id: int, db: Session = Depends(database.get_db)):
+    asset = db.query(models.Asset).filter(models.Asset.id == asset_id).first()
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+    
+    db.delete(asset)
+    db.commit()
+    return {"message": "Asset and associated transactions deleted"}
 
 @app.post("/transactions/", response_model=TransactionResponse)
 def create_transaction(tx_in: TransactionCreate, db: Session = Depends(database.get_db)):

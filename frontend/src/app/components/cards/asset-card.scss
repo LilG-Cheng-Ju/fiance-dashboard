@@ -1,0 +1,126 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+// 2. 主容器
+.card-container {
+  background: white;
+  border-radius: 16px;
+  padding: 20px 20px 10px 20px;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+    // 預設 hover 邊框色
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+
+  // --- 內部元素樣式 ---
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .asset-name {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.4;
+      
+      display: -webkit-box;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      margin-left: 12px;
+      background-color: #f8fafc;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+    }
+  }
+
+  .card-body {
+    margin-top: auto; // 把內容推到底部
+    .balance-group {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+
+      .currency {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+      }
+
+      .amount {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+      }
+    }
+  }
+
+  .details-row {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem; // 字體小一點
+    color: #64748b;     // 使用次要文字顏色 (Slate-500)
+    font-weight: 500;
+    
+    .detail-item {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .divider {
+      margin: 0 6px;
+      color: #cbd5e1;   // 分隔線更淡一點
+      font-size: 0.8rem;
+    }
+  }
+
+  $types: 'stock', 'cash', 'crypto', 'gold', 'default';
+  @each $type in $types {
+    &.type-#{$type} {
+      
+      .card-header .status-badge {
+        background-color: rgba(var(--theme-#{$type}-rgb), 0.1);
+        color: rgba(var(--theme-#{$type}-rgb), 1);
+        border: 1px solid rgba(var(--theme-#{$type}-rgb), 0.3);
+      }
+
+      &:hover {
+        border-color: rgba(var(--theme-#{$type}-rgb), 0.6);
+      }
+    }
+  }
+}

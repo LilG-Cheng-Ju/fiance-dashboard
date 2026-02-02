@@ -1,0 +1,229 @@
+// --- 變數 ---
+$bg-color: #f8fafc;
+$gap-size: 24px;
+$radius: 20px;
+$primary-color: #2563eb;
+$text-main: #1f2937;
+$text-sub: #6b7280;
+
+// --- 容器 ---
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-size;
+  padding: $gap-size;
+  min-height: 100vh;
+  background-color: $bg-color;
+  max-width: 1600px;       // 限制最大寬度，避免在大螢幕太散
+  margin: 0 auto;          // 居中
+}
+
+// 通用卡片
+.card {
+  background: white;
+  border-radius: $radius;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03); // 很淡的陰影
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+// ------------------------------------------
+// 🔥 第一層：Overview Section
+// ------------------------------------------
+.overview-section {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-size;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    height: 320px; // 高度稍微縮小一點，更精緻
+  }
+
+  .hero-card-wrapper {
+    flex: 0 0 35%; // 寬度控制在這裡
+    height: 100%;  // 高度撐滿
+  }
+}
+
+// (A) 總資產 VIP 黑卡 ✨
+.hero-card.vip-card {
+  flex: 0 0 35%; // 固定佔 35% 寬度
+  position: relative;
+  overflow: hidden;
+  
+  // 高級漸層背景 (深藍 -> 紫)
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; // 內容上下撐開
+  border: none;
+  
+  // 玻璃光澤感
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  }
+
+  .hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .sub-title { 
+      font-size: 0.9rem; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; 
+    }
+    .date-badge {
+      background: rgba(255,255,255,0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  }
+
+  .total-amount {
+    font-size: 3.5rem; // 超大數字
+    font-weight: 700;
+    margin: 20px 0;
+    .currency-symbol { font-size: 1.5rem; opacity: 0.6; vertical-align: top; margin-top: 10px; display: inline-block;}
+  }
+
+  .profit-loss {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(46, 204, 113, 0.15); // 綠色底
+    color: #2ecc71; // 綠色字
+    border-radius: 12px;
+    font-weight: 600;
+    width: fit-content;
+    
+    &.negative {
+      background: rgba(231, 76, 60, 0.15);
+      color: #e74c3c;
+    }
+  }
+
+  .asset-progress {
+    margin-top: auto; // 推到底部
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      display: flex;
+      overflow: hidden;
+      
+      .bar { height: 100%; }
+      .bar.cash { background: #3b82f6; }   // 藍色
+      .bar.invest { background: #8b5cf6; } // 紫色
+    }
+  }
+
+  // 背景裝飾圓圈
+  .bg-pattern {
+    position: absolute;
+    right: -50px;
+    bottom: -50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
+    pointer-events: none;
+  }
+}
+
+// (B) 圓餅圖容器
+.pie-grid {
+  flex: 1; // 佔滿剩下空間 (65%)
+  display: flex;
+  gap: $gap-size;
+  
+  // 讓裡面的圖表自動分配寬度
+  .pie-wrapper {
+    flex: 1; // 大家平分寬度
+    background: white;
+    border-radius: $radius;
+    padding: 16px;
+    min-width: 0; // 防止 Flex 子元素溢出
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    
+    // 如果只有一張圖，限制最大寬度，不要太誇張
+    &:only-child {
+      max-width: 500px; 
+    }
+    
+    // 確保 app-allocation-pie 撐滿
+    app-allocation-pie {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+}
+
+// ------------------------------------------
+// 🔥 第二層：Trend Section (全寬)
+// ------------------------------------------
+.trend-section {
+  width: 100%;
+  min-height: 400px; // 給足夠的高度畫圖
+  display: flex;
+  flex-direction: column;
+  
+  .section-header {
+    margin-bottom: 20px;
+    h3 { margin: 0; color: #1e293b; }
+  }
+  
+  .chart-area {
+    flex: 1;
+    background: #f1f5f9; // 暫時的灰色背景
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+  }
+}
+
+// ------------------------------------------
+// 🔥 第三層：Asset Grid (維持 Grid)
+// ------------------------------------------
+.asset-grid {
+  display: grid;
+  gap: $gap-size; // 維持原本的間距 (約 16px-24px)
+  
+  grid-auto-rows: minmax(160px, auto);
+
+  // mobile
+  grid-template-columns: repeat(2, 1fr); 
+
+  // desktop
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// 修改新增按鈕的高度，讓它跟小卡一樣緊湊
+.asset-card-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border: 2px dashed #e5e7eb;
+  background-color: transparent;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}

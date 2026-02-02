@@ -1,0 +1,128 @@
+// 變數設定 (可以之後抽出去)
+$primary-blue: #2563eb;
+$text-dark: #1e293b;
+$text-grey: #64748b;
+$bg-white: #ffffff;
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%; // 確保它撐滿父容器
+}
+
+.wealth-card {
+  position: relative; // 為了讓絕對定位的 SVG 背景參考
+  background-color: $bg-white;
+  border-radius: 24px; // ✅ 圓角回來了
+  padding: 28px;       // ✅ 內容不會貼邊了 (加上足夠的內距)
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); // 極淡的陰影，營造空氣感
+  overflow: hidden;    // ✅ 確保圓角裁切正常
+  height: 100%;
+  box-sizing: border-box;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  // 加上一個很淡的邊框增加精緻度
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+// 內容層級要比背景高
+.content {
+  position: relative;
+  z-index: 2; 
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+
+  .label {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: $text-grey; // 標題用灰色，降低視覺干擾
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .date-badge {
+    background-color: #f1f5f9; // 淺灰底
+    color: $text-grey;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+}
+
+.main-number {
+  margin: 16px 0;
+  color: $text-dark;
+  
+  .currency {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: $text-grey; // 幣別符號淡一點
+    margin-right: 4px;
+    vertical-align: text-top;
+  }
+  
+  .value {
+    font-size: 3rem; // 數字大一點
+    font-weight: 700; // 字體加粗
+    letter-spacing: -1px; // 數字緊湊一點比較好看
+    line-height: 1;
+  }
+}
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    
+    &.positive {
+      color: #10b981; // 清爽的綠色
+      background-color: rgba(16, 185, 129, 0.1); // 淡淡的綠底
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+  }
+
+  .separator {
+    color: #e2e8f0;
+  }
+
+  .stat-info {
+    color: $text-grey;
+    font-size: 0.85rem;
+  }
+}
+
+// ✅ 背景裝飾 (SVG 折線圖)
+.chart-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60%; // 佔下半部
+  z-index: 1; // 在內容下方
+  opacity: 0.8;
+  pointer-events: none; // 讓滑鼠點擊穿透
+  
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block; // 消除 SVG 下方空隙
+  }
+}
