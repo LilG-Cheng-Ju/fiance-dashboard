@@ -1,58 +1,56 @@
 import { CommonModule } from '@angular/common';
 import { Component, DOCUMENT, OnInit, computed, effect, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { AssetCard } from './components/cards/asset-card';
+
+import { AssetCollectionComponent } from './components/cards/asset-collection';
 import { TotalWealthCard } from './components/cards/total-wealth-card';
 import { AllocationPieComponent } from './components/widgets/allocation-pie';
 import { ASSET_CONFIG } from './core/config/asset-config';
-import * as AssetActions from './core/store/asset/asset.actions';
-import { selectAssetLoading, selectAssets } from './core/store/asset/asset.selectors';
-import * as MarketActions from './core/store/market/market.actions';
-import { selectPrices } from './core/store/market/market.selectors';
-import * as RateActions from './core/store/exchange_rate/exchange_rate.actions';
-import { selectRateMap, selectRateTimestamps } from './core/store/exchange_rate/exchange_rate.selectors';
+
+
+import { AssetStore } from './core/store/asset.store';
+import { MarketStore } from './core/store/market.store';
+import { RateStore } from './core/store/exchange_rate.store';
+import { AssetType } from './core/models/asset.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, AllocationPieComponent, TotalWealthCard, AssetCard],
+  imports: [CommonModule, AllocationPieComponent, TotalWealthCard, AssetCollectionComponent],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']
 })
 export class App implements OnInit {
-  private store = inject(Store);
   private document = inject(DOCUMENT);
 
-  assets = this.store.selectSignal(selectAssets);
-  isLoading = this.store.selectSignal(selectAssetLoading);
-  priceMap = this.store.selectSignal(selectPrices);
-  rateMap = this.store.selectSignal(selectRateMap);
-  rateTimestamps = this.store.selectSignal(selectRateTimestamps);
+  readonly assetStore = inject(AssetStore);
+  readonly marketStore = inject(MarketStore);
+  readonly rateStore = inject(RateStore);
 
   private readonly RATE_CACHE_DURATION = 30 * 60 * 1000;
 
   constructor() {
     effect(() => {
-      const assets = this.assets();
+      const assets = this.assetStore.activeAssets();
 
       if (assets.length === 0) return;
 
       const symbolsToTrack = assets
-        .filter(a => a.asset_type === 'STOCK')
+        .filter(a => a.asset_type === AssetType.STOCK ||
+                     a.asset_type === AssetType.CRYPTO || 
+                     a.asset_type === AssetType.GOLD && a.symbol)
         .map(a => ({ 
-          ticker: a.symbol, 
-          region: a.currency === 'USD' ? 'US' : 'TW'}));
+          ticker: a.symbol!, 
+          region: a.currency === 'USD' ? 'US' : 'TW'
+        }));
 
-      if (symbolsToTrack.length > 0) {
-        this.store.dispatch(MarketActions.startTracking({ symbols: symbolsToTrack }));
-      }
+      this.marketStore.startTracking(symbolsToTrack);
     });
 
     effect(() => {
-      const assets = this.assets();
+      const assets = this.assetStore.assets();
       if (assets.length === 0) return;
 
-      const timestamps = this.rateTimestamps();
+      const timestamps = this.rateStore.rateTimestamps();
       const now = Date.now();
 
       const foreignCurrencies = new Set(
@@ -63,19 +61,12 @@ export class App implements OnInit {
 
       foreignCurrencies.forEach(currency => {
         const rateKey = `${currency}-TWD`;
-        
-        const lastBackendUpdate = timestamps[rateKey];
-
-        const isStale = !lastBackendUpdate || (now - lastBackendUpdate > this.RATE_CACHE_DURATION);
+        const lastUpdate = timestamps[rateKey];
+        const isStale = !lastUpdate || (now - lastUpdate > this.RATE_CACHE_DURATION);
 
         if (isStale) {
-          console.log(`⏳ [Rate] ${currency} 過期或未存在，發送更新請求...`);
-          this.store.dispatch(RateActions.loadRate({ 
-            fromCurr: currency, 
-            toCurr: 'TWD' 
-          }));
-        } else {
-          console.log(`✅ [Rate] ${currency} 使用快取資料`);
+          console.log(`⏳ [App] ${currency} 匯率過期，更新中...`);
+          this.rateStore.loadRate({ fromCurr: currency, toCurr: 'TWD' });
         }
       });
     });
@@ -83,55 +74,66 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.initThemeVariables();
-    this.store.dispatch(AssetActions.loadAssets());
+    this.assetStore.loadAssets();
   }
 
-  enrichedAssets = computed(() => {
-    const assets = this.assets();
-    const prices = this.priceMap();
+  readonly assetsWithMarketValue = computed(() => {
+    const assets = this.assetStore.activeAssets();
+    const prices = this.marketStore.priceMap();
+    const rates = this.rateStore.rateMap();
 
     return assets.map(asset => {
-      if (asset.asset_type === 'STOCK' && prices[asset.symbol]) {
-        const marketData = prices[asset.symbol];
-        return {
-          ...asset,
-          // 算出總價值 (目前是原幣，尚未乘匯率)
-          current_value: marketData.price * asset.quantity,
-          unit_price: marketData.price // 順便把單價塞進去顯示
-        };
+      let marketPrice = 0;
+      let marketValue = asset.current_value;
+      const exchangeRate = rates[`${asset.currency}-TWD`] || 1;
+      const isMarketAsset = asset.asset_type !== AssetType.CASH && asset.symbol;
+
+      if (isMarketAsset) {
+        // Get stock price from MarketStore, default to 0 if not available
+        const stockData = prices[asset.symbol!];
+        marketPrice = stockData?.price || 0;
+        
+        if (marketPrice > 0) {
+          // Market value (original currency) = quantity * market price
+          marketValue = asset.quantity * marketPrice;
+        }
+      } 
+      // For cash assets
+      else if (asset.asset_type === AssetType.CASH) {
+          marketValue = asset.quantity; // Cash amount equals market value (original currency)
       }
-      return asset;
+
+      // Convert market value to TWD
+      const marketValueTwd = marketValue * exchangeRate;
+      
+      // Calculate unrealized P&L (market value TWD - cost TWD)
+      // Note: asset.current_value is stored as total cost in TWD
+      const unrealizedPnl = marketValueTwd - asset.current_value;
+
+      return {
+        ...asset,
+        marketPrice,     // Unit price (original currency)
+        marketValue,     // Total market value (original currency)
+        marketValueTwd,  // Total market value (TWD)
+        exchangeRate,
+        unrealizedPnl,
+        returnRate: asset.current_value > 0 ? (unrealizedPnl / asset.current_value) * 100 : 0
+      };
     });
   });
 
-  totalWealth = computed(() => {
-    const assets = this.enrichedAssets();
-    const rates = this.rateMap();
-
-    return assets.reduce((sum, asset) => {
-      let finalValue = asset.current_value;
-
-      if (asset.currency !== 'TWD') {
-        const rateKey = `${asset.currency}-TWD`;
-        const exchangeRate = rates[rateKey];
-
-        if (exchangeRate) {
-          finalValue = asset.current_value * exchangeRate;
-        } else {
-          finalValue = 0; 
-        }
-      }
-
-      return sum + finalValue;
-    }, 0);
+  readonly totalWealth = computed(() => {
+    return this.assetsWithMarketValue()
+      .filter(a => a.include_in_net_worth)
+      .reduce((sum, a) => sum + a.marketValueTwd, 0);
   });
 
-  hasTwStock = computed(() => 
-    this.enrichedAssets().some(a => a.asset_type === 'STOCK' && a.currency === 'TWD')
+  readonly hasTwStock = computed(() => 
+    this.assetStore.activeAssets().some(a => a.currency === 'TWD' && a.asset_type === AssetType.STOCK)
   );
-
-  hasUsStock = computed(() => 
-    this.enrichedAssets().some(a => a.asset_type === 'STOCK' && a.currency === 'USD')
+  
+  readonly hasUsStock = computed(() => 
+    this.assetStore.activeAssets().some(a => a.currency === 'USD' && a.asset_type === AssetType.STOCK)
   );
 
   private initThemeVariables() {

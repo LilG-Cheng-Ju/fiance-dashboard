@@ -1,0 +1,121 @@
+// 變數 (維持一致性)
+$gap: 20px;
+$primary: #2563eb;
+$text-main: #1e293b;
+$border-light: #e2e8f0;
+
+:host {
+  display: block;
+}
+
+.collection-container {
+  // 這裡可以設背景，也可以透明，看你喜好
+  // 為了區塊感，我們給它一個乾淨的白底容器
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+// --- Header 排版 ---
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap; // 手機版如果太擠會自動換行
+  gap: 16px;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: $text-main;
+    }
+
+    .count-badge {
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 0.85rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+  }
+
+  // 篩選按鈕樣式 (Pills 風格)
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    background: #f8fafc; // 淺灰底槽
+    padding: 4px;
+    border-radius: 12px;
+
+    button {
+      border: none;
+      background: transparent;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #64748b;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover { color: $text-main; }
+      
+      // 激活狀態
+      &.active {
+        background: white;
+        color: $primary;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// --- Grid 排版 ---
+.grid-layout {
+  display: grid;
+  gap: $gap;
+  
+  // 響應式欄位設定 (RWD)
+  grid-template-columns: repeat(1, 1fr); // 手機單欄
+  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
+  @media (min-width: 1440px) { grid-template-columns: repeat(5, 1fr); }
+
+  // 新增按鈕卡片 (讓它長得跟 AssetCard 一樣大)
+  .add-card-btn {
+    min-height: 180px; // 這裡要稍微抓一下 AssetCard 的高度，避免忽高忽低
+    border: 2px dashed $border-light;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #94a3b8;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.5);
+
+    &:hover {
+      border-color: $primary;
+      background: rgba(37, 99, 235, 0.02);
+      color: $primary;
+    }
+
+    .plus-icon {
+      font-size: 2rem;
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+  }
+}

@@ -1,6 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { AssetData } from '../../core/services/asset.service';
+import { Asset } from '../../core/models/asset.model';
 
 @Component({
   selector: 'app-asset-card',
@@ -9,5 +9,16 @@ import { AssetData } from '../../core/services/asset.service';
   styleUrl: './asset-card.scss',
 })
 export class AssetCard {
-  asset = input.required<AssetData>();
+  asset = input.required<Asset>();
+  marketPrice = input<number>(0);
+
+  displayValue = input<number | null>(null);
+  pnl = input<number>(0);
+  roi = input<number | string>(0);
+
+  delete = output<number>();
+
+  onDelete() {
+    this.delete.emit(this.asset().id);
+  }
 }

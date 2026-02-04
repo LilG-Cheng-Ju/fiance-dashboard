@@ -1,8 +1,8 @@
 import { Component, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgxEchartsModule, NGX_ECHARTS_CONFIG } from 'ngx-echarts';
+import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
-import { AssetData } from '../../core/services/asset.service';
+import { Asset } from '../../core/models/asset.model';
 import { getAssetRgb } from '../../core/config/asset-config';
 
 export type PieChartType = 'ASSET_TYPE' | 'TW_STOCK' | 'US_STOCK';
@@ -30,7 +30,7 @@ const CHART_STYLE = {
   styleUrls: ['./allocation-pie.scss'],
 })
 export class AllocationPieComponent {
-  assets = input.required<AssetData[]>();
+  assets = input.required<Asset[]>();
   chartType = input<PieChartType>('ASSET_TYPE');
   title = input<string>('資產配置');
 
@@ -47,7 +47,7 @@ export class AllocationPieComponent {
     });
   }
 
-  private updateChart(assets: AssetData[], type: PieChartType) {
+  private updateChart(assets: Asset[], type: PieChartType) {
     let chartData: { name: string; value: number }[] = [];
 
     switch (type) {
@@ -94,7 +94,7 @@ export class AllocationPieComponent {
 
 
   /** 計算總資產配置 (Group By Type) */
-  private _groupByAssetType(assets: AssetData[]) {
+  private _groupByAssetType(assets: Asset[]) {
     const grouped = assets.reduce((acc, curr) => {
       acc[curr.asset_type] = (acc[curr.asset_type] || 0) + curr.current_value;
       return acc;
@@ -107,7 +107,7 @@ export class AllocationPieComponent {
   }
 
   /** 通用的股票過濾器 (Filter Stock + Currency) */
-  private _filterStockByCurrency(assets: AssetData[], currency: string) {
+  private _filterStockByCurrency(assets: Asset[], currency: string) {
     return assets
       .filter(a => a.asset_type === 'STOCK' && a.currency === currency)
       .map(a => ({

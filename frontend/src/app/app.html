@@ -1,62 +1,58 @@
 <div class="dashboard-container">
-  
-  <div class="overview-section">
-    
-    <div class="hero-card-wrapper">
-      <app-total-wealth-card [totalAmount]="totalWealth()"></app-total-wealth-card>
+
+  <section class="header-section">
+    <div class="wealth-wrapper">
+      <app-total-wealth-card 
+        [totalAmount]="totalWealth()"
+        [loading]="assetStore.isLoading()">
+      </app-total-wealth-card>
     </div>
 
+    <div class="trend-wrapper card">
+      <div class="section-title">資產趨勢</div>
+      <div class="chart-placeholder">
+        Trend Chart Coming Soon...
+      </div>
+    </div>
+  </section>
+
+  <section class="analytics-section">
     <div class="pie-grid">
-      
-      <div class="pie-wrapper">
+      <div class="pie-card card">
         <app-allocation-pie 
-          [assets]="enrichedAssets()" 
+          [assets]="assetStore.activeAssets()" 
           chartType="ASSET_TYPE" 
           title="資產分佈">
         </app-allocation-pie>
       </div>
 
       @if (hasTwStock()) {
-        <div class="pie-wrapper">
+        <div class="pie-card card">
           <app-allocation-pie 
-            [assets]="enrichedAssets()" 
+            [assets]="assetStore.activeAssets()" 
             chartType="TW_STOCK" 
-            title="台股持倉">
+            title="台股配置">
           </app-allocation-pie>
         </div>
       }
 
       @if (hasUsStock()) {
-        <div class="pie-wrapper">
+        <div class="pie-card card">
           <app-allocation-pie 
-            [assets]="enrichedAssets()" 
+            [assets]="assetStore.activeAssets()" 
             chartType="US_STOCK" 
-            title="美股持倉">
+            title="美股配置">
           </app-allocation-pie>
         </div>
       }
     </div>
-  </div>
-
-  <section class="trend-section card">
-    <div class="section-header">
-      <h3>資產歷史走勢</h3>
-      </div>
-    <div class="chart-area">
-      <div class="placeholder-content">
-        Multi-Line Trend Chart Coming Soon...
-      </div>
-    </div>
   </section>
 
-  <div class="asset-grid">
-    @for (asset of enrichedAssets(); track asset.id) {
-      <app-asset-card [asset]="asset"></app-asset-card>
-    }
-
-    <div class="asset-card-add-btn card">
-      <span class="plus-icon">+</span>
-    </div>
-  </div>
+  <section class="assets-section">
+    <app-asset-collection 
+      [assets]="assetsWithMarketValue()"
+      (deleteAsset)="assetStore.deleteAsset($event)">
+    </app-asset-collection>
+  </section>
 
 </div>

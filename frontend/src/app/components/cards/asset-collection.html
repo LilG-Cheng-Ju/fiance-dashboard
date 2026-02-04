@@ -1,0 +1,44 @@
+<div class="collection-container">
+  
+  <div class="header-row">
+    <div class="title-group">
+      <h3>我的資產庫</h3>
+      <span class="count-badge">{{ displayedAssets().length }}</span>
+    </div>
+
+    <div class="filter-pills">
+      <button 
+        [class.active]="filterType() === 'ALL'" 
+        (click)="setFilter('ALL')">全部</button>
+      
+      <button 
+        [class.active]="filterType() === 'STOCK'" 
+        (click)="setFilter('STOCK')">股票</button>
+      
+      <button 
+        [class.active]="filterType() === 'CASH'" 
+        (click)="setFilter('CASH')">現金</button>
+
+      </div>
+  </div>
+
+  <div class="grid-layout">
+    
+    @for (asset of displayedAssets(); track asset.id) {
+      <app-asset-card 
+        [asset]="asset"
+        [marketPrice]="asset.marketPrice"
+        [displayValue]="asset.marketValueTwd" 
+        [pnl]="asset.unrealizedPnl"
+        [roi]="asset.returnRate"
+        (delete)="onDelete($event)">
+      </app-asset-card>
+    }
+
+    <div class="add-card-btn">
+      <span class="plus-icon">+</span>
+      <span>新增資產</span>
+    </div>
+
+  </div>
+</div>
