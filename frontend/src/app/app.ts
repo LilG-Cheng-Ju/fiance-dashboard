@@ -106,9 +106,14 @@ export class App implements OnInit {
       // Convert market value to TWD
       const marketValueTwd = marketValue * exchangeRate;
       
+      // Calculate cost in TWD for P&L calculation
+      const costTwd = asset.current_value * exchangeRate;
+      
       // Calculate unrealized P&L (market value TWD - cost TWD)
       // Note: asset.current_value is stored as total cost in TWD
-      const unrealizedPnl = marketValueTwd - asset.current_value;
+      const unrealizedPnl = marketValueTwd - costTwd;
+
+      const returnRate = costTwd > 0 ? (unrealizedPnl / costTwd) * 100 : 0;
 
       return {
         ...asset,
@@ -117,7 +122,7 @@ export class App implements OnInit {
         marketValueTwd,  // Total market value (TWD)
         exchangeRate,
         unrealizedPnl,
-        returnRate: asset.current_value > 0 ? (unrealizedPnl / asset.current_value) * 100 : 0
+        returnRate
       };
     });
   });

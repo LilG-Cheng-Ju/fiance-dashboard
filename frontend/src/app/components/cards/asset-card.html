@@ -4,36 +4,51 @@
     <div class="name-group">
       <h3 class="asset-name">{{ asset().name }}</h3>
       @if (asset().asset_type === 'STOCK') {
-        <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">
-          {{ asset().symbol }}
-        </span>
+        <span class="asset-symbol">{{ asset().symbol }}</span>
       }
     </div>
-    
-    <span class="status-badge">
-      {{ asset().asset_type }}
-    </span>
+    <span class="status-badge">{{ asset().asset_type }}</span>
   </div>
 
   <div class="card-body">
-    <div class="balance-group">
-      <span class="currency">{{ asset().currency }}</span>
-      <span class="amount">{{ asset().current_value | number:'1.0-0' }}</span>
-    </div>
-    @if (asset().asset_type === 'STOCK' && marketPrice()) {
-      <div class="details-row">
-        <span class="detail-item">
-          <i class="icon-share"></i> {{ asset().quantity | number }} 股
+    
+    <div class="main-data-row">
+      
+      <div class="balance-group">
+        <span class="currency">NT$</span>
+        <span class="amount">
+          {{ (displayValue() !== null ? displayValue() : asset().current_value) | number:'1.0-0' }}
         </span>
-        
-        <span class="divider">/</span>
+      </div>
 
-        <span class="detail-item">
-          @ {{ marketPrice() | number:'1.2-2' }}
-        </span>
-
+      @if (pnl() !== 0) {
+        <div class="pnl-wrapper" [class.positive]="pnl() > 0" [class.negative]="pnl() < 0">
+          <span class="arrow">{{ pnl() > 0 ? '▲' : '▼' }}</span>
+          <span class="roi">{{ roi() | number:'1.1-2' }}%</span>
         </div>
+      }
+    </div>
+
+  </div>
+
+  <div class="card-footer">
+    
+    @if (asset().asset_type === 'STOCK' && marketPrice()) {
+      <span class="detail-item">{{ asset().quantity | number }} 股</span>
+      <span class="divider">/</span>
+      <span class="detail-item price">@ {{ marketPrice() | number:'1.2-2' }}</span>
     }
+    
+    @else if (asset().asset_type === 'CASH' && asset().currency !== 'TWD') {
+      <span class="detail-item">匯率</span>
+      <span class="divider">:</span>
+      <span class="detail-item price">{{ exchangeRate() | number:'1.2-2' }}</span>
+    }
+    
+    @else if (asset().asset_type === 'CASH' && asset().currency === 'TWD') {
+      <span class="detail-item" style="opacity: 0.4; font-size: 0.8rem;">Base Currency</span>
+    }
+
   </div>
 
   <div class="bg-decoration"></div>

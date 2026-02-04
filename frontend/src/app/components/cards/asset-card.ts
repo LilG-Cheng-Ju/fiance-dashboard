@@ -18,6 +18,8 @@ export class AssetCard {
 
   delete = output<number>();
 
+  exchangeRate = input<number>(1);
+
   onDelete() {
     this.delete.emit(this.asset().id);
   }

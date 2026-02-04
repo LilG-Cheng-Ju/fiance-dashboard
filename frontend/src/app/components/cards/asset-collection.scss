@@ -1,5 +1,5 @@
 // 變數 (維持一致性)
-$gap: 20px;
+$gap: 16px;
 $primary: #2563eb;
 $text-main: #1e293b;
 $border-light: #e2e8f0;
@@ -87,14 +87,11 @@ $border-light: #e2e8f0;
   gap: $gap;
   
   // 響應式欄位設定 (RWD)
-  grid-template-columns: repeat(1, 1fr); // 手機單欄
-  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-  @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
-  @media (min-width: 1440px) { grid-template-columns: repeat(5, 1fr); }
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 
   // 新增按鈕卡片 (讓它長得跟 AssetCard 一樣大)
   .add-card-btn {
-    min-height: 180px; // 這裡要稍微抓一下 AssetCard 的高度，避免忽高忽低
+    min-height: 150px; // 這裡要稍微抓一下 AssetCard 的高度，避免忽高忽低
     border: 2px dashed $border-light;
     border-radius: 20px;
     display: flex;

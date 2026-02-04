@@ -1,125 +1,180 @@
 :host {
   display: block;
   height: 100%;
-  width: 100%;
 }
 
-// 2. 主容器
 .card-container {
   background: white;
-  border-radius: 16px;
-  padding: 20px 20px 10px 20px;
+  border-radius: 20px;
+  padding: 16px 20px; // 上下緊一點，左右寬一點
+  
+  // 🔥 高度設定
   height: 100%;
+  min-height: 130px; // 下修高度，讓卡片更緊湊
+  
   box-sizing: border-box;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 12px;
+  // 讓 Header 貼頂，Footer 貼底，Body 佔滿中間
+  justify-content: space-between; 
   
   position: relative;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
-    // 預設 hover 邊框色
-    border-color: rgba(37, 99, 235, 0.3);
+    box-shadow: 0 12px 24px -5px rgba(0, 0, 0, 0.08);
   }
 
-  // --- 內部元素樣式 ---
-
+  // --- 1. Header ---
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    margin-bottom: 8px; // 與 Body 的距離
+
+    .name-group {
+      // 限制寬度，避免標題太長蓋到 Badge
+      flex: 1;
+      margin-right: 8px;
+      min-width: 0; 
+    }
 
     .asset-name {
       margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 1rem; // 字體微調
+      font-weight: 700;
       color: #1e293b;
-      line-height: 1.4;
-      
-      display: -webkit-box;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
+      white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .asset-symbol {
+      font-size: 0.75rem; 
+      color: #94a3b8; 
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      display: block; // 強制換行在名字下方
     }
 
     .status-badge {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 6px; // 改成方圓角，比較俐落
       text-transform: uppercase;
-      white-space: nowrap;
-      margin-left: 12px;
-      background-color: #f8fafc;
+      background-color: #f1f5f9;
       color: #64748b;
-      border: 1px solid #e2e8f0;
+      flex-shrink: 0; // 防止被壓縮
     }
   }
 
+  // --- 2. Body (核心修改) ---
   .card-body {
-    margin-top: auto; // 把內容推到底部
+    flex: 1; // 佔據剩餘空間
+    display: flex;
+    flex-direction: column;
+    justify-content: center; // 🔥 讓數字垂直置中！這樣 CASH 就不會覺得上面很空
+    
+    .main-data-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .balance-group {
       display: flex;
       align-items: baseline;
-      gap: 4px;
+      gap: 2px;
 
       .currency {
         font-size: 0.8rem;
         font-weight: 600;
         color: #94a3b8;
-        text-transform: uppercase;
       }
 
       .amount {
-        font-size: 1.4rem;
+        font-size: 1.5rem; // 字體適中
         font-weight: 700;
         color: #0f172a;
         letter-spacing: -0.5px;
+        line-height: 1;
+      }
+    }
+
+    // 損益標籤 (變更為跟在數字旁邊的小標籤)
+    .pnl-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      
+      background-color: #f1f5f9;
+      color: #64748b;
+      
+      // 稍微往上提一點點，視覺重心更穩
+      transform: translateY(-2px); 
+
+      .arrow { font-size: 0.6rem; }
+
+      &.positive {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+      }
+      &.negative {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #059669;
       }
     }
   }
 
-  .details-row {
+  // --- 3. Footer (對齊區) ---
+  .card-footer {
+    // 🔥 固定高度區
+    height: 24px;
+    min-height: 24px;
+    
+    // 分隔線
+    border-top: 1px dashed #e2e8f0;
+    margin-top: 8px;
+    padding-top: 8px;
+    
     display: flex;
     align-items: center;
-    font-size: 0.85rem; // 字體小一點
-    color: #64748b;     // 使用次要文字顏色 (Slate-500)
+    font-size: 0.8rem;
+    color: #64748b;
     font-weight: 500;
-    
-    .detail-item {
-      display: inline-flex;
-      align-items: center;
-    }
 
     .divider {
       margin: 0 6px;
-      color: #cbd5e1;   // 分隔線更淡一點
-      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+
+    .price {
+      color: #475569;
     }
   }
 
-  $types: 'stock', 'cash', 'crypto', 'gold', 'default';
+  // --- Theme Colors ---
+  $types: 'stock', 'cash', 'crypto', 'gold';
   @each $type in $types {
     &.type-#{$type} {
-      
       .card-header .status-badge {
-        background-color: rgba(var(--theme-#{$type}-rgb), 0.1);
         color: rgba(var(--theme-#{$type}-rgb), 1);
-        border: 1px solid rgba(var(--theme-#{$type}-rgb), 0.3);
+        background-color: rgba(var(--theme-#{$type}-rgb), 0.1);
       }
-
       &:hover {
-        border-color: rgba(var(--theme-#{$type}-rgb), 0.6);
+        border-color: rgba(var(--theme-#{$type}-rgb), 0.4);
       }
     }
   }

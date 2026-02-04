@@ -9,6 +9,7 @@ export interface AssetViewModel extends Asset {
   marketPrice: number;     // 現價
   marketValueTwd: number;  // 台幣市值
   unrealizedPnl: number;   // 未實現損益
+  exchangeRate?: number;   // 匯率
   returnRate: number | string; // 報酬率
 }
 

@@ -31,6 +31,7 @@
         [displayValue]="asset.marketValueTwd" 
         [pnl]="asset.unrealizedPnl"
         [roi]="asset.returnRate"
+        [exchangeRate]="asset.exchangeRate ?? 1"
         (delete)="onDelete($event)">
       </app-asset-card>
     }
