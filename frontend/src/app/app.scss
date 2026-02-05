@@ -1,39 +1,107 @@
+@use '../assets/styles/theme';
+
+// --- Legacy Variables ---
 $bg-color: #f8fafc;
 $card-bg: #ffffff;
-$primary: #2563eb;
+$primary: #0f284e;
+$primary-hover: #1e3a66;
 $text-main: #1e293b;
 $text-sub: #64748b;
 $border-light: #e2e8f0;
 $radius: 24px;
 $gap: 24px;
 
-.dashboard-container {
+// --- 1. Global Layout ---
+.app-layout {
+  min-height: 100vh;
+  background-color: var(--bg-main, $bg-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  padding: $gap;
   max-width: 1600px;
   margin: 0 auto;
-  padding: $gap;
-  background-color: $bg-color;
-  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: $gap;
 }
 
+// --- 2. Global Buttons ---
+// (Kept for compatibility with other components)
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary, $primary);
+  color: var(--text-inverse, white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--primary-hover, $primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 40, 78, 0.25);
+  }
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-sub, $text-sub);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-main, $text-main);
+  }
+}
+
+// --- 3. Visibility Utilities ---
+
+// Default: Hide desktop component (Mobile First)
+.desktop-only {
+  display: none;
+}
+
+// spacer-bottom is part of the layout flow, so it stays here
+.spacer-bottom {
+  height: 80px;
+}
+
+// --- 4. Content Layout (Cards & Grid) ---
+// Kept for dashboard layout
+
 .card {
-  background: $card-bg;
+  background: var(--bg-card, $card-bg);
   border-radius: $radius;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  border: 1px solid $border-light;
+  border: 1px solid var(--border-light, $border-light);
   overflow: hidden;
 }
 
 .section-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: $text-main;
+  color: var(--text-main, $text-main);
   margin-bottom: 16px;
 }
 
-// --- Row 1: Header (Wealth + Trend) ---
+// Header Section
 .header-section {
   display: flex;
   flex-direction: column;
@@ -46,7 +114,6 @@ $gap: 24px;
 
   .wealth-wrapper {
     flex: 0 0 35%;
-
     app-total-wealth-card {
       display: block;
       height: 100%;
@@ -72,19 +139,17 @@ $gap: 24px;
   }
 }
 
-// --- Row 2: Analytics (Pies) ---
+// Analytics Section
 .analytics-section {
   .pie-grid {
     display: flex;
     flex-wrap: wrap;
     gap: $gap;
-
     .pie-card {
       flex: 1;
       min-width: 300px;
       height: 300px;
       padding: 20px;
-
       app-allocation-pie {
         display: block;
         width: 100%;
@@ -94,74 +159,18 @@ $gap: 24px;
   }
 }
 
-// --- Row 3: Asset Grid ---
-.assets-section {
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding: 0 4px;
+// --- 5. Desktop Mode Overrides ---
 
-    h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: $text-main;
-      margin: 0;
-    }
-
-    .filter-btn {
-      color: $text-sub;
-      background: none;
-      border: none;
-      font-size: 0.9rem;
-      cursor: pointer;
-      &:hover {
-        color: $primary;
-      }
-    }
+@media (min-width: 768px) {
+  // Show desktop header
+  .desktop-only {
+    display: block;
   }
 
-  .asset-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 20px;
-
-    @media (min-width: 640px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(4, 1fr);
-    }
-    @media (min-width: 1440px) {
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    .add-btn-card {
-      height: 100%;
-      min-height: 180px;
-      border: 2px dashed $border-light;
-      border-radius: $radius;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background-color: rgba(255, 255, 255, 0.5);
-
-      &:hover {
-        border-color: $primary;
-        background-color: rgba(37, 99, 235, 0.05);
-        .plus-icon {
-          color: $primary;
-        }
-      }
-
-      .plus-icon {
-        font-size: 2rem;
-        color: #cbd5e1;
-        font-weight: 300;
-      }
-    }
+  // Hide mobile nav
+  // 🔥 Now we only need to hide the component class
+  .mobile-only,
+  .spacer-bottom {
+    display: none;
   }
 }

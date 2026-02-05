@@ -5,6 +5,8 @@ import { AssetCollectionComponent } from './components/cards/asset-collection';
 import { TotalWealthCard } from './components/cards/total-wealth-card';
 import { AllocationPieComponent } from './components/widgets/allocation-pie';
 import { ASSET_CONFIG } from './core/config/asset-config';
+import { DesktopHeaderComponent } from './components/widgets/desktop-header';
+import { MobileNavComponent } from './components/widgets/mobile-nav';
 
 import { AssetStore } from './core/store/asset.store';
 import { MarketStore } from './core/store/market.store';
@@ -14,7 +16,14 @@ import { AssetType } from './core/models/asset.model';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, AllocationPieComponent, TotalWealthCard, AssetCollectionComponent],
+  imports: [
+    CommonModule,
+    AllocationPieComponent,
+    TotalWealthCard,
+    AssetCollectionComponent,
+    DesktopHeaderComponent,
+    MobileNavComponent,
+  ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
@@ -157,5 +166,9 @@ export class App implements OnInit {
 
   private setVar(name: string, value: string) {
     this.document.documentElement.style.setProperty(name, value);
+  }
+
+  onAddAsset() {
+    console.log('Add Asset clicked');
   }
 }
