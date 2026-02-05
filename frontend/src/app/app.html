@@ -1,47 +1,45 @@
 <div class="dashboard-container">
-
   <section class="header-section">
     <div class="wealth-wrapper">
-      <app-total-wealth-card 
-        [totalAmount]="totalWealth()"
-        [loading]="assetStore.isLoading()">
+      <app-total-wealth-card [totalAmount]="totalWealth()" [loading]="assetStore.isLoading()">
       </app-total-wealth-card>
     </div>
 
     <div class="trend-wrapper card">
       <div class="section-title">資產趨勢</div>
-      <div class="chart-placeholder">
-        Trend Chart Coming Soon...
-      </div>
+      <div class="chart-placeholder">Trend Chart Coming Soon...</div>
     </div>
   </section>
 
   <section class="analytics-section">
     <div class="pie-grid">
       <div class="pie-card card">
-        <app-allocation-pie 
-          [assets]="assetStore.activeAssets()" 
-          chartType="ASSET_TYPE" 
-          title="資產分佈">
+        <app-allocation-pie
+          [assets]="assetStore.activeAssets()"
+          chartType="ASSET_TYPE"
+          title="資產分佈"
+        >
         </app-allocation-pie>
       </div>
 
       @if (hasTwStock()) {
         <div class="pie-card card">
-          <app-allocation-pie 
-            [assets]="assetStore.activeAssets()" 
-            chartType="TW_STOCK" 
-            title="台股配置">
+          <app-allocation-pie
+            [assets]="assetStore.activeAssets()"
+            chartType="TW_STOCK"
+            title="台股配置"
+          >
           </app-allocation-pie>
         </div>
       }
 
       @if (hasUsStock()) {
         <div class="pie-card card">
-          <app-allocation-pie 
-            [assets]="assetStore.activeAssets()" 
-            chartType="US_STOCK" 
-            title="美股配置">
+          <app-allocation-pie
+            [assets]="assetStore.activeAssets()"
+            chartType="US_STOCK"
+            title="美股配置"
+          >
           </app-allocation-pie>
         </div>
       }
@@ -49,10 +47,10 @@
   </section>
 
   <section class="assets-section">
-    <app-asset-collection 
+    <app-asset-collection
       [assets]="assetsWithMarketValue()"
-      (deleteAsset)="assetStore.deleteAsset($event)">
+      (deleteAsset)="assetStore.deleteAsset($event)"
+    >
     </app-asset-collection>
   </section>
-
 </div>

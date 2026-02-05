@@ -7,20 +7,20 @@
   background: white;
   border-radius: 20px;
   padding: 16px 20px; // 上下緊一點，左右寬一點
-  
+
   // 🔥 高度設定
   height: 100%;
   min-height: 130px; // 下修高度，讓卡片更緊湊
-  
+
   box-sizing: border-box;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  
+
   display: flex;
   flex-direction: column;
   // 讓 Header 貼頂，Footer 貼底，Body 佔滿中間
-  justify-content: space-between; 
-  
+  justify-content: space-between;
+
   position: relative;
   overflow: hidden;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -42,7 +42,7 @@
       // 限制寬度，避免標題太長蓋到 Badge
       flex: 1;
       margin-right: 8px;
-      min-width: 0; 
+      min-width: 0;
     }
 
     .asset-name {
@@ -56,8 +56,8 @@
     }
 
     .asset-symbol {
-      font-size: 0.75rem; 
-      color: #94a3b8; 
+      font-size: 0.75rem;
+      color: #94a3b8;
       font-weight: 500;
       letter-spacing: 0.5px;
       display: block; // 強制換行在名字下方
@@ -81,7 +81,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center; // 🔥 讓數字垂直置中！這樣 CASH 就不會覺得上面很空
-    
+
     .main-data-row {
       display: flex;
       align-items: baseline;
@@ -118,14 +118,16 @@
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 600;
-      
+
       background-color: #f1f5f9;
       color: #64748b;
-      
-      // 稍微往上提一點點，視覺重心更穩
-      transform: translateY(-2px); 
 
-      .arrow { font-size: 0.6rem; }
+      // 稍微往上提一點點，視覺重心更穩
+      transform: translateY(-2px);
+
+      .arrow {
+        font-size: 0.6rem;
+      }
 
       &.positive {
         background-color: rgba(239, 68, 68, 0.1);
@@ -143,12 +145,12 @@
     // 🔥 固定高度區
     height: 24px;
     min-height: 24px;
-    
+
     // 分隔線
     border-top: 1px dashed #e2e8f0;
     margin-top: 8px;
     padding-top: 8px;
-    
+
     display: flex;
     align-items: center;
     font-size: 0.8rem;

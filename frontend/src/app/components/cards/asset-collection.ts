@@ -6,10 +6,10 @@ import { Asset, AssetType } from '../../core/models/asset.model';
 // 定義這個 Collection 預期接收的資料格式
 // (這是 App 算好傳進來的，包含了市價跟損益)
 export interface AssetViewModel extends Asset {
-  marketPrice: number;     // 現價
-  marketValueTwd: number;  // 台幣市值
-  unrealizedPnl: number;   // 未實現損益
-  exchangeRate?: number;   // 匯率
+  marketPrice: number; // 現價
+  marketValueTwd: number; // 台幣市值
+  unrealizedPnl: number; // 未實現損益
+  exchangeRate?: number; // 匯率
   returnRate: number | string; // 報酬率
 }
 
@@ -18,11 +18,11 @@ export interface AssetViewModel extends Asset {
   standalone: true,
   imports: [CommonModule, AssetCard], // 只引入必要的模組
   templateUrl: './asset-collection.html',
-  styleUrls: ['./asset-collection.scss']
+  styleUrls: ['./asset-collection.scss'],
 })
 export class AssetCollectionComponent {
   // --- Inputs / Outputs ---
-  
+
   // 1. 接收外部算好的完整資料
   assets = input.required<AssetViewModel[]>();
 
@@ -41,9 +41,9 @@ export class AssetCollectionComponent {
     const type = this.filterType();
 
     if (type === 'ALL') return list;
-    
+
     // 簡單的過濾邏輯
-    return list.filter(a => a.asset_type === type);
+    return list.filter((a) => a.asset_type === type);
   });
 
   // --- Methods ---

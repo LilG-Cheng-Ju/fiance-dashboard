@@ -10,7 +10,7 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 })
 export class TotalWealthCard {
   totalAmount = input.required<number>();
-  dayChange = 12500; 
+  dayChange = 12500;
   dayChangePercentage = 0.85;
   loading = input<boolean>(false);
 }

@@ -4,13 +4,13 @@ export interface Transaction {
   id: number;
   asset_id: number;
   transaction_type: TransactionType;
-  
+
   amount: number;
   quantity_change: number;
-  
+
   balance_after: number;
   realized_pnl?: number;
-  
+
   exchange_rate: number;
   note?: string;
   transaction_date: string; // ISO String

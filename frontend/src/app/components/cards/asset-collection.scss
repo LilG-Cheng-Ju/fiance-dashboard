@@ -15,7 +15,7 @@ $border-light: #e2e8f0;
   border-radius: 24px;
   padding: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 // --- Header 排版 ---
@@ -68,13 +68,15 @@ $border-light: #e2e8f0;
       font-weight: 500;
       transition: all 0.2s;
 
-      &:hover { color: $text-main; }
-      
+      &:hover {
+        color: $text-main;
+      }
+
       // 激活狀態
       &.active {
         background: white;
         color: $primary;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         font-weight: 600;
       }
     }
@@ -85,7 +87,7 @@ $border-light: #e2e8f0;
 .grid-layout {
   display: grid;
   gap: $gap;
-  
+
   // 響應式欄位設定 (RWD)
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 

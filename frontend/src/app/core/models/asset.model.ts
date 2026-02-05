@@ -5,12 +5,12 @@ export enum AssetType {
   GOLD = 'GOLD',
   LIABILITY = 'LIABILITY',
   CREDIT_CARD = 'CREDIT_CARD',
-  PENDING = 'PENDING'
+  PENDING = 'PENDING',
 }
 
 export enum AssetStatus {
   ACTIVE = 'ACTIVE',
-  ARCHIVED = 'ARCHIVED'
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum TransactionType {
@@ -22,7 +22,7 @@ export enum TransactionType {
   TRANSFER_OUT = 'TRANSFER_OUT',
   TRANSFER_IN = 'TRANSFER_IN',
   ADJUSTMENT = 'ADJUSTMENT',
-  INTEREST = 'INTEREST'
+  INTEREST = 'INTEREST',
 }
 
 export interface Asset {
@@ -47,10 +47,10 @@ export interface AssetCreate {
   asset_type: AssetType;
   currency: string;
   symbol?: string;
-  
+
   initial_total_cost: number;
   initial_quantity: number;
-  
+
   include_in_net_worth: boolean;
   meta_data?: any;
 }

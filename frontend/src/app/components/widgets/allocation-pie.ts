@@ -13,13 +13,13 @@ const CHART_STYLE = {
     textMain: '#1e293b',
     textSub: '#64748b',
     border: '#e2e8f0',
-    bgTooltip: 'rgba(255, 255, 255, 0.95)'
+    bgTooltip: 'rgba(255, 255, 255, 0.95)',
   },
   fonts: {
     base: 12,
     title: 14,
-    emphasis: 10
-  }
+    emphasis: 10,
+  },
 };
 
 @Component({
@@ -40,7 +40,7 @@ export class AllocationPieComponent {
     effect(() => {
       const data = this.assets();
       const chartType = this.chartType();
-      
+
       if (data.length > 0) {
         this.updateChart(data, chartType);
       }
@@ -53,18 +53,18 @@ export class AllocationPieComponent {
     switch (type) {
       case 'ASSET_TYPE':
         const grouped = this._groupByAssetType(assets);
-        chartData = grouped.map(item => {
-          const rgb = getAssetRgb(item.name); 
-          
+        chartData = grouped.map((item) => {
+          const rgb = getAssetRgb(item.name);
+
           return {
             name: item.name,
             value: item.value,
 
-            itemStyle: { 
-              color: `rgba(${rgb}, 0.85)`, 
-              borderColor: `rgba(${rgb}, 1)`, 
-              borderWidth: 1
-            } 
+            itemStyle: {
+              color: `rgba(${rgb}, 0.85)`,
+              borderColor: `rgba(${rgb}, 1)`,
+              borderWidth: 1,
+            },
           };
         });
         break;
@@ -76,43 +76,45 @@ export class AllocationPieComponent {
         break;
     }
 
-  this.chartOptions = {
+    this.chartOptions = {
       ...this._getBasePieChart(),
       title: {
         ...this._getBasePieChart().title,
-        text: this.title()
+        text: this.title(),
       },
       series: [
         {
           ...(this._getBasePieChart().series as any)[0],
           name: this.title(),
-          data: chartData
-        }
-      ]
+          data: chartData,
+        },
+      ],
     };
   }
 
-
   /** 計算總資產配置 (Group By Type) */
   private _groupByAssetType(assets: Asset[]) {
-    const grouped = assets.reduce((acc, curr) => {
-      acc[curr.asset_type] = (acc[curr.asset_type] || 0) + curr.current_value;
-      return acc;
-    }, {} as Record<string, number>);
+    const grouped = assets.reduce(
+      (acc, curr) => {
+        acc[curr.asset_type] = (acc[curr.asset_type] || 0) + curr.current_value;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    return Object.keys(grouped).map(key => ({
+    return Object.keys(grouped).map((key) => ({
       name: key,
-      value: grouped[key]
+      value: grouped[key],
     }));
   }
 
   /** 通用的股票過濾器 (Filter Stock + Currency) */
   private _filterStockByCurrency(assets: Asset[], currency: string) {
     return assets
-      .filter(a => a.asset_type === 'STOCK' && a.currency === currency)
-      .map(a => ({
+      .filter((a) => a.asset_type === 'STOCK' && a.currency === currency)
+      .map((a) => ({
         name: a.name,
-        value: a.current_value
+        value: a.current_value,
       }));
   }
 
@@ -123,7 +125,7 @@ export class AllocationPieComponent {
       title: {
         left: 'center',
         top: '5%',
-        textStyle: { fontSize: CHART_STYLE.fonts.title, color: CHART_STYLE.colors.textSub }
+        textStyle: { fontSize: CHART_STYLE.fonts.title, color: CHART_STYLE.colors.textSub },
       },
       tooltip: {
         trigger: 'item',
@@ -134,13 +136,13 @@ export class AllocationPieComponent {
         padding: [8, 12],
         textStyle: {
           color: CHART_STYLE.colors.textMain,
-          fontSize: CHART_STYLE.fonts.base
+          fontSize: CHART_STYLE.fonts.base,
         },
-        formatter: this._tooltipFormatter
+        formatter: this._tooltipFormatter,
       },
       legend: {
         bottom: '0%',
-        left: 'center'
+        left: 'center',
       },
       series: [
         {
@@ -150,10 +152,10 @@ export class AllocationPieComponent {
           itemStyle: {
             borderRadius: 10,
             borderColor: '#fff',
-            borderWidth: 2
+            borderWidth: 2,
           },
           labelLine: {
-            show: false
+            show: false,
           },
           label: {
             show: true,
@@ -161,7 +163,7 @@ export class AllocationPieComponent {
             color: '#e9edf7',
             fontSize: 11,
             fontWeight: 'bold',
-            textShadowColor: 'rgba(0, 0, 0, 0.4)', 
+            textShadowColor: 'rgba(0, 0, 0, 0.4)',
             textShadowBlur: 3,
             textShadowOffsetY: 1,
 
@@ -169,28 +171,28 @@ export class AllocationPieComponent {
               if (params.percent < 5) {
                 return '';
               }
-                return `${params.percent.toFixed(1)}%`;
-            }
+              return `${params.percent.toFixed(1)}%`;
+            },
           },
           // 🔥 更新重點：滑鼠懸停時，中間顯示名稱與數值
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
               shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.2)'
+              shadowColor: 'rgba(0, 0, 0, 0.2)',
             },
             scale: true,
             scaleSize: 5,
             label: {
               show: false,
-            }
-          }
-        }
-      ]
+            },
+          },
+        },
+      ],
     };
   }
 
-// 獨立出來的 Tooltip Formatter，保持主設定乾淨
+  // 獨立出來的 Tooltip Formatter，保持主設定乾淨
   private _tooltipFormatter(params: any): string {
     const valueFormatted = new Intl.NumberFormat().format(params.value);
     return `

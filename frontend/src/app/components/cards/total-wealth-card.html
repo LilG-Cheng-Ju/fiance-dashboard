@@ -1,7 +1,5 @@
 <div class="wealth-card">
-  
   <div class="content">
-    
     <div class="header">
       <h3 class="label">Total Net Worth</h3>
       <span class="date-badge">Today</span>
@@ -9,40 +7,38 @@
 
     <div class="main-number">
       <span class="currency">NT$</span>
-      <span class="value">{{ totalAmount() | number:'1.0-0' }}</span>
+      <span class="value">{{ totalAmount() | number: '1.0-0' }}</span>
     </div>
 
     <div class="stats-row">
       <div class="stat-item positive">
         <span class="icon">▲</span>
-        <span class="text">
-          {{ dayChange | number }} ({{ dayChangePercentage }}%)
-        </span>
+        <span class="text"> {{ dayChange | number }} ({{ dayChangePercentage }}%) </span>
       </div>
       <span class="separator">|</span>
-      <div class="stat-info">
-        vs. yesterday
-      </div>
+      <div class="stat-info">vs. yesterday</div>
     </div>
-
   </div>
 
   <div class="chart-decoration">
     <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-      <path d="M0,80 C50,80 50,40 100,40 C150,40 150,70 200,70 C250,70 250,20 300,20" 
-            fill="none" 
-            stroke="rgba(37, 99, 235, 0.1)" 
-            stroke-width="3" />
-      <path d="M0,80 C50,80 50,40 100,40 C150,40 150,70 200,70 C250,70 250,20 300,20 L300,100 L0,100 Z" 
-            fill="url(#gradient)" 
-            stroke="none" />
+      <path
+        d="M0,80 C50,80 50,40 100,40 C150,40 150,70 200,70 C250,70 250,20 300,20"
+        fill="none"
+        stroke="rgba(37, 99, 235, 0.1)"
+        stroke-width="3"
+      />
+      <path
+        d="M0,80 C50,80 50,40 100,40 C150,40 150,70 200,70 C250,70 250,20 300,20 L300,100 L0,100 Z"
+        fill="url(#gradient)"
+        stroke="none"
+      />
       <defs>
         <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style="stop-color:rgba(37, 99, 235, 0.05);stop-opacity:1" />
-          <stop offset="100%" style="stop-color:rgba(37, 99, 235, 0);stop-opacity:0" />
+          <stop offset="0%" style="stop-color: rgba(37, 99, 235, 0.05); stop-opacity: 1" />
+          <stop offset="100%" style="stop-color: rgba(37, 99, 235, 0); stop-opacity: 0" />
         </linearGradient>
       </defs>
     </svg>
   </div>
-
 </div>

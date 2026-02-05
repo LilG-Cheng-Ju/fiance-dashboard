@@ -7,7 +7,7 @@ import { StockPrice } from '../models/market.model';
 export type PriceMap = Record<string, StockPrice>;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MarketService {
   private http = inject(HttpClient);
@@ -17,23 +17,24 @@ export class MarketService {
    * batch fetch stock prices
    * @param targets [{ ticker: 'TSLA', region: 'US' }, { ticker: '2330', region: 'TW' }]
    */
-  fetchBatchPrices(targets: { ticker: string, region: string }[]): Observable<PriceMap> {
+  fetchBatchPrices(targets: { ticker: string; region: string }[]): Observable<PriceMap> {
     if (targets.length === 0) return of({});
 
-    const requests = targets.map(target => 
-      this.http.get<StockPrice>(
-        `${this.API_BASE}/market/stock/${target.ticker}`, 
-        { params: { region: target.region } }
-      ).pipe(
-        catchError(err => {
-          console.warn(`[MarketService] 查價失敗: ${target.ticker}`, err);
-          return of(null); 
+    const requests = targets.map((target) =>
+      this.http
+        .get<StockPrice>(`${this.API_BASE}/market/stock/${target.ticker}`, {
+          params: { region: target.region },
         })
-      )
+        .pipe(
+          catchError((err) => {
+            console.warn(`[MarketService] 查價失敗: ${target.ticker}`, err);
+            return of(null);
+          }),
+        ),
     );
 
     return forkJoin(requests).pipe(
-      map(results => {
+      map((results) => {
         const priceMap: PriceMap = {};
         results.forEach((res, index) => {
           if (res) {
@@ -42,7 +43,7 @@ export class MarketService {
           }
         });
         return priceMap;
-      })
+      }),
     );
   }
 }

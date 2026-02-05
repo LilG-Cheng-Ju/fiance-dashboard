@@ -78,30 +78,12 @@ ng build
 
 The built files will be in the `dist/` directory.
 
-#### Running Tests
-To run the test suite:
-```bash
-npm test
-```
-or
-```bash
-ng test
-```
 
 #### Code Formatting
 The project uses Prettier for code formatting. To format your code:
 ```bash
 npx prettier --write .
 ```
-
-#### Project Structure Overview
-- `src/app/` - Main application code
-  - `components/` - Reusable UI components (cards, widgets)
-  - `core/` - Core functionality (services, models, config)
-  - `store/` - NgRx state management
-- `public/` - Static assets
-- `angular.json` - Angular CLI configuration
-- `tsconfig.json` - TypeScript configuration
 
 ## Technology Stack
 

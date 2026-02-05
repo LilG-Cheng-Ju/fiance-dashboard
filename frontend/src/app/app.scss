@@ -46,7 +46,7 @@ $gap: 24px;
 
   .wealth-wrapper {
     flex: 0 0 35%;
-    
+
     app-total-wealth-card {
       display: block;
       height: 100%;
@@ -84,7 +84,7 @@ $gap: 24px;
       min-width: 300px;
       height: 300px;
       padding: 20px;
-      
+
       app-allocation-pie {
         display: block;
         width: 100%;
@@ -116,7 +116,9 @@ $gap: 24px;
       border: none;
       font-size: 0.9rem;
       cursor: pointer;
-      &:hover { color: $primary; }
+      &:hover {
+        color: $primary;
+      }
     }
   }
 
@@ -125,13 +127,19 @@ $gap: 24px;
     grid-template-columns: repeat(1, 1fr);
     gap: 20px;
 
-    @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-    @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
-    @media (min-width: 1440px) { grid-template-columns: repeat(5, 1fr); }
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    @media (min-width: 1440px) {
+      grid-template-columns: repeat(5, 1fr);
+    }
 
     .add-btn-card {
       height: 100%;
-      min-height: 180px; 
+      min-height: 180px;
       border: 2px dashed $border-light;
       border-radius: $radius;
       display: flex;
@@ -144,7 +152,9 @@ $gap: 24px;
       &:hover {
         border-color: $primary;
         background-color: rgba(37, 99, 235, 0.05);
-        .plus-icon { color: $primary; }
+        .plus-icon {
+          color: $primary;
+        }
       }
 
       .plus-icon {

@@ -10,7 +10,7 @@ import { ExchangeRate } from '../models/market.model';
 
 // 1. [State] 定義狀態結構 (對應 RateState)
 type RateState = {
-  rates: Record<string, number>;      // ex: "USD-TWD": 32.5
+  rates: Record<string, number>; // ex: "USD-TWD": 32.5
   timestamps: Record<string, number>; // ex: "USD-TWD": 1708...
   isLoading: boolean;
   error: any;
@@ -31,25 +31,24 @@ export const RateStore = signalStore(
   // 2. [Selectors] 轉換為 Computed Signals
   withComputed((store) => ({
     rateMap: computed(() => store.rates()),
-    
+
     rateTimestamps: computed(() => store.timestamps()),
-    
+
     // (Optional) 為了方便除錯或顯示，保留 isLoading 的 computed
-    loading: computed(() => store.isLoading())
+    loading: computed(() => store.isLoading()),
   })),
 
   // 3. [Actions + Effects + Reducer]
   withMethods((store, rateService = inject(RateService)) => ({
-    
     // Action: loadRate
-    loadRate: rxMethod<{ fromCurr: string, toCurr: string }>(
+    loadRate: rxMethod<{ fromCurr: string; toCurr: string }>(
       pipe(
         // Reducer: isLoading = true
         tap(() => patchState(store, { isLoading: true })),
 
         // Effect: 呼叫 Service
         // 使用 mergeMap 以支援同時查詢多個匯率 (例如同時查 USD 和 JPY)
-        mergeMap(({ fromCurr, toCurr }) => 
+        mergeMap(({ fromCurr, toCurr }) =>
           rateService.getExchangeRate(fromCurr, toCurr).pipe(
             tapResponse({
               // Reducer: Load Success
@@ -62,25 +61,26 @@ export const RateStore = signalStore(
                   // 更新 rates map
                   rates: {
                     ...state.rates,
-                    [key]: data.rate
+                    [key]: data.rate,
                   },
                   // 更新 timestamps map
                   timestamps: {
                     ...state.timestamps,
-                    [key]: new Date(data.updated_at).getTime()
-                  }
+                    [key]: new Date(data.updated_at).getTime(),
+                  },
                 }));
               },
-              
+
               // Reducer: Load Failure
-              error: (error) => patchState(store, { 
-                isLoading: false, 
-                error 
-              })
-            })
-          )
-        )
-      )
-    )
-  }))
+              error: (error) =>
+                patchState(store, {
+                  isLoading: false,
+                  error,
+                }),
+            }),
+          ),
+        ),
+      ),
+    ),
+  })),
 );

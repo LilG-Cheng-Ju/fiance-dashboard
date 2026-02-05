@@ -1,5 +1,6 @@
 /* Global Reset */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -7,12 +8,15 @@ html, body {
 }
 
 /* 讓所有元素的 padding 不會撐大寬度 (這很重要!) */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
   // 設定全站字體
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: #f3f4f6; // 跟 component 背景一致，避免加載時閃爍
 }
