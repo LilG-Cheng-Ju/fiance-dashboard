@@ -2,6 +2,17 @@
 
 :host {
   display: block;
+  /* full-bleed sticky bar with theme-driven glass effect */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, var(--header-gradient-start), var(--header-gradient-end));
+  /* fallback solid with configurable opacity */
+  background-color: rgba(255, 255, 255, var(--header-glass-opacity));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: var(--header-shadow);
+  border-bottom: 1px solid var(--header-border);
 }
 
 .desktop-header {
@@ -9,11 +20,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 32px;
-  background-color: var(--bg-main);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 1px solid transparent;
+  /* Constrain header width so it aligns with main content */
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  /* keep content constrained and transparent so host provides full-bleed background */
+  background-color: transparent;
 
   .logo-area {
     display: flex;

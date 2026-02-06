@@ -15,38 +15,10 @@
     </section>
 
     <section class="analytics-section">
-      <div class="pie-grid">
-        <div class="pie-card card">
-          <app-allocation-pie
-            [assets]="assetStore.activeAssets()"
-            chartType="ASSET_TYPE"
-            title="資產分佈"
-          >
-          </app-allocation-pie>
-        </div>
-
-        @if (hasTwStock()) {
-          <div class="pie-card card">
-            <app-allocation-pie
-              [assets]="assetStore.activeAssets()"
-              chartType="TW_STOCK"
-              title="台股配置"
-            >
-            </app-allocation-pie>
-          </div>
-        }
-
-        @if (hasUsStock()) {
-          <div class="pie-card card">
-            <app-allocation-pie
-              [assets]="assetStore.activeAssets()"
-              chartType="US_STOCK"
-              title="美股配置"
-            >
-            </app-allocation-pie>
-          </div>
-        }
-      </div>
+      <app-widget-collection
+        [assets]="assetsWithMarketValue()"
+        [loading]="assetStore.isLoading()">
+      </app-widget-collection>
     </section>
 
     <section class="assets-section">

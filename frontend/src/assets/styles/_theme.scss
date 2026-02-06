@@ -26,6 +26,13 @@
 
   // [Border]
   --border-light: var(--color-slate-200);
+
+  // --- Header specific styling (used for top sticky bar) ---
+  --header-gradient-start: rgba(255,255,255,0.66);
+  --header-gradient-end: rgba(255,255,255,0.48);
+  --header-glass-opacity: 0.6;
+  --header-shadow: 0 2px 12px rgba(15, 40, 78, 0.06);
+  --header-border: rgba(226,232,240,0.8);
 }
 
 // --- 3. SCSS Variables Compatibility (for legacy code) ---
@@ -34,6 +41,13 @@ $bg-color: var(--bg-main);
 $text-main: var(--text-main);
 $text-sub: var(--text-sub);
 $border-light: var(--border-light);
+
+// Header legacy SCSS fallbacks
+$header-gradient-start: var(--header-gradient-start);
+$header-gradient-end: var(--header-gradient-end);
+$header-glass-opacity: var(--header-glass-opacity);
+$header-shadow: var(--header-shadow);
+$header-border: var(--header-border);
 
 // Legacy variables preserved
 $card-bg: #ffffff;

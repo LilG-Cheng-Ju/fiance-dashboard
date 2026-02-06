@@ -12,7 +12,7 @@ $bg-white: #ffffff;
 
 .wealth-card {
   position: relative; // 為了讓絕對定位的 SVG 背景參考
-  background-color: $bg-white;
+  background-color: var(--bg-card, $bg-white);
   border-radius: 24px; // ✅ 圓角回來了
   padding: 28px; // ✅ 內容不會貼邊了 (加上足夠的內距)
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); // 極淡的陰影，營造空氣感
@@ -24,8 +24,8 @@ $bg-white: #ffffff;
   flex-direction: column;
   justify-content: space-between;
 
-  // 加上一個很淡的邊框增加精緻度
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  // 加上一個很淡的邊框增加精緻度（使用 theme 邊框變數）
+  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.03));
 }
 
 // 內容層級要比背景高

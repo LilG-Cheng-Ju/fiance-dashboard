@@ -3,10 +3,10 @@ import { Component, DOCUMENT, OnInit, computed, effect, inject } from '@angular/
 
 import { AssetCollectionComponent } from './components/cards/asset-collection';
 import { TotalWealthCard } from './components/cards/total-wealth-card';
-import { AllocationPieComponent } from './components/widgets/allocation-pie';
 import { ASSET_CONFIG } from './core/config/asset-config';
 import { DesktopHeaderComponent } from './components/widgets/desktop-header';
 import { MobileNavComponent } from './components/widgets/mobile-nav';
+import { WidgetCollectionComponent } from './components/cards/widget-collection';
 
 import { AssetStore } from './core/store/asset.store';
 import { MarketStore } from './core/store/market.store';
@@ -18,11 +18,11 @@ import { AssetType } from './core/models/asset.model';
   standalone: true,
   imports: [
     CommonModule,
-    AllocationPieComponent,
     TotalWealthCard,
     AssetCollectionComponent,
     DesktopHeaderComponent,
     MobileNavComponent,
+    WidgetCollectionComponent,
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
@@ -141,18 +141,6 @@ export class App implements OnInit {
       .filter((a) => a.include_in_net_worth)
       .reduce((sum, a) => sum + a.marketValueTwd, 0);
   });
-
-  readonly hasTwStock = computed(() =>
-    this.assetStore
-      .activeAssets()
-      .some((a) => a.currency === 'TWD' && a.asset_type === AssetType.STOCK),
-  );
-
-  readonly hasUsStock = computed(() =>
-    this.assetStore
-      .activeAssets()
-      .some((a) => a.currency === 'USD' && a.asset_type === AssetType.STOCK),
-  );
 
   private initThemeVariables() {
     Object.keys(ASSET_CONFIG).forEach((key) => {

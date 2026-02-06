@@ -1,0 +1,68 @@
+@use '../../../assets/styles/theme';
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.widget-card {
+  background-color: var(--bg-card, #ffffff);
+  border-radius: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-light, #e2e8f0);
+  overflow: hidden;
+  
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  padding: 20px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+
+  .card-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+}
+
+.card-body {
+  flex: 1;
+  padding: 0 20px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.state-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: 10;
+  color: var(--text-sub);
+  
+  &.error { color: #ef4444; }
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

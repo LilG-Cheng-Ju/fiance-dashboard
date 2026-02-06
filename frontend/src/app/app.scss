@@ -139,28 +139,6 @@ $gap: 24px;
   }
 }
 
-// Analytics Section
-.analytics-section {
-  .pie-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $gap;
-    .pie-card {
-      flex: 1;
-      min-width: 300px;
-      height: 300px;
-      padding: 20px;
-      app-allocation-pie {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-}
-
-// --- 5. Desktop Mode Overrides ---
-
 @media (min-width: 768px) {
   // Show desktop header
   .desktop-only {

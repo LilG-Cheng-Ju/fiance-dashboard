@@ -1,0 +1,134 @@
+@use '../../../assets/styles/theme';
+
+$gap: 16px; 
+$radius: 24px;
+
+:host {
+  display: block;
+}
+
+
+.collection-container {
+  background: linear-gradient(
+    180deg, 
+    var(--header-gradient-start, #ffffff), 
+    var(--header-gradient-end, #f8fafc)
+  );
+  
+  border-radius: $radius;
+  padding: 24px;
+  
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-light);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .section-title {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+  }
+
+  .btn-icon-sm {
+    background: white;
+    border: 1px solid var(--border-light);
+    color: var(--text-sub);
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+
+    &:hover, &.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+    }
+  }
+}
+
+.settings-panel {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  animation: slideDown 0.2s ease-out;
+
+  .panel-title {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .toggles-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+
+  .toggle-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+    background: white;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+
+    &.selected {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: #f1f5f9;
+    }
+  }
+}
+
+.grid-layout {
+  display: grid;
+  gap: $gap;
+  
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid-item {
+    height: 280px; 
+    
+    // 如果想要正方形一點，可以用 aspect-ratio
+    // aspect-ratio: 1 / 1; 
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
