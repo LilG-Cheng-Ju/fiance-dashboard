@@ -51,19 +51,15 @@
   }
 }
 
-// Local override for the icon button inside the nav if needed,
-// otherwise it inherits global styles if they are available.
-// Since btn-icon is simple, we rely on global or basic inheritance,
-// but to be safe/independent:
-.btn-icon {
-  background: transparent;
-  border: none;
-  color: var(--text-sub);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+app-user-menu {
+  position: relative;
+  z-index: 70;
+  ::ng-deep .dropdown {
+    top: auto !important;
+    bottom: 55px !important;
+    right: 10px !important;
+    transform-origin: bottom right !important;
+
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
 }

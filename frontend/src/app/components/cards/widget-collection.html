@@ -1,17 +1,17 @@
 <div class="collection-container">
-
   <div class="header-row">
     <div class="title-group">
       <h3 class="section-title">概況總覽</h3>
-      </div>
+    </div>
 
     <div class="tools-group">
-      <button 
+      <button
         #toggleBtn
-        class="btn-icon-sm" 
-        (click)="widgetStore.toggleSettings()" 
+        class="btn-icon-sm"
+        (click)="widgetStore.toggleSettings()"
         [class.active]="widgetStore.isSettingsOpen()"
-        title="設定顯示圖表">
+        title="設定顯示圖表"
+      >
         <span class="material-symbols-rounded">tune</span>
       </button>
     </div>
@@ -22,12 +22,12 @@
       <div class="panel-title">選擇顯示卡片</div>
       <div class="toggles-list">
         @for (state of widgetStates(); track state.def.id) {
-          <button 
-            class="toggle-chip" 
+          <button
+            class="toggle-chip"
             [class.selected]="state.isSelected"
             [class.disabled]="!state.isAvailable"
-            (click)="toggleWidget(state.def.id, state.isAvailable)">
-            
+            (click)="toggleWidget(state.def.id, state.isAvailable)"
+          >
             @if (state.isSelected) {
               <span class="material-symbols-rounded check-icon">check</span>
             } @else if (!state.isAvailable) {
@@ -45,32 +45,23 @@
       <div class="grid-item">
         <app-widget-card [title]="widget.def.label" [loading]="loading()">
           @switch (widget.def.id) {
-            
             @case ('PIE_ASSET') {
-              <app-allocation-pie 
-                [data]="assetPieData()" 
-                seriesName="資產分佈">
-              </app-allocation-pie>
-            }
-            
-            @case ('PIE_TW') {
-              <app-allocation-pie 
-                [data]="twStockData()" 
-                seriesName="台股配置">
-              </app-allocation-pie>
-            }
-            
-            @case ('PIE_US') {
-              <app-allocation-pie 
-                [data]="usStockData()" 
-                seriesName="美股配置">
+              <app-allocation-pie [data]="assetPieData()" seriesName="資產分佈">
               </app-allocation-pie>
             }
 
+            @case ('PIE_TW') {
+              <app-allocation-pie [data]="twStockData()" seriesName="台股配置">
+              </app-allocation-pie>
+            }
+
+            @case ('PIE_US') {
+              <app-allocation-pie [data]="usStockData()" seriesName="美股配置">
+              </app-allocation-pie>
+            }
           }
         </app-widget-card>
       </div>
     }
   </div>
-
 </div>

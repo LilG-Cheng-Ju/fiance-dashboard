@@ -5,24 +5,20 @@
   </div>
 
   <div class="card-body">
-    
     @if (loading()) {
       <div class="state-overlay loading">
         <div class="spinner"></div>
         <span>載入中...</span>
       </div>
-    }
 
-    @else if (error()) {
+    } @else if (error()) {
       <div class="state-overlay error">
         <span class="material-symbols-rounded icon">error</span>
         <span>{{ error() }}</span>
       </div>
-    }
 
-    @else {
+    } @else {
       <ng-content></ng-content>
     }
-    
   </div>
 </div>

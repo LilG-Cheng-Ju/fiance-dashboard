@@ -10,8 +10,7 @@
       Add Asset
     </button>
 
-    <button class="btn-icon">
-      <span class="material-symbols-rounded">settings</span>
-    </button>
+    <app-user-menu [user]="user()" (logout)="logout.emit()" (settings)="settings.emit()">
+    </app-user-menu>
   </div>
 </header>

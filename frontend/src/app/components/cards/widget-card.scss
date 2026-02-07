@@ -11,7 +11,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-light, #e2e8f0);
   overflow: hidden;
-  
+
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -52,8 +52,10 @@
   backdrop-filter: blur(2px);
   z-index: 10;
   color: var(--text-sub);
-  
-  &.error { color: #ef4444; }
+
+  &.error {
+    color: #ef4444;
+  }
 }
 
 .spinner {
@@ -65,4 +67,8 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

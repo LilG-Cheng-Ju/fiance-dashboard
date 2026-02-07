@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './widget-card.html',
-  styleUrls: ['./widget-card.scss']
+  styleUrls: ['./widget-card.scss'],
 })
 export class WidgetCardComponent {
   title = input.required<string>();

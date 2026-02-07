@@ -14,19 +14,21 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     id: 'PIE_ASSET',
     label: '總資產分佈',
     isAvailable: (assets) => assets.length > 0,
-    defaultSelected: true
+    defaultSelected: true,
   },
   {
     id: 'PIE_TW',
     label: '台股配置',
-    isAvailable: (assets) => assets.some(a => a.currency === 'TWD' && a.asset_type === AssetType.STOCK),
-    defaultSelected: true
+    isAvailable: (assets) =>
+      assets.some((a) => a.currency === 'TWD' && a.asset_type === AssetType.STOCK),
+    defaultSelected: true,
   },
   {
     id: 'PIE_US',
     label: '美股配置',
-    isAvailable: (assets) => assets.some(a => a.currency === 'USD' && a.asset_type === AssetType.STOCK),
-    defaultSelected: true
+    isAvailable: (assets) =>
+      assets.some((a) => a.currency === 'USD' && a.asset_type === AssetType.STOCK),
+    defaultSelected: true,
   },
   // example：
   // {

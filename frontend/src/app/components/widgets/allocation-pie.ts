@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 
-// 🔥 1. 定義通用的圖表資料介面 (這就是元件跟外界溝通的唯一語言)
 export interface PieChartData {
   name: string;
   value: number;
-  color?: string; // 保留擴充性：外部可以指定顏色
+  color?: string;
 }
 
 const CHART_STYLE = {
@@ -30,7 +29,7 @@ const CHART_STYLE = {
 })
 export class AllocationPieComponent {
   data = input.required<PieChartData[]>();
-  
+
   seriesName = input<string>('數據分佈');
 
   chartOptions: EChartsOption = {};
@@ -51,22 +50,24 @@ export class AllocationPieComponent {
         {
           ...(this._getBasePieChart().series as any)[0],
           name: this.seriesName(),
-          
-          data: data.map(item => ({
+
+          data: data.map((item) => ({
             name: item.name,
             value: item.value,
-            itemStyle: item.color ? {
-              color: item.color,
-              borderColor: item.color,
-              borderWidth: 1,
-              opacity: 0.85 
-            } : undefined
+            itemStyle: item.color
+              ? {
+                  color: item.color,
+                  borderColor: item.color,
+                  borderWidth: 1,
+                  opacity: 0.85,
+                }
+              : undefined,
           })),
         },
       ],
     };
   }
-  
+
   private _getBasePieChart(): EChartsOption {
     return {
       tooltip: {
@@ -89,13 +90,13 @@ export class AllocationPieComponent {
         itemGap: 10,
         textStyle: {
           fontSize: 13,
-          color: CHART_STYLE.colors.textSub
-        }
+          color: CHART_STYLE.colors.textSub,
+        },
       },
       series: [
         {
           type: 'pie',
-          radius: ['40%', '70%'], 
+          radius: ['40%', '70%'],
           center: ['50%', '42%'],
           avoidLabelOverlap: false,
           itemStyle: {
@@ -107,7 +108,7 @@ export class AllocationPieComponent {
           label: {
             show: true,
             position: 'inner',
-            color: '#fff', 
+            color: '#fff',
             fontSize: 12,
             fontWeight: 'bold',
             formatter: (params: any) => {
