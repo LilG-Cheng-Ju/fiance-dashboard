@@ -1,18 +1,20 @@
 import { Component, inject, OnInit, effect, computed, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 
 import { AssetCollectionComponent } from '../../components/cards/asset-collection';
 import { TotalWealthCard } from '../../components/cards/total-wealth-card';
 import { DesktopHeaderComponent } from '../../components/widgets/desktop-header';
 import { MobileNavComponent } from '../../components/widgets/mobile-nav';
 import { WidgetCollectionComponent } from '../../components/cards/widget-collection';
+import { ModalService } from '../../core/services/modal.service';
+import { AssetTypePickerComponent } from '../../components/modals/asset-type-picker';
 
 import { AuthStore } from '../../core/store/auth.store';
 import { AssetStore } from '../../core/store/asset.store';
 import { MarketStore } from '../../core/store/market.store';
 import { RateStore } from '../../core/store/exchange_rate.store';
 import { AssetType } from '../../core/models/asset.model';
-import { ASSET_CONFIG } from '../../core/config/asset-config';
+import { ASSET_CONFIG } from '../../core/config/asset.config';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,6 +37,7 @@ export class DashboardComponent implements OnInit {
   readonly marketStore = inject(MarketStore);
   readonly rateStore = inject(RateStore);
   readonly authStore = inject(AuthStore);
+  readonly modalService = inject(ModalService);
 
   private readonly RATE_CACHE_DURATION = 30 * 60 * 1000;
 
@@ -151,6 +154,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onAddAsset() {
-    console.log('Add Asset clicked');
+    this.modalService.open(AssetTypePickerComponent);
   }
 }

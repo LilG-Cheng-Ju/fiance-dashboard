@@ -12,9 +12,9 @@ import { CommonModule } from '@angular/common';
 import { Asset, AssetType } from '../../core/models/asset.model';
 import { WidgetCardComponent } from './widget-card';
 import { AllocationPieComponent } from '../widgets/allocation-pie';
-import { WIDGET_REGISTRY } from '../../core/config/widget-config';
+import { WIDGET_REGISTRY } from '../../core/config/widget.config';
 import { WidgetStore } from '../../core/store/widget.store';
-import { getAssetRgb } from '../../core/config/asset-config';
+import { getAssetRgb } from '../../core/config/asset.config';
 import { PieChartData } from '../widgets/allocation-pie';
 
 interface AssetWithMarketValue extends Asset {

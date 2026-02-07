@@ -1,6 +1,6 @@
 import { patchState, signalStore, withMethods, withState, withHooks } from '@ngrx/signals';
 import { effect, inject } from '@angular/core';
-import { WidgetType } from '../config/widget-config'; // 請確認路徑
+import { WidgetType } from '../config/widget.config'; // 請確認路徑
 
 type WidgetState = {
   selectedWidgets: WidgetType[];
