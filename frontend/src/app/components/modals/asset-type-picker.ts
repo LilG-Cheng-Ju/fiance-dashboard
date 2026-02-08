@@ -23,11 +23,11 @@ export class AssetTypePickerComponent {
   options: AssetOption[] = [
     {
       type: 'CASH',
-      label: '現金 / 活存',
+      label: '現金 / 存款',
       icon: 'account_balance_wallet',
       rgb: getAssetRgb('CASH'),
     },
-    { type: 'STOCK', label: '股票 / ETF', icon: 'ssid_chart', rgb: getAssetRgb('STOCK') },
+    { type: 'STOCK', label: '股票 / 基金', icon: 'ssid_chart', rgb: getAssetRgb('STOCK') },
     { type: 'CRYPTO', label: '加密貨幣', icon: 'currency_bitcoin', rgb: getAssetRgb('CRYPTO') },
     { type: 'GOLD', label: '黃金 / 貴金屬', icon: 'diamond', rgb: getAssetRgb('GOLD') },
     {
