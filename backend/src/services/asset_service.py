@@ -64,6 +64,7 @@ class AssetService:
         # 3. Create Initial Transaction (Genesis Block)
         # We manually create this here instead of calling TransactionService to avoid circular dependency
         if asset_in.initial_total_cost != 0 or asset_in.initial_quantity != 0:
+            tx_time = asset_in.transaction_time or datetime.now()
             initial_tx = models.Transaction(
                 asset_id=db_asset.id,
                 transaction_type=models.TransactionType.INITIAL,
@@ -71,7 +72,7 @@ class AssetService:
                 quantity_change=final_quantity,     # Initial Qty
                 balance_after=final_current_value,
                 note="Initial Balance",
-                transaction_date=datetime.now()
+                transaction_date=tx_time
             )
             db.add(initial_tx)
             db.commit()
