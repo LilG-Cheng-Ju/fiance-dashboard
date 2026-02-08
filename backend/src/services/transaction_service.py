@@ -22,7 +22,10 @@ class TransactionService:
 
         return db.query(models.Transaction)\
             .filter(models.Transaction.asset_id == asset_id)\
-            .order_by(desc(models.Transaction.transaction_date))\
+            .order_by(
+                desc(models.Transaction.transaction_date),
+                desc(models.Transaction.id) # Secondary sort to ensure consistent order for same-date transactions
+            )\
             .limit(limit)\
             .all()
 
