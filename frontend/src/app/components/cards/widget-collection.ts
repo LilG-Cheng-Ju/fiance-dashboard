@@ -73,7 +73,7 @@ export class WidgetCollectionComponent {
     const grouped = assets.reduce(
       (acc, curr) => {
         // 優先用 marketValueTwd
-        const value = curr.marketValueTwd ?? curr.current_value;
+        const value = curr.marketValueTwd ?? curr.book_value;
         acc[curr.asset_type] = (acc[curr.asset_type] || 0) + value;
         return acc;
       },
@@ -97,7 +97,7 @@ export class WidgetCollectionComponent {
       .filter((a) => a.asset_type === AssetType.STOCK && a.currency === 'TWD')
       .map((a) => ({
         name: a.name,
-        value: a.marketValue ?? a.current_value,
+        value: a.marketValue ?? a.book_value,
       }));
   });
 
@@ -107,7 +107,7 @@ export class WidgetCollectionComponent {
       .filter((a) => a.asset_type === AssetType.STOCK && a.currency === 'USD')
       .map((a) => ({
         name: a.name,
-        value: a.marketValue ?? a.current_value,
+        value: a.marketValue ?? a.book_value,
       }));
   });
 

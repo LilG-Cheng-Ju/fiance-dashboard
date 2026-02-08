@@ -56,7 +56,7 @@ class AssetResponse(BaseModel):
     
     quantity: float       # Current holding quantity
     average_cost: float   # Average cost (used for profit and loss calculation)
-    current_value: float  # Current book value
+    book_value: float  # Current book value
     
     include_in_net_worth: bool 
     meta_data: Optional[Dict[str, Any]]

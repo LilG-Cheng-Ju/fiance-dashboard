@@ -14,7 +14,7 @@
       <div class="balance-group">
         <span class="currency">NT$</span>
         <span class="amount">
-          {{ (displayValue() !== null ? displayValue() : asset().current_value) | number: '1.0-0' }}
+          {{ (displayValue() !== null ? displayValue() : asset().book_value) | number: '1.0-0' }}
         </span>
       </div>
 

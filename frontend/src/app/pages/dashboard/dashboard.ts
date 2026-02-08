@@ -102,7 +102,7 @@ export class DashboardComponent implements OnInit {
 
     return assets.map((asset) => {
       let marketPrice = 0;
-      let marketValue = asset.current_value;
+      let marketValue = asset.book_value;
       const exchangeRate = rates[`${asset.currency}-TWD`] || 1;
       const isMarketAsset = asset.asset_type !== AssetType.CASH && asset.symbol;
 
@@ -118,7 +118,7 @@ export class DashboardComponent implements OnInit {
       }
 
       const marketValueTwd = marketValue * exchangeRate;
-      const costTwd = asset.current_value * exchangeRate;
+      const costTwd = asset.book_value * exchangeRate;
       const unrealizedPnl = marketValueTwd - costTwd;
       const returnRate = costTwd > 0 ? (unrealizedPnl / costTwd) * 100 : 0;
 

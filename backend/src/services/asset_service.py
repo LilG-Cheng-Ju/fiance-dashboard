@@ -1,11 +1,10 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from src import models, schemas
 
-from src import models
-from src import schemas
 
 class AssetService:
     
@@ -51,7 +50,7 @@ class AssetService:
             
             # Core Inventory Fields
             quantity=final_quantity,
-            current_value=final_current_value,
+            book_value=final_current_value,
             average_cost=final_avg_cost,
             
             include_in_net_worth=asset_in.include_in_net_worth,

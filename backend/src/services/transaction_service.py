@@ -46,11 +46,11 @@ class TransactionService:
                 # New Total Cost = Old Total Cost + Cost of new batch (abs(amount))
                 # Note: amount is negative for BUY (outflow), so we take abs()
                 cost_added = abs(tx_in.amount) 
-                new_total_cost = asset.current_value + cost_added
+                new_total_cost = asset.book_value + cost_added
                 new_quantity = asset.quantity + tx_in.quantity_change
                 
                 # Update Asset
-                asset.current_value = new_total_cost
+                asset.book_value = new_total_cost
                 asset.quantity = new_quantity
                 # Avoid division by zero
                 asset.average_cost = new_total_cost / new_quantity if new_quantity > 0 else 0.0
@@ -72,14 +72,14 @@ class TransactionService:
                 realized_pnl = tx_in.amount - cost_removed
                 
                 # Update Asset
-                asset.current_value -= cost_removed
+                asset.book_value -= cost_removed
                 asset.quantity += tx_in.quantity_change # quantity_change is negative
                 
                 # Logic: Zero Inventory Check
                 # Use epsilon for float comparison safety
                 if asset.quantity <= 0.000001: 
                     asset.quantity = 0
-                    asset.current_value = 0
+                    asset.book_value = 0
                     # Note: We keep average_cost as is, or reset? 
                     # Usually keeping it is fine until next buy resets it.
                     asset.status = models.AssetStatus.ARCHIVED
@@ -87,7 +87,7 @@ class TransactionService:
         else:
             # Scenario C: CASH / PENDING / LIABILITY / CREDIT_CARD
             # Logic: Simple Accumulation
-            asset.current_value += tx_in.amount
+            asset.book_value += tx_in.amount
             # For cash, quantity tracks amount
             asset.quantity += tx_in.quantity_change if tx_in.quantity_change != 0 else tx_in.amount
 
@@ -99,7 +99,7 @@ class TransactionService:
             quantity_change=tx_in.quantity_change,
             price_at_transaction=tx_in.price_at_transaction,
             exchange_rate=tx_in.exchange_rate,
-            balance_after=asset.current_value, # Records the Book Value (Total Cost)
+            balance_after=asset.book_value, # Records the Book Value (Total Cost)
             realized_pnl=realized_pnl,
             related_transaction_id=tx_in.related_transaction_id,
             note=tx_in.note,
@@ -130,22 +130,22 @@ class TransactionService:
             if tx.quantity_change > 0: # Was a BUY
                 # Reverse: Decrease Cost and Qty
                 cost_to_reverse = abs(tx.amount)
-                asset.current_value -= cost_to_reverse
+                asset.book_value -= cost_to_reverse
                 asset.quantity -= tx.quantity_change
             else: # Was a SELL
                  # Reverse: Add back Cost and Qty
                  # cost_removed = amount - realized_pnl
                  cost_restored = tx.amount - (tx.realized_pnl if tx.realized_pnl else 0)
-                 asset.current_value += cost_restored
+                 asset.book_value += cost_restored
                  asset.quantity -= tx.quantity_change # minus negative = plus
             
             # Recalculate Avg Cost
             if asset.quantity > 0:
-                asset.average_cost = asset.current_value / asset.quantity
+                asset.average_cost = asset.book_value / asset.quantity
                 asset.status = models.AssetStatus.ACTIVE
         else:
             # Cash: Simple reverse
-            asset.current_value -= tx.amount
+            asset.book_value -= tx.amount
             # If quantity_change was used, reverse it; otherwise reverse amount
             qty_delta = tx.quantity_change if tx.quantity_change != 0 else tx.amount
             asset.quantity -= qty_delta
