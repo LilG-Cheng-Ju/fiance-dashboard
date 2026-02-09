@@ -1,0 +1,8 @@
+@for (modal of modalService.stack(); track modal.id; let i = $index) {
+  <div class="modal-overlay" [style.z-index]="1000 + i * 10" (click)="close()">
+    <div class="modal-wrapper" (click)="$event.stopPropagation()">
+      <ng-container *ngComponentOutlet="modal.component; inputs: { data: modal.data }">
+      </ng-container>
+    </div>
+  </div>
+}

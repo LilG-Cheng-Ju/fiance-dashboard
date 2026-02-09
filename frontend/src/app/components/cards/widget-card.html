@@ -1,0 +1,22 @@
+<div class="widget-card">
+  <div class="card-header">
+    <h3 class="card-title">{{ title() }}</h3>
+    <div class="card-actions"></div>
+  </div>
+
+  <div class="card-body">
+    @if (loading()) {
+      <div class="state-overlay loading">
+        <div class="spinner"></div>
+        <span>載入中...</span>
+      </div>
+    } @else if (error()) {
+      <div class="state-overlay error">
+        <span class="material-symbols-rounded icon">error</span>
+        <span>{{ error() }}</span>
+      </div>
+    } @else {
+      <ng-content></ng-content>
+    }
+  </div>
+</div>

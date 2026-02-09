@@ -1,0 +1,46 @@
+<div class="app-layout">
+  <app-desktop-header
+    class="desktop-only"
+    (addAsset)="onAddAsset()"
+    [user]="authStore.user()"
+    (logout)="authStore.logout()"
+  >
+  </app-desktop-header>
+
+  <main class="main-content">
+    <section class="header-section">
+      <div class="wealth-wrapper">
+        <app-total-wealth-card [totalAmount]="totalWealth()" [loading]="assetStore.isLoading()">
+        </app-total-wealth-card>
+      </div>
+
+      <div class="trend-wrapper card">
+        <div class="section-title">資產趨勢</div>
+        <div class="chart-placeholder">Trend Chart Coming Soon...</div>
+      </div>
+    </section>
+
+    <section class="analytics-section">
+      <app-widget-collection [assets]="assetsWithMarketValue()" [loading]="assetStore.isLoading()">
+      </app-widget-collection>
+    </section>
+
+    <section class="assets-section">
+      <app-asset-collection
+        [assets]="assetsWithMarketValue()"
+        (deleteAsset)="assetStore.deleteAsset($event)"
+      >
+      </app-asset-collection>
+    </section>
+
+    <div class="spacer-bottom"></div>
+  </main>
+
+  <app-mobile-nav
+    class="mobile-only"
+    (addAsset)="onAddAsset()"
+    [user]="authStore.user()"
+    (logout)="authStore.logout()"
+  >
+  </app-mobile-nav>
+</div>

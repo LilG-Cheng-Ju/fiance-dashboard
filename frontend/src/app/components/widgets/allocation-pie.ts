@@ -2,10 +2,12 @@ import { Component, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
-import { Asset } from '../../core/models/asset.model';
-import { getAssetRgb } from '../../core/config/asset-config';
 
-export type PieChartType = 'ASSET_TYPE' | 'TW_STOCK' | 'US_STOCK';
+export interface PieChartData {
+  name: string;
+  value: number;
+  color?: string;
+}
 
 const CHART_STYLE = {
   colors: {
@@ -15,11 +17,7 @@ const CHART_STYLE = {
     border: '#e2e8f0',
     bgTooltip: 'rgba(255, 255, 255, 0.95)',
   },
-  fonts: {
-    base: 12,
-    title: 14,
-    emphasis: 10,
-  },
+  fonts: { base: 12 },
 };
 
 @Component({
@@ -30,103 +28,48 @@ const CHART_STYLE = {
   styleUrls: ['./allocation-pie.scss'],
 })
 export class AllocationPieComponent {
-  assets = input.required<Asset[]>();
-  chartType = input<PieChartType>('ASSET_TYPE');
-  title = input<string>('資產配置');
+  data = input.required<PieChartData[]>();
+
+  seriesName = input<string>('數據分佈');
 
   chartOptions: EChartsOption = {};
 
   constructor() {
     effect(() => {
-      const data = this.assets();
-      const chartType = this.chartType();
-
-      if (data.length > 0) {
-        this.updateChart(data, chartType);
+      const data = this.data();
+      if (data && data.length > 0) {
+        this.updateChart(data);
       }
     });
   }
 
-  private updateChart(assets: Asset[], type: PieChartType) {
-    let chartData: { name: string; value: number }[] = [];
-
-    switch (type) {
-      case 'ASSET_TYPE':
-        const grouped = this._groupByAssetType(assets);
-        chartData = grouped.map((item) => {
-          const rgb = getAssetRgb(item.name);
-
-          return {
-            name: item.name,
-            value: item.value,
-
-            itemStyle: {
-              color: `rgba(${rgb}, 0.85)`,
-              borderColor: `rgba(${rgb}, 1)`,
-              borderWidth: 1,
-            },
-          };
-        });
-        break;
-      case 'TW_STOCK':
-        chartData = this._filterStockByCurrency(assets, 'TWD');
-        break;
-      case 'US_STOCK':
-        chartData = this._filterStockByCurrency(assets, 'USD');
-        break;
-    }
-
+  private updateChart(data: PieChartData[]) {
     this.chartOptions = {
       ...this._getBasePieChart(),
-      title: {
-        ...this._getBasePieChart().title,
-        text: this.title(),
-      },
       series: [
         {
           ...(this._getBasePieChart().series as any)[0],
-          name: this.title(),
-          data: chartData,
+          name: this.seriesName(),
+
+          data: data.map((item) => ({
+            name: item.name,
+            value: item.value,
+            itemStyle: item.color
+              ? {
+                  color: item.color,
+                  borderColor: item.color,
+                  borderWidth: 1,
+                  opacity: 0.85,
+                }
+              : undefined,
+          })),
         },
       ],
     };
   }
 
-  /** 計算總資產配置 (Group By Type) */
-  private _groupByAssetType(assets: Asset[]) {
-    const grouped = assets.reduce(
-      (acc, curr) => {
-        acc[curr.asset_type] = (acc[curr.asset_type] || 0) + curr.current_value;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-
-    return Object.keys(grouped).map((key) => ({
-      name: key,
-      value: grouped[key],
-    }));
-  }
-
-  /** 通用的股票過濾器 (Filter Stock + Currency) */
-  private _filterStockByCurrency(assets: Asset[], currency: string) {
-    return assets
-      .filter((a) => a.asset_type === 'STOCK' && a.currency === currency)
-      .map((a) => ({
-        name: a.name,
-        value: a.current_value,
-      }));
-  }
-
-  // --- 👇 樣式設定區 (View Configuration) ---
-
   private _getBasePieChart(): EChartsOption {
     return {
-      title: {
-        left: 'center',
-        top: '5%',
-        textStyle: { fontSize: CHART_STYLE.fonts.title, color: CHART_STYLE.colors.textSub },
-      },
       tooltip: {
         trigger: 'item',
         confine: true,
@@ -143,38 +86,36 @@ export class AllocationPieComponent {
       legend: {
         bottom: '0%',
         left: 'center',
+        icon: 'circle',
+        itemGap: 10,
+        textStyle: {
+          fontSize: 13,
+          color: CHART_STYLE.colors.textSub,
+        },
       },
       series: [
         {
           type: 'pie',
           radius: ['40%', '70%'],
+          center: ['50%', '42%'],
           avoidLabelOverlap: false,
           itemStyle: {
-            borderRadius: 10,
+            borderRadius: 8,
             borderColor: '#fff',
             borderWidth: 2,
           },
-          labelLine: {
-            show: false,
-          },
+          labelLine: { show: false },
           label: {
             show: true,
             position: 'inner',
-            color: '#e9edf7',
-            fontSize: 11,
+            color: '#fff',
+            fontSize: 12,
             fontWeight: 'bold',
-            textShadowColor: 'rgba(0, 0, 0, 0.4)',
-            textShadowBlur: 3,
-            textShadowOffsetY: 1,
-
             formatter: (params: any) => {
-              if (params.percent < 5) {
-                return '';
-              }
-              return `${params.percent.toFixed(1)}%`;
+              if (params.percent < 8) return '';
+              return `${params.percent.toFixed(0)}%`;
             },
           },
-          // 🔥 更新重點：滑鼠懸停時，中間顯示名稱與數值
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
@@ -183,18 +124,15 @@ export class AllocationPieComponent {
             },
             scale: true,
             scaleSize: 5,
-            label: {
-              show: false,
-            },
+            label: { show: false },
           },
         },
       ],
     };
   }
 
-  // 獨立出來的 Tooltip Formatter，保持主設定乾淨
   private _tooltipFormatter(params: any): string {
-    const valueFormatted = new Intl.NumberFormat().format(params.value);
+    const valueFormatted = new Intl.NumberFormat().format(Math.round(params.value));
     return `
       <div style="font-weight: 600; margin-bottom: 4px;">${params.name}</div>
       <div style="font-size: 11px; color: ${CHART_STYLE.colors.textSub};">

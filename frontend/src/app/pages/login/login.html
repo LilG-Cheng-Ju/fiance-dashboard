@@ -1,0 +1,86 @@
+<div class="login-container">
+  <div class="visual-side">
+    <div class="overlay"></div>
+    <div class="content">
+      <h1>Wealth Dashboard</h1>
+      <p>Manage your assets simply & securely.</p>
+    </div>
+    <img
+      src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=1920&auto=format&fit=crop"
+      alt="Finance Background"
+    />
+  </div>
+
+  <div class="form-side">
+    <div class="form-wrapper">
+      <div class="header">
+        <h2>{{ isLoginMode ? 'Welcome back' : 'Create account' }}</h2>
+        <p class="subtitle">
+          {{ isLoginMode ? 'Please enter your details.' : 'Start your journey today.' }}
+        </p>
+      </div>
+
+      <button type="button" class="btn-google" (click)="onGoogleLogin()">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" />
+        <span>Sign in with Google</span>
+      </button>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+        <div class="form-group" *ngIf="!isLoginMode">
+          <label>Name</label>
+          <input type="text" formControlName="displayName" placeholder="Your name" />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            [class.error]="f.email.invalid && f.email.touched"
+          />
+          <span class="error-msg" *ngIf="f.email.invalid && f.email.touched"
+            >Valid email is required</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+            [class.error]="f.password.invalid && f.password.touched"
+          />
+          <span class="error-msg" *ngIf="f.password.invalid && f.password.touched"
+            >Min 6 chars required</span
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="authForm.invalid || authStore.loading()"
+        >
+          <span *ngIf="!authStore.loading()">{{ isLoginMode ? 'Sign in' : 'Sign up' }}</span>
+          <span *ngIf="authStore.loading()" class="loader"></span>
+        </button>
+
+        <div class="auth-error" *ngIf="authStore.error()">
+          {{ authStore.error() }}
+        </div>
+      </form>
+
+      <div class="footer">
+        <p>
+          {{ isLoginMode ? "Don't have an account?" : 'Already have an account?' }}
+          <a (click)="toggleMode()">{{ isLoginMode ? 'Sign up' : 'Log in' }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

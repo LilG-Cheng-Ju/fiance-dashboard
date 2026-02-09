@@ -1,0 +1,122 @@
+:host {
+  display: block;
+  width: 100vw;
+  max-width: 420px;
+}
+
+.picker-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+
+    span {
+      font-size: 24px;
+    }
+  }
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.option-btn {
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 16px;
+
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+
+  .icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #f1f5f9;
+    color: #64748b;
+    transition: all 0.2s;
+
+    span {
+      font-size: 28px;
+    }
+  }
+
+  .label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #475569;
+    transition: color 0.2s;
+  }
+
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    background-color: rgba(var(--theme-rgb), 0.04);
+    border-color: rgba(var(--theme-rgb), 0.3);
+
+    .icon-box {
+      background-color: rgba(var(--theme-rgb), 0.12);
+      color: rgb(var(--theme-rgb));
+    }
+
+    .label {
+      color: rgb(var(--theme-rgb));
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}

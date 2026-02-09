@@ -47,7 +47,7 @@ class Asset(Base):
 
     quantity = Column(Float, default=0.0) 
     average_cost = Column(Float, default=0.0) 
-    current_value = Column(Float, default=0.0) # Book balance
+    book_value = Column(Float, default=0.0) # Book balance
 
     currency = Column(String(3), default="TWD", nullable=False)
     symbol = Column(String, nullable=True)

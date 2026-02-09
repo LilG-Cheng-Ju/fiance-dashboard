@@ -1,0 +1,55 @@
+:root {
+  --color-moonlight-blue: #0f284e; // 🌙 Moonlight Blue
+  --color-blue-light: #1e3a66;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-500: #64748b;
+  --color-slate-800: #1e293b;
+  --color-white: #ffffff;
+
+  // --- 2. Semantic Variables ---
+  // [Brand]
+  --primary: var(--color-moonlight-blue);
+  --primary-hover: var(--color-blue-light);
+
+  // [Background]
+  --bg-main: var(--color-slate-50);
+  --bg-card: var(--color-white);
+  --bg-glass: rgba(255, 255, 255, 0.9);
+
+  // [Text]
+  --text-main: var(--color-slate-800);
+  --text-sub: var(--color-slate-500);
+  --text-inverse: var(--color-white);
+
+  // [Border]
+  --border-light: var(--color-slate-200);
+
+  // --- Header specific styling (used for top sticky bar) ---
+  --header-gradient-start: rgba(255, 255, 255, 0.66);
+  --header-gradient-end: rgba(255, 255, 255, 0.48);
+  --header-glass-opacity: 0.6;
+  --header-shadow: 0 2px 12px rgba(15, 40, 78, 0.06);
+  --header-border: rgba(226, 232, 240, 0.8);
+}
+
+// --- 3. SCSS Variables Compatibility (for legacy code) ---
+$primary: var(--primary);
+$bg-color: var(--bg-main);
+$text-main: var(--text-main);
+$text-sub: var(--text-sub);
+$border-light: var(--border-light);
+
+// Header legacy SCSS fallbacks
+$header-gradient-start: var(--header-gradient-start);
+$header-gradient-end: var(--header-gradient-end);
+$header-glass-opacity: var(--header-glass-opacity);
+$header-shadow: var(--header-shadow);
+$header-border: var(--header-border);
+
+// Legacy variables preserved
+$card-bg: #ffffff;
+$radius: 24px;
+$gap: 24px;

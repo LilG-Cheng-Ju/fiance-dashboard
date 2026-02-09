@@ -1,0 +1,18 @@
+<nav class="mobile-bottom-bar">
+  <div class="mobile-logo">
+    <span class="material-symbols-rounded">account_balance_wallet</span>
+    <span>MyWealth</span>
+  </div>
+
+  <app-user-menu
+    class="bottom-menu"
+    [user]="user()"
+    (logout)="logout.emit()"
+    (settings)="settings.emit()"
+  >
+  </app-user-menu>
+</nav>
+
+<button class="fab-btn" (click)="onAddClick()">
+  <span class="material-symbols-rounded" style="font-size: 28px">add</span>
+</button>

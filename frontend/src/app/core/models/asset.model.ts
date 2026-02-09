@@ -36,7 +36,7 @@ export interface Asset {
 
   quantity: number;
   average_cost: number;
-  current_value: number; // Book Value for assets like STOCK, CASH balance for CASH type
+  book_value: number; // Book Value for assets like STOCK, CASH balance for CASH type
 
   include_in_net_worth: boolean;
   meta_data?: any;

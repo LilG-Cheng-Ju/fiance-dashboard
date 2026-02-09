@@ -1,0 +1,96 @@
+@use '../../../assets/styles/theme';
+
+:host {
+  display: block;
+  /* full-bleed sticky bar with theme-driven glass effect */
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, var(--header-gradient-start), var(--header-gradient-end));
+  /* fallback solid with configurable opacity */
+  background-color: rgba(255, 255, 255, var(--header-glass-opacity));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: var(--header-shadow);
+  border-bottom: 1px solid var(--header-border);
+}
+
+.desktop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  /* Constrain header width so it aligns with main content */
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  /* keep content constrained and transparent so host provides full-bleed background */
+  background-color: transparent;
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-main);
+
+    .logo-icon {
+      color: var(--primary);
+      font-size: 32px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+  }
+
+  .actions-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background-color: var(--primary);
+  color: var(--text-inverse);
+
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 40, 78, 0.25);
+  }
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-main);
+  }
+}

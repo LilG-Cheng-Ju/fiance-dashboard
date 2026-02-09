@@ -47,7 +47,7 @@ export const AssetStore = signalStore(
     totalCostBasis: computed(() =>
       assets()
         .filter((a) => a.include_in_net_worth && a.status === AssetStatus.ACTIVE)
-        .reduce((sum, asset) => sum + asset.current_value, 0),
+        .reduce((sum, asset) => sum + asset.book_value, 0),
     ),
 
     // 判斷是否為空

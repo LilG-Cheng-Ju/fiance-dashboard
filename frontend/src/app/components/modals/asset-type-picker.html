@@ -1,0 +1,22 @@
+<div class="picker-card">
+  <header class="header">
+    <h3>新增資產</h3>
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <div class="options-grid">
+    @for (item of options; track item.type) {
+      <button class="option-btn" (click)="selectType(item.type)" [style.--theme-rgb]="item.rgb">
+        <div class="icon-box">
+          <span 
+            class="material-symbols-rounded"
+            style="font-variation-settings: 'wght' 600;">{{ item.icon }}</span>
+        </div>
+
+        <span class="label">{{ item.label }}</span>
+      </button>
+    }
+  </div>
+</div>

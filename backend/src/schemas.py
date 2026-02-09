@@ -42,6 +42,10 @@ class AssetCreate(BaseModel):
     
     initial_total_cost: float = Field(0.0, description="Initial total cost / initial balance")
     initial_quantity: float = Field(0.0, description="Initial quantity")
+    transaction_time: Optional[datetime] = Field(
+        default=None, 
+        description="The time of the initial transaction. If provided, overrides current time."
+    )
     include_in_net_worth: bool = True
     meta_data: Optional[Dict[str, Any]] = {}
 
@@ -56,7 +60,7 @@ class AssetResponse(BaseModel):
     
     quantity: float       # Current holding quantity
     average_cost: float   # Average cost (used for profit and loss calculation)
-    current_value: float  # Current book value
+    book_value: float  # Current book value
     
     include_in_net_worth: bool 
     meta_data: Optional[Dict[str, Any]]
