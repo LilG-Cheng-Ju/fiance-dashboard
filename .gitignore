@@ -3,3 +3,6 @@
 *.db
 
 __pycache__/
+
+# Credentials
+/backend/config/firebase-service-account.json
