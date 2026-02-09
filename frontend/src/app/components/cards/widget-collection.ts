@@ -68,17 +68,22 @@ export class WidgetCollectionComponent {
 
   readonly assetPieData = computed<PieChartData[]>(() => {
     const assets = this.assets() as AssetWithMarketValue[];
+    const EXCLUDED_TYPES = [AssetType.CREDIT_CARD, AssetType.LIABILITY, AssetType.PENDING];
 
     // Group By Logic
-    const grouped = assets.reduce(
-      (acc, curr) => {
-        // 優先用 marketValueTwd
-        const value = curr.marketValueTwd ?? curr.book_value;
-        acc[curr.asset_type] = (acc[curr.asset_type] || 0) + value;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    const grouped = assets
+      .filter(a => a.include_in_net_worth && !EXCLUDED_TYPES.includes(a.asset_type))
+      .reduce(
+        (acc, curr) => {
+          const value = curr.marketValueTwd ?? curr.book_value;
+          
+          if (value > 0) {
+            acc[curr.asset_type] = (acc[curr.asset_type] || 0) + value;
+          }
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
 
     // Transform to Chart Data
     return Object.keys(grouped).map((key) => {

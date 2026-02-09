@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalService } from '../../core/services/modal.service';
 import { getAssetRgb } from '../../core/config/asset.config';
+import { SimpleAssetFormComponent, SimpleAssetFormData } from '../forms/simple-asset-form';
 
 interface AssetOption {
   type: string;
@@ -9,6 +10,8 @@ interface AssetOption {
   icon: string;
   rgb: string;
 }
+
+const simpleAssets = ['CASH', 'PENDING', 'LIABILITY', 'CREDIT_CARD'];
 
 @Component({
   selector: 'app-asset-type-picker',
@@ -19,6 +22,8 @@ interface AssetOption {
 })
 export class AssetTypePickerComponent {
   private modalService = inject(ModalService);
+
+  data = input<any>(null);
 
   options: AssetOption[] = [
     {
@@ -50,10 +55,15 @@ export class AssetTypePickerComponent {
   }
 
   selectType(type: string) {
-    console.log('User selected:', type);
     // TODO: 下一步：
     // 1. this.modalService.close(); // 關掉目前的選擇器
     // 2. this.modalService.open(StockFormComponent); // 打開對應的表單
     this.modalService.close();
+    if (simpleAssets.includes(type)) {
+      console.log(`Opening SimpleAssetForm for type: ${type}`);
+      this.modalService.open(SimpleAssetFormComponent, { assetType: type } as SimpleAssetFormData);
+    } else {
+      console.log(`TODO: Open Investment Form for ${type}`);
+    }
   }
 }

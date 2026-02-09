@@ -168,7 +168,7 @@
   }
 
   // --- Theme Colors ---
-  $types: 'stock', 'cash', 'crypto', 'gold';
+  $types: 'stock', 'cash', 'crypto', 'gold', 'liability', 'pending', 'credit_card';
   @each $type in $types {
     &.type-#{$type} {
       .card-header .status-badge {

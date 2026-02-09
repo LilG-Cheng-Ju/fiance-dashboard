@@ -1,0 +1,126 @@
+<div class="form-card">
+  
+  <header 
+    class="header" 
+    [style.background-color]="'rgba(' + themeColor() + ', 0.1)'">
+    
+    <h3 [style.color]="'rgb(' + themeColor() + ')'">{{ config().title }}</h3>
+    
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-body">
+    
+    <div class="row">
+      <div class="field group-name">
+        <label>名稱</label>
+        <input type="text" formControlName="name" [placeholder]="'e.g. ' + config().name_example">
+      </div>
+      
+      <div class="field group-currency">
+        <label>幣別</label>
+        <select formControlName="currency">
+          @for (c of rateStore.currencies(); track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>{{ config().amountLabel }}</label>
+      
+      <div class="amount-row">
+        <input 
+          type="number" 
+          formControlName="amount" 
+          placeholder="0.00"
+          [class.text-danger]="config().isLiability"
+          [class.text-success]="!config().isLiability">
+        
+        @if (assetType() === 'PENDING') {
+          <div class="segmented-control">
+            <button 
+              type="button"
+              [class.active]="pendingDirection() === 'RECEIVABLE'"
+              (click)="setPendingDirection('RECEIVABLE')">
+              應收
+            </button>
+            <button 
+              type="button"
+              [class.active]="pendingDirection() === 'PAYABLE'"
+              (click)="setPendingDirection('PAYABLE')">
+              應付
+            </button>
+          </div>
+        }
+      </div>
+
+      @if (config().isLiability && assetType() !== 'PENDING') {
+        <span class="hint">請輸入正數金額，系統將自動記錄為負債。</span>
+      }
+    </div>
+
+    @if (showExchangeRate()) {
+      <div class="field highlight-bg">
+        <label>匯率 (to TWD)</label>
+        
+        <div class="input-suffix">
+          <input 
+            type="number" 
+            formControlName="exchange_rate" 
+            step="0.01"
+            [placeholder]="referenceRate() ? '參考匯率: ' + referenceRate() : '請輸入匯率'">
+          <span>TWD</span>
+        </div>
+
+        <div class="calc-result">
+          <span class="label">約 $</span>
+          <span class="value">
+            {{ estimatedCost() | number:'1.0-0' }} 
+            <small>TWD</small>
+          </span>
+        </div>
+      </div>
+    }
+
+    <div class="row">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" formControlName="date">
+      </div>
+
+      <div class="field toggle-field">
+        <label>計入總資產</label>
+        <div class="switch-wrapper">
+          <label class="switch">
+            <input type="checkbox" formControlName="include_in_net_worth">
+            <span 
+              class="slider round" 
+              [style.background-color]="form.get('include_in_net_worth')?.value ? 'rgb(' + themeColor() + ')' : '#cbd5e1'">
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>備註 (選填)</label>
+      <input type="text" formControlName="note" placeholder="寫點備註...">
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-cancel" (click)="close()">取消</button>
+      <button 
+        type="submit" 
+        class="btn-submit" 
+        [disabled]="form.invalid"
+        [style.background-color]="'rgb(' + themeColor() + ')'">
+        確認新增
+      </button>
+    </div>
+
+  </form>
+</div>

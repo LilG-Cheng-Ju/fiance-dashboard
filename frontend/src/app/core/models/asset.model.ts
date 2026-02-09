@@ -51,6 +51,7 @@ export interface AssetCreate {
   initial_total_cost: number;
   initial_quantity: number;
 
+  transaction_time?: string; // ISO format, e.g. "2024-01-01T00:00:00Z"
   include_in_net_worth: boolean;
   meta_data?: any;
 }
