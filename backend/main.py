@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src import database, models
-from src.api import assets, market, transactions
+from src.api import assets, market, transactions, login
+from src.config import firebase
+
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -19,6 +21,7 @@ app.add_middleware(
 app.include_router(assets.router)
 app.include_router(transactions.router)
 app.include_router(market.router)
+app.include_router(login.router)
 
 @app.get("/")
 def root():
