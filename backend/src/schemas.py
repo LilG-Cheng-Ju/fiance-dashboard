@@ -13,6 +13,8 @@ class TransactionCreate(BaseModel):
     quantity_change: float = Field(0.0, description="Quantity change (positive for buy, negative for sell)")
     price_at_transaction: Optional[float] = None
     exchange_rate: float = Field(1.0, description="Exchange rate at transaction")
+    source_amount: Optional[float] = Field(None, description="Actual deducted amount in source currency")
+    source_currency: Optional[str] = Field(None, description="Source currency code (e.g., TWD)")
     note: Optional[str] = None
     related_transaction_id: Optional[int] = None
 
@@ -26,6 +28,10 @@ class TransactionResponse(BaseModel):
     # how much the profit/loss realized in this transaction
     realized_pnl: Optional[float] = None
     exchange_rate: float
+    
+    source_amount: Optional[float]
+    source_currency: Optional[str]
+    
     note: Optional[str]
     transaction_date: datetime
     related_transaction_id: Optional[int]
@@ -42,6 +48,13 @@ class AssetCreate(BaseModel):
     
     initial_total_cost: float = Field(0.0, description="Initial total cost / initial balance")
     initial_quantity: float = Field(0.0, description="Initial quantity")
+    
+    source_asset_id: Optional[int] = Field(None, description="ID of the asset used to pay for this new asset")
+    
+    source_amount: Optional[float] = Field(None, description="Actual initial deducted amount")
+    source_currency: Optional[str] = Field(None, description="Initial source currency code")
+    exchange_rate: Optional[float] = Field(1.0, description="Exchange rate at the time of creation")
+    
     transaction_time: Optional[datetime] = Field(
         default=None, 
         description="The time of the initial transaction. If provided, overrides current time."

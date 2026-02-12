@@ -15,11 +15,11 @@ import { switchMap, tap, mergeMap, finalize } from 'rxjs/operators';
 import { AssetService } from '../services/asset.service';
 import { Asset, AssetCreate, AssetStatus } from '../models/asset.model';
 
-// 1. 定義 State 的形狀
+
 type AssetState = {
   assets: Asset[];
   isLoading: boolean;
-  error: string | null; // 簡化 error type 為 string，方便顯示
+  error: string | null;
 };
 
 const initialState: AssetState = {
@@ -29,12 +29,12 @@ const initialState: AssetState = {
 };
 
 export const AssetStore = signalStore(
-  { providedIn: 'root' }, // 全域單例，隨處可注入
+  { providedIn: 'root' },
 
-  // 2. 初始化狀態
+
   withState(initialState),
 
-  // 3. Computed Signals (類似 Selectors，會自動緩存)
+  // Computed Signals
   withComputed(({ assets }) => ({
     // 取得所有「活躍中」的資產 (過濾掉已歸檔/賣光的)
     activeAssets: computed(() => assets().filter((a) => a.status === AssetStatus.ACTIVE)),

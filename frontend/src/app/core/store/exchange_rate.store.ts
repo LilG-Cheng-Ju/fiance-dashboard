@@ -7,6 +7,7 @@ import { tap, mergeMap } from 'rxjs/operators';
 
 import { RateService } from '../services/exchange_rate.service';
 import { ExchangeRate } from '../models/market.model';
+import { SUPPORTED_CURRENCIES } from '../config/currency.config';
 
 // 1. [State] 定義狀態結構 (對應 RateState)
 type RateState = {
@@ -36,6 +37,13 @@ export const RateStore = signalStore(
 
     // (Optional) 為了方便除錯或顯示，保留 isLoading 的 computed
     loading: computed(() => store.isLoading()),
+
+    currencies: computed(() => SUPPORTED_CURRENCIES),
+
+    // TODO: A new store should be added that allows users to enter their local currency.
+    foreignCurrencies: computed(() => 
+      SUPPORTED_CURRENCIES.filter(c => c !== 'TWD')
+    ),
   })),
 
   // 3. [Actions + Effects + Reducer]

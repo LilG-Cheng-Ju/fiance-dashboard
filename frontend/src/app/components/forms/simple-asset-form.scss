@@ -1,0 +1,321 @@
+.form-card {
+  background: #ffffff;
+  width: 90vw;
+  max-width: 420px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    
+    &:hover { background-color: rgba(0,0,0,0.05); }
+  }
+}
+
+.form-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  .group-name { flex: 2; }
+  .group-currency { flex: 1; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  input, select {
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.2s;
+    background: #fff;
+
+    &:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  .hint {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+}
+
+.amount-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  input {
+    flex: 1;
+    font-weight: 700;
+    
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    background-color: #ffffff; 
+    border: 1px solid #cbd5e1;
+    color: #1e293b;
+
+    &.text-success {
+      background-color: rgba(16, 185, 129, 0.05) !important;
+      
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      
+      color: #047857 !important; 
+
+      &::placeholder {
+        color: rgba(16, 185, 129, 0.4);
+      }
+
+      &:focus {
+        background-color: rgba(16, 185, 129, 0.08) !important;
+        border-color: rgba(16, 185, 129, 0.6) !important;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important; 
+      }
+    }
+    
+    &.text-danger {
+      background-color: rgba(239, 68, 68, 0.05) !important;
+      
+      border-color: rgba(239, 68, 68, 0.3) !important;
+      
+      color: #b91c1c !important;
+
+      &::placeholder {
+        color: rgba(239, 68, 68, 0.4);
+      }
+
+      &:focus {
+        background-color: rgba(239, 68, 68, 0.08) !important;
+        border-color: rgba(239, 68, 68, 0.6) !important;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+      }
+    }
+  }
+}
+
+.segmented-control {
+  display: flex;
+  background-color: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  height: 46px; 
+  align-items: center;
+
+  button {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &.active {
+      background-color: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+  }
+}
+
+.highlight-bg {
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+
+.input-suffix {
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  input { width: 100%; padding-right: 50px; }
+  span {
+    position: absolute;
+    right: 14px;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+}
+
+.calc-result {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .label { 
+    font-size: 0.85rem; 
+    color: #64748b; 
+    font-weight: 500;
+  }
+  
+  .value { 
+    font-size: 1.05rem; 
+    font-weight: 700; 
+    color: #1e293b; 
+    
+    small { 
+      font-size: 0.75rem; 
+      color: #94a3b8; 
+      margin-left: 4px; 
+      font-weight: 600;
+    }
+  }
+}
+
+.toggle-field {
+  /* Inherits .field column layout from parent */
+  /* Removed background and border as requested */
+}
+
+/* Wrapper to align switch with the input height next to it */
+.switch-wrapper {
+  height: 45px; /* Matches standard input height approx */
+  display: flex;
+  align-items: center; /* Vertically center the switch */
+  gap: 12px;
+}
+
+.status-text {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* The Switch Component */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin-bottom: 0;
+}
+
+/* Hide default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The Slider (Track) */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #cbd5e1; /* Default grey */
+  transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border-radius: 24px;
+
+  /* The Knob (Circle) */
+  &:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+}
+
+/* Checked State Animation */
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+
+  button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+
+    &:active { transform: scale(0.98); }
+  }
+
+  .btn-cancel {
+    background-color: #f1f5f9;
+    color: #64748b;
+    &:hover { background-color: #e2e8f0; }
+  }
+
+  .btn-submit {
+    color: #ffffff;
+    &:disabled {
+      background-color: #cbd5e1 !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    &:hover:not(:disabled) { filter: brightness(1.1); }
+  }
+}
