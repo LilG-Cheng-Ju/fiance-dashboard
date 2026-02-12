@@ -72,23 +72,49 @@
             type="number" 
             formControlName="exchange_rate" 
             step="0.01"
+            (focus)="onRateFocus()"
             [placeholder]="referenceRate() ? '參考匯率: ' + referenceRate() : '請輸入匯率'">
           <span>TWD</span>
         </div>
 
-        <div class="calc-result">
-          <span class="label">約 $</span>
-          <span class="value">
-            {{ estimatedCost() | number:'1.0-0' }} 
-            <small>TWD</small>
-          </span>
-        </div>
+        @if (!selectedSourceId()) {
+            <div class="calc-result">
+              <span class="label">約 $</span>
+              <span class="value">
+                {{ estimatedCost() | number:'1.0-0' }} 
+                <small>TWD</small>
+              </span>
+            </div>
+        }
       </div>
+    }
+
+    @if (!config().isLiability && assetType() !== 'PENDING') {
+        <div class="row">
+            <div class="field group-source">
+                <label>資金來源</label>
+                <select formControlName="source_asset_id">
+                    <option [ngValue]="null">-- 無 --</option>
+                    @for (source of fundingSources(); track source.id) {
+                        <option [value]="source.id">
+                            {{ source.name }} ({{ source.currency }})
+                        </option>
+                    }
+                </select>
+            </div>
+
+            @if (selectedSourceId()) {
+                <div class="field group-deduct">
+                    <label>扣款金額</label>
+                    <input type="number" formControlName="source_amount">
+                </div>
+            }
+        </div>
     }
 
     <div class="row">
       <div class="field">
-        <label>Date</label>
+        <label>日期</label>
         <input type="date" formControlName="date">
       </div>
 

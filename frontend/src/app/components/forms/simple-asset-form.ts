@@ -7,9 +7,8 @@ import { startWith } from 'rxjs/operators';
 import { ModalService } from '../../core/services/modal.service';
 import { getAssetRgb } from '../../core/config/asset.config';
 import { AssetStore } from '../../core/store/asset.store';
-import { AssetCreate } from '../../core/models/asset.model';
+import { AssetCreate, AssetType } from '../../core/models/asset.model';
 import { RateStore } from '../../core/store/exchange_rate.store';
-import { AssetType } from '../../core/models/asset.model';
 import { getLocalISODate } from '../../core/helpers/date.helper';
 
 interface FormConfig {
@@ -37,19 +36,18 @@ export class SimpleAssetFormComponent {
   private assetStore = inject(AssetStore);
   public rateStore = inject(RateStore);
 
-  // --- 1. Inputs (Renamed from type to assetType) ---
+  // --- Inputs ---
   data = input<SimpleAssetFormData>({ assetType: 'CASH' });
   assetType: Signal<string> = computed(() => this.data().assetType);
 
   pendingDirection = signal<'RECEIVABLE' | 'PAYABLE'>('RECEIVABLE');
 
-  // --- 2. Computed State ---
-  
-  // Calculate RGB string dynamically based on assetType
-  // Example result: "16, 185, 129" (No hardcoding here!)
+  // --- Data Source ---
+  fundingSources = this.assetStore.cashAssets;
+
+  // --- Computed State ---
   themeColor = computed(() => getAssetRgb(this.assetType()));
 
-  // Determine Form UI Config based on assetType
   config = computed(() => {
     const assetType = this.assetType();
     let cfg = this.CONFIG_MAP[assetType] || this.CONFIG_MAP['CASH'];
@@ -61,35 +59,34 @@ export class SimpleAssetFormComponent {
         amountLabel: isPayable ? '待支付金額' : '待收款金額',
         isLiability: isPayable,
         name_example: isPayable ? '水電費' : '客戶尾款'
-      } ;
-    } 
+      };
+    }
     return cfg;
   });
 
-  // --- 3. Form & Logic ---
+  // --- Form & Logic ---
   form: FormGroup;
   
-  // Signals for form values (Reactive)
+  // Form Signals
   currentCurrency: Signal<string>;
   amountValue: Signal<number>;
   rateValue: Signal<number | null>;
-  // Signal to decide whether to show exchange rate inputs
   showExchangeRate: Signal<boolean>;
+  selectedSourceId: Signal<number | null>;
 
   referenceRate = computed(() => {
     const currency = this.currentCurrency();
     if (currency === 'TWD') return null;
-    
     const key = `${currency}-TWD`;
-    const rate = this.rateStore.rateMap()[key];
-    
-    return rate ? rate : null;
+    return this.rateStore.rateMap()[key] || null;
   });
 
+  // Basic estimation (Display only)
   estimatedCost = computed(() => {
     const amt = this.amountValue() || 0;
     const rate = this.rateValue() || 1;
-    return amt * rate;
+    // 🔥 Update: Round to integer directly
+    return Math.round(amt * rate);
   });
 
   private readonly CONFIG_MAP: Record<string, FormConfig> = {
@@ -126,18 +123,19 @@ export class SimpleAssetFormComponent {
   constructor() {
     const today = getLocalISODate();
 
-    // Initialize Form
     this.form = this.fb.group({
       name: ['', Validators.required],
       currency: ['TWD', Validators.required],
       amount: [null, [Validators.required, Validators.min(0)]],
       exchange_rate: [1.0, [Validators.required, Validators.min(0.000001)]],
-      date: [today], // YYYY-MM-DD
+      date: [today],
       include_in_net_worth: [true],
-      note: ['']
+      note: [''],
+      source_asset_id: [null], 
+      source_amount: [null]    
     });
 
-    // Convert form value changes to Signal
+    // --- Signals ---
     this.currentCurrency = toSignal(
       this.form.get('currency')!.valueChanges.pipe(startWith('TWD')), 
       { initialValue: 'TWD' }
@@ -153,36 +151,79 @@ export class SimpleAssetFormComponent {
       { initialValue: null }
     );
 
+    this.selectedSourceId = toSignal(
+      this.form.get('source_asset_id')!.valueChanges.pipe(startWith(null)),
+      { initialValue: null }
+    );
+
     this.showExchangeRate = computed(() => this.currentCurrency() !== 'TWD');
 
-    // Fetch Exchange Rate when currency changes
+    // --- Effects ---
+
+    // 1. Fetch Exchange Rate
     effect(() => {
       const curr = this.currentCurrency();
       if (curr && curr !== 'TWD') {
-        // Trigger API call via Store
         this.rateStore.loadRate({ fromCurr: curr, toCurr: 'TWD' });
-        
-        // Reset manual input to show placeholder
         this.form.patchValue({ exchange_rate: null }, { emitEvent: false });
       }
     });
 
-    // Reset Rate to 1.0 when currency is TWD
+    // 2. Reset Rate
     effect(() => {
       if (this.currentCurrency() === 'TWD') {
         this.form.patchValue({ exchange_rate: 1.0 }, { emitEvent: false });
       }
     });
 
-    // Sync Config Defaults
+    // 3. Sync Defaults
     effect(() => {
       const cfg = this.config();
       const control = this.form.get('include_in_net_worth');
-
       if (control && control.pristine) {
         this.form.patchValue({ include_in_net_worth: cfg.defaultNetWorth }, { emitEvent: false });
       }
     });
+
+    // 4. Auto-calculate Source Amount
+    effect(() => {
+      const sourceId = this.selectedSourceId();
+      const amount = this.amountValue() || 0;
+      const rate = this.rateValue() || 1;
+      const targetCurrency = this.currentCurrency();
+
+      if (sourceId) {
+        const sourceAsset = this.fundingSources().find(a => a.id == sourceId);
+        
+        if (sourceAsset) {
+            let calculatedSourceAmount = 0;
+            
+            if (sourceAsset.currency === targetCurrency) {
+                calculatedSourceAmount = amount;
+            } else {
+                calculatedSourceAmount = amount * rate;
+            }
+
+            // 🔥 Update: Round to integer (Math.round)
+            calculatedSourceAmount = Math.round(calculatedSourceAmount);
+
+            this.form.patchValue({ source_amount: calculatedSourceAmount }, { emitEvent: false });
+        }
+      } else {
+        this.form.patchValue({ source_amount: null }, { emitEvent: false });
+      }
+    });
+  }
+
+  // UX Logic: Auto-fill reference rate on focus
+  onRateFocus() {
+    const currentVal = this.form.get('exchange_rate')?.value;
+    const ref = this.referenceRate();
+    
+    // Only auto-fill if empty AND reference exists
+    if ((currentVal === null || currentVal === '') && ref) {
+      this.form.patchValue({ exchange_rate: ref });
+    }
   }
 
   close() {
@@ -198,9 +239,14 @@ export class SimpleAssetFormComponent {
 
     const val = this.form.value;
     const isBaseCurrency = val.currency === 'TWD';
-    // Use user input rate OR reference rate OR 1.0
     const finalRate = isBaseCurrency ? 1.0 : (val.exchange_rate || this.referenceRate() || 1.0);
     const multiplier = this.config().isLiability ? -1 : 1;
+
+    let sourceCurrency = null;
+    if (val.source_asset_id) {
+        const sourceAsset = this.fundingSources().find(a => a.id == val.source_asset_id);
+        sourceCurrency = sourceAsset?.currency || null;
+    }
 
     const payload: AssetCreate = {
       name: val.name,
@@ -210,8 +256,12 @@ export class SimpleAssetFormComponent {
       initial_quantity: val.amount * multiplier,
       initial_total_cost: val.amount * finalRate * multiplier,
       
+      source_asset_id: val.source_asset_id,
+      source_amount: val.source_amount,
+      source_currency: sourceCurrency,
+      exchange_rate: finalRate,
+
       transaction_time: `${val.date}T00:00:00`,
-      
       include_in_net_worth: val.include_in_net_worth,
       meta_data: { note: val.note }
     };
