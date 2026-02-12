@@ -102,6 +102,10 @@ class TransactionService:
             quantity_change=tx_in.quantity_change,
             price_at_transaction=tx_in.price_at_transaction,
             exchange_rate=tx_in.exchange_rate,
+            
+            source_amount=tx_in.source_amount,
+            source_currency=tx_in.source_currency,
+            
             balance_after=asset.book_value, # Records the Book Value (Total Cost)
             realized_pnl=realized_pnl,
             related_transaction_id=tx_in.related_transaction_id,

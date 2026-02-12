@@ -72,6 +72,11 @@ class Transaction(Base):
     price_at_transaction = Column(Float, nullable=True)
     
     exchange_rate = Column(Float, default=1.0, nullable=False)
+    
+    # for sub-delegation or foreign currency deposits
+    source_amount = Column(Float, nullable=True) # actual amount deducted/received in source currency
+    
+    source_currency = Column(String(3), nullable=True) # currency of the source amount, if different from asset currency
 
     balance_after = Column(Float) # book balance after this transaction
 
