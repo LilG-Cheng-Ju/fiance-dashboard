@@ -53,6 +53,12 @@ export interface AssetCreate {
 
   transaction_time?: string; // ISO format, e.g. "2024-01-01T00:00:00Z"
   include_in_net_worth: boolean;
+
+  source_asset_id?: number | null; // ID of the asset used to pay (e.g., Bank Account ID)
+  source_amount?: number | null;   // Actual amount deducted from source (e.g., TWD amount)
+  source_currency?: string | null; // Currency of the source asset
+  exchange_rate?: number | null;   // Exchange rate used for this transaction
+  
   meta_data?: any;
 }
 
