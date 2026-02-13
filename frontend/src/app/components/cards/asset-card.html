@@ -12,9 +12,9 @@
   <div class="card-body">
     <div class="main-data-row">
       <div class="balance-group">
-        <span class="currency">NT$</span>
+        <span class="currency">{{ displayCurrency() }}</span>
         <span class="amount">
-          {{ (displayValue() !== null ? displayValue() : asset().book_value) | number: '1.0-0' }}
+          {{ displayAmount() | number: '1.0-0' }}
         </span>
       </div>
 
@@ -32,11 +32,11 @@
       <span class="detail-item">{{ asset().quantity | number }} 股</span>
       <span class="divider">/</span>
       <span class="detail-item price">@ {{ marketPrice() | number: '1.2-2' }}</span>
-    } @else if (asset().asset_type === 'CASH' && asset().currency !== 'TWD') {
+    } @else if (asset().asset_type === 'CASH' && exchangeRate() !== 1) {
       <span class="detail-item">匯率</span>
       <span class="divider">:</span>
       <span class="detail-item price">{{ exchangeRate() | number: '1.2-2' }}</span>
-    } @else if (asset().asset_type === 'CASH' && asset().currency === 'TWD') {
+    } @else if (asset().asset_type === 'CASH' && exchangeRate() === 1) {
       <span class="detail-item" style="opacity: 0.4; font-size: 0.8rem">Base Currency</span>
     }
   </div>

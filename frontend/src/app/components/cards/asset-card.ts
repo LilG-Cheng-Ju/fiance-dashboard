@@ -1,24 +1,25 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { Asset } from '../../core/models/asset.model';
 
 @Component({
   selector: 'app-asset-card',
+  standalone: true,
   imports: [CommonModule, DecimalPipe],
   templateUrl: './asset-card.html',
-  styleUrl: './asset-card.scss',
+  styleUrls: ['./asset-card.scss'],
 })
 export class AssetCard {
-  asset = input.required<Asset>();
+  asset = input.required<any>(); 
   marketPrice = input<number>(0);
-
-  displayValue = input<number | null>(null);
+  
+  displayCurrency = input<string>('TWD');
+  displayAmount = input<number>(0);
+  
   pnl = input<number>(0);
   roi = input<number | string>(0);
+  exchangeRate = input<number>(1);
 
   delete = output<number>();
-
-  exchangeRate = input<number>(1);
 
   onDelete() {
     this.delete.emit(this.asset().id);

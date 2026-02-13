@@ -7,9 +7,7 @@
 
     <div class="filter-pills">
       <button [class.active]="filterType() === 'ALL'" (click)="setFilter('ALL')">全部</button>
-
       <button [class.active]="filterType() === 'STOCK'" (click)="setFilter('STOCK')">股票</button>
-
       <button [class.active]="filterType() === 'CASH'" (click)="setFilter('CASH')">現金</button>
     </div>
   </div>
@@ -19,7 +17,8 @@
       <app-asset-card
         [asset]="asset"
         [marketPrice]="asset.marketPrice"
-        [displayValue]="asset.marketValueTwd"
+        [displayCurrency]="asset.displayCurrency"
+        [displayAmount]="asset.displayAmount"
         [pnl]="asset.unrealizedPnl"
         [roi]="asset.returnRate"
         [exchangeRate]="asset.exchangeRate ?? 1"

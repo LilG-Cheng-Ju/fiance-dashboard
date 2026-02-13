@@ -33,20 +33,13 @@ class AssetService:
         
         try:
             # 1. Safety Check & Auto-fill logic
-            # For CASH-like assets, quantity equals total cost (1:1 ratio)
-            if asset_in.asset_type in [
-                models.AssetType.CASH, 
-                models.AssetType.LIABILITY, 
-                models.AssetType.PENDING, 
-                models.AssetType.CREDIT_CARD
-            ]:
-                final_quantity = asset_in.initial_quantity
-                final_current_value = asset_in.initial_total_cost
-                
-                if final_quantity != 0:
-                    final_avg_cost = final_current_value / final_quantity
-                else:
-                    final_avg_cost = 1.0
+            final_quantity = asset_in.initial_quantity
+            final_current_value = asset_in.initial_total_cost
+            
+            if final_quantity != 0:
+                final_avg_cost = final_current_value / final_quantity
+            else:
+                final_avg_cost = 1.0
 
             # 2. Prepare Source Transaction (Funding Logic)
             related_tx_id = None

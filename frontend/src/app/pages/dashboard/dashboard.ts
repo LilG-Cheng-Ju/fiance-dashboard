@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect, computed, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, effect, computed } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 
 import { AssetCollectionComponent } from '../../components/cards/asset-collection';
@@ -39,12 +39,11 @@ export class DashboardComponent implements OnInit {
   readonly rateStore = inject(RateStore);
   readonly authStore = inject(AuthStore);
   readonly modalService = inject(ModalService);
-  readonly settingsStore = inject(SettingsStore); // 🔥 注入 SettingsStore
+  readonly settingsStore = inject(SettingsStore);
 
   private readonly RATE_CACHE_DURATION = 30 * 60 * 1000;
 
   constructor() {
-    // 1. Market tracking effect
     effect(() => {
       const assets = this.assetStore.activeAssets();
 
@@ -65,7 +64,6 @@ export class DashboardComponent implements OnInit {
       this.marketStore.startTracking(symbolsToTrack);
     });
 
-    // 2. Exchange rate update effect
     effect(() => {
       const assets = this.assetStore.assets();
       const baseCurr = this.settingsStore.baseCurrency();
@@ -74,7 +72,6 @@ export class DashboardComponent implements OnInit {
       const timestamps = this.rateStore.rateTimestamps();
       const now = Date.now();
 
-      // Only check currencies that are actually in the portfolio and different from base currency
       const foreignCurrencies = new Set(
         assets.map((a) => a.currency).filter((curr) => curr !== baseCurr),
       );
@@ -85,7 +82,6 @@ export class DashboardComponent implements OnInit {
         const isStale = !lastUpdate || now - lastUpdate > this.RATE_CACHE_DURATION;
 
         if (isStale) {
-          console.log(`[Dashboard] Updating rate for ${currency} to ${baseCurr}...`);
           this.rateStore.loadRate({ fromCurr: currency, toCurr: baseCurr });
         }
       });
@@ -97,43 +93,71 @@ export class DashboardComponent implements OnInit {
     this.assetStore.loadAssets();
   }
 
-  // 3. Complex calculation logic
   readonly assetsWithMarketValue = computed(() => {
     const assets = this.assetStore.activeAssets();
     const prices = this.marketStore.priceMap();
     const rates = this.rateStore.rateMap();
     const baseCurr = this.settingsStore.baseCurrency();
+    const showOriginal = this.settingsStore.showOriginalCurrency();
 
     return assets.map((asset) => {
       let marketPrice = 0;
-      let marketValue = asset.quantity; 
+      let nativeMarketValue = 0;
+      let baseMarketValue = 0;
+      let unrealizedPnl = 0;
+      let returnRate = 0;
       
       const isBaseCurrency = asset.currency === baseCurr;
       const exchangeRate = isBaseCurrency ? 1.0 : (rates[`${asset.currency}-${baseCurr}`] || 1.0);
-      const isMarketAsset = asset.asset_type !== AssetType.CASH && asset.symbol;
+      
+      // 區分是「現金型」還是「市場型」資產
+      const isCashLike = asset.asset_type === AssetType.CASH || 
+                         asset.asset_type === AssetType.PENDING || 
+                         asset.asset_type === AssetType.LIABILITY ||
+                         asset.asset_type === AssetType.CREDIT_CARD;
 
-      if (isMarketAsset) {
-        const stockData = prices[asset.symbol!];
-        marketPrice = stockData?.price || 0;
+      if (isCashLike) {
+        // 💵 【現金型邏輯】：追蹤「本位幣匯差」
+        // 你的設計：book_value 是台幣總成本 (e.g. 31000)
+        nativeMarketValue = asset.quantity; 
+        baseMarketValue = nativeMarketValue * exchangeRate; 
+
+        const costInBase = asset.book_value; 
+        unrealizedPnl = baseMarketValue - costInBase; // 賺賠多少台幣匯差
+        returnRate = costInBase !== 0 ? (unrealizedPnl / Math.abs(costInBase)) * 100 : 0;
+
+      } else {
+        // 📈 【市場型邏輯 (股票/加密貨幣)】：單純追蹤「原幣漲幅」
+        // 你的設計：book_value 是原幣總成本 (e.g. 6050)
+        if (asset.symbol) {
+          const stockData = prices[asset.symbol];
+          marketPrice = stockData?.price || 0;
+        }
 
         if (marketPrice > 0) {
-          marketValue = asset.quantity * marketPrice;
+          nativeMarketValue = asset.quantity * marketPrice;
+        } else {
+          nativeMarketValue = asset.book_value; // 沒股價時顯示購買成本
         }
+        
+        baseMarketValue = nativeMarketValue * exchangeRate;
+
+        const costInNative = asset.book_value; 
+        unrealizedPnl = nativeMarketValue - costInNative; // 賺賠多少美元
+        returnRate = costInNative !== 0 ? (unrealizedPnl / Math.abs(costInNative)) * 100 : 0;
       }
 
-      const costInBase = asset.book_value; 
-      
-      const marketValueInBase = marketValue * exchangeRate; 
-
-      const unrealizedPnl = marketValueInBase - costInBase;
-      const returnRate = costInBase !== 0 ? (unrealizedPnl / Math.abs(costInBase)) * 100 : 0;
+      // 最終交給小卡的顯示字串與數字 (這點我們剛重構得很棒，不用改)
+      const displayCurrency = showOriginal ? asset.currency : baseCurr;
+      const displayAmount = showOriginal ? nativeMarketValue : baseMarketValue;
 
       return {
         ...asset,
         marketPrice,
-        marketValue,
-        // 保留 marketValueTwd 這個名字，避免子元件 (TotalWealthCard) 報錯
-        marketValueTwd: marketValueInBase, 
+        nativeMarketValue,
+        baseMarketValue,
+        displayCurrency,
+        displayAmount,
         exchangeRate,
         unrealizedPnl,
         returnRate,
@@ -144,7 +168,7 @@ export class DashboardComponent implements OnInit {
   readonly totalWealth = computed(() => {
     return this.assetsWithMarketValue()
       .filter((a) => a.include_in_net_worth)
-      .reduce((sum, a) => sum + a.marketValueTwd, 0);
+      .reduce((sum, a) => sum + a.baseMarketValue, 0);
   });
 
   private initThemeVariables() {

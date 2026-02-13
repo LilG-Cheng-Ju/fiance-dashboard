@@ -63,7 +63,6 @@ export class SimpleAssetFormComponent {
 
   form: FormGroup;
   
-  // 🔥 升級：監聽整個 Form 的 valueChanges，保證 100% 響應式
   formValues: Signal<any>;
 
   currentCurrency = computed(() => this.formValues()?.currency || this.settingsStore.baseCurrency());
@@ -97,7 +96,6 @@ export class SimpleAssetFormComponent {
     return Math.round(amt * rate);
   });
 
-  // 🔥 隱含匯率修正：現在絕對會即時跳出來！
   impliedExchangeRate = computed(() => {
     const sourceAmt = this.sourceAmountValue();
     const targetAmt = this.amountValue();
@@ -108,7 +106,6 @@ export class SimpleAssetFormComponent {
 
     const sourceAsset = this.fundingSources().find(a => a.id == sourceId);
     
-    // 如果同幣別互轉，不顯示隱含匯率
     if (!sourceAsset || sourceAsset.currency === targetCurr) {
         return null; 
     }
@@ -139,23 +136,19 @@ export class SimpleAssetFormComponent {
       source_amount: [null]    
     });
 
-    // 建立表單的全局 Signal
     this.formValues = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)), { initialValue: this.form.value });
 
-    // 1. Fetch Target Rates & 清空輸入框
     effect(() => {
       const curr = this.currentCurrency();
       const base = this.settingsStore.baseCurrency();
       if (curr && curr !== base) {
         this.rateStore.loadRate({ fromCurr: curr, toCurr: base });
-        // 為了避免無限迴圈，這裡保留 emitEvent: false，因為我們只希望改動 UI 不希望再次觸發計算
         this.form.patchValue({ exchange_rate: null }, { emitEvent: false });
       } else if (curr === base) {
         this.form.patchValue({ exchange_rate: 1.0 }, { emitEvent: false });
       }
     });
 
-    // 2. Fetch Source Rates
     effect(() => {
       const sourceId = this.selectedSourceId();
       const base = this.settingsStore.baseCurrency();
@@ -167,7 +160,6 @@ export class SimpleAssetFormComponent {
       }
     });
 
-    // 3. Sync Defaults
     effect(() => {
       const cfg = this.config();
       const control = this.form.get('include_in_net_worth');
@@ -176,7 +168,6 @@ export class SimpleAssetFormComponent {
       }
     });
 
-    // 4. 計算扣款金額 Default Value
     effect(() => {
       const sourceId = this.selectedSourceId();
       const amount = this.amountValue() || 0;
@@ -201,8 +192,6 @@ export class SimpleAssetFormComponent {
                     calculatedSourceAmount = valueInBase / sourceToBaseRate;
                 }
             }
-            // 🔥 移除 emitEvent: false，讓它觸發 valueChanges，保證隱含匯率一定會顯示！
-            // 但因為我們使用 valueChanges 的特性，如果數值沒有變就不會引發無窮迴圈
             const currentSourceAmt = this.form.get('source_amount')?.value;
             const newSourceAmt = Math.round(calculatedSourceAmount);
             if (currentSourceAmt !== newSourceAmt) {
@@ -265,7 +254,7 @@ export class SimpleAssetFormComponent {
       name: val.name,
       asset_type: this.assetType() as AssetType,
       currency: val.currency,
-      initial_quantity: val.amount * multiplier, // 這裡傳 1000 過去，後端請務必不要亂乘！
+      initial_quantity: val.amount * multiplier,
       initial_total_cost: finalTotalCost * multiplier,
       source_asset_id: val.source_asset_id,
       source_amount: val.source_amount,
