@@ -1,0 +1,68 @@
+<div class="settings-card">
+  
+  <header class="header">
+    <h3>系統設定</h3>
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <form [formGroup]="form" class="settings-body">
+    
+    <section class="settings-section">
+      <h4 class="section-title">財務與記帳</h4>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>本位幣</label>
+          <span class="desc">總資產與預設記帳的幣別</span>
+        </div>
+        <select formControlName="baseCurrency" class="currency-select">
+          @for (c of rateStore.currencies(); track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>原幣顯示</label>
+          <span class="desc">資產顯示外幣原值，關閉則統一折合本位幣</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" formControlName="showOriginalCurrency">
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <label>自動套用匯率</label>
+          <span class="desc">新增資產時，自動填入當前參考匯率</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" formControlName="autoFillExchangeRate">
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h4 class="section-title">外觀</h4>
+
+      <div class="setting-item disabled-item">
+        <div class="setting-info">
+          <label class="with-badge">
+            深色模式
+            <span class="badge coming-soon">coming soon</span>
+          </label>
+        </div>
+        <label class="switch disabled">
+          <input type="checkbox" disabled>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </section>
+
+  </form>
+</div>

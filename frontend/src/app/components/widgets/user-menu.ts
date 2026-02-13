@@ -1,6 +1,8 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserProfile } from '../../core/models/user.model';
+import { ModalService } from '../../core/services/modal.service';
+import { SettingsModalComponent } from '../modals/settings-modal';
 
 @Component({
   selector: 'app-user-menu',
@@ -10,10 +12,11 @@ import { UserProfile } from '../../core/models/user.model';
   styleUrls: ['./user-menu.scss'],
 })
 export class UserMenuComponent {
+  private modalService = inject(ModalService);
+
   user = input<UserProfile | null>(null);
 
   logout = output<void>();
-  settings = output<void>();
 
   isOpen = signal(false);
 
@@ -37,7 +40,7 @@ export class UserMenuComponent {
   }
 
   onSettings() {
-    this.settings.emit();
+    this.modalService.open(SettingsModalComponent);
     this.closeMenu();
   }
 }

@@ -14,7 +14,6 @@ export class MobileNavComponent {
   user = input<UserProfile | null>(null);
 
   logout = output<void>();
-  settings = output<void>();
   // Event emitter for the FAB button
   readonly addAsset = output<void>();
 

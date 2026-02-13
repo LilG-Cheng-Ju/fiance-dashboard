@@ -15,7 +15,6 @@ export class DesktopHeaderComponent {
 
   readonly addAsset = output<void>();
   logout = output<void>();
-  settings = output<void>();
 
   onAddClick() {
     this.addAsset.emit();
