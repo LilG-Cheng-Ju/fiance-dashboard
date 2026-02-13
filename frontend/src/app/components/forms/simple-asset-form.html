@@ -1,11 +1,7 @@
 <div class="form-card">
   
-  <header 
-    class="header" 
-    [style.background-color]="'rgba(' + themeColor() + ', 0.1)'">
-    
+  <header class="header" [style.background-color]="'rgba(' + themeColor() + ', 0.1)'">
     <h3 [style.color]="'rgb(' + themeColor() + ')'">{{ config().title }}</h3>
-    
     <button class="close-btn" (click)="close()">
       <span class="material-symbols-rounded">close</span>
     </button>
@@ -18,7 +14,6 @@
         <label>名稱</label>
         <input type="text" formControlName="name" [placeholder]="'e.g. ' + config().name_example">
       </div>
-      
       <div class="field group-currency">
         <label>幣別</label>
         <select formControlName="currency">
@@ -31,85 +26,76 @@
 
     <div class="field">
       <label>{{ config().amountLabel }}</label>
-      
       <div class="amount-row">
         <input 
-          type="number" 
-          formControlName="amount" 
-          placeholder="0.00"
-          [class.text-danger]="config().isLiability"
-          [class.text-success]="!config().isLiability">
-        
+          type="number" formControlName="amount" placeholder="0.00"
+          [class.text-danger]="config().isLiability" [class.text-success]="!config().isLiability">
         @if (assetType() === 'PENDING') {
           <div class="segmented-control">
-            <button 
-              type="button"
-              [class.active]="pendingDirection() === 'RECEIVABLE'"
-              (click)="setPendingDirection('RECEIVABLE')">
-              應收
-            </button>
-            <button 
-              type="button"
-              [class.active]="pendingDirection() === 'PAYABLE'"
-              (click)="setPendingDirection('PAYABLE')">
-              應付
-            </button>
+            <button type="button" [class.active]="pendingDirection() === 'RECEIVABLE'" (click)="setPendingDirection('RECEIVABLE')">應收</button>
+            <button type="button" [class.active]="pendingDirection() === 'PAYABLE'" (click)="setPendingDirection('PAYABLE')">應付</button>
           </div>
         }
       </div>
-
       @if (config().isLiability && assetType() !== 'PENDING') {
         <span class="hint">請輸入正數金額，系統將自動記錄為負債。</span>
       }
     </div>
 
+    @if (!config().isLiability && assetType() !== 'PENDING') {
+        <div class="field group-source">
+            <label>資金來源</label>
+            <select formControlName="source_asset_id">
+                <option [ngValue]="null">-- 無 (獨立新增) --</option>
+                @for (source of fundingSources(); track source.id) {
+                    <option [value]="source.id">{{ source.name }} ({{ source.currency }})</option>
+                }
+            </select>
+        </div>
+    }
+
     @if (showExchangeRate()) {
       <div class="field highlight-bg">
-        <label>匯率 (to TWD)</label>
+        <label>估值匯率 (to {{ settingsStore.baseCurrency() }})</label>
         
         <div class="input-suffix">
           <input 
             type="number" 
             formControlName="exchange_rate" 
-            step="0.01"
+            step="0.01" 
             (focus)="onRateFocus()"
-            [placeholder]="referenceRate() ? '參考匯率: ' + referenceRate() : '請輸入匯率'">
-          <span>TWD</span>
+            [placeholder]="referenceRate() ? '參考: ' + referenceRate() : '請輸入匯率'">
+          <span>{{ settingsStore.baseCurrency() }}</span>
         </div>
 
-        @if (!selectedSourceId()) {
-            <div class="calc-result">
-              <span class="label">約 $</span>
-              <span class="value">
-                {{ estimatedCost() | number:'1.0-0' }} 
-                <small>TWD</small>
-              </span>
-            </div>
-        }
+        <div class="calc-result">
+            <span class="label">成本預估 $</span>
+            <span class="value">
+              {{ estimatedCost() | number:'1.0-0' }} 
+              <small>{{ settingsStore.baseCurrency() }}</small>
+            </span>
+        </div>
       </div>
     }
 
-    @if (!config().isLiability && assetType() !== 'PENDING') {
-        <div class="row">
-            <div class="field group-source">
-                <label>資金來源</label>
-                <select formControlName="source_asset_id">
-                    <option [ngValue]="null">-- 無 --</option>
-                    @for (source of fundingSources(); track source.id) {
-                        <option [value]="source.id">
-                            {{ source.name }} ({{ source.currency }})
-                        </option>
-                    }
-                </select>
-            </div>
-
-            @if (selectedSourceId()) {
-                <div class="field group-deduct">
-                    <label>扣款金額</label>
-                    <input type="number" formControlName="source_amount">
-                </div>
-            }
+    @if (selectedSourceId()) {
+      <div class="field highlight-bg">
+        <label>實際扣款金額 (含手續費)</label>
+        <div class="input-suffix">
+          <input type="number" formControlName="source_amount">
+          <span>{{ selectedSourceCurrency() }}</span>
         </div>
+
+        @if (impliedExchangeRate()) {
+            <div class="calc-result">
+                <span class="label">銀行換匯成本</span>
+                <span class="value">
+                  {{ impliedExchangeRate() | number:'1.2-4' }}
+                  <small>{{ selectedSourceCurrency() }}</small>
+                </span>
+            </div>
+        }
+      </div>
     }
 
     <div class="row">
@@ -117,16 +103,12 @@
         <label>日期</label>
         <input type="date" formControlName="date">
       </div>
-
       <div class="field toggle-field">
         <label>計入總資產</label>
         <div class="switch-wrapper">
           <label class="switch">
             <input type="checkbox" formControlName="include_in_net_worth">
-            <span 
-              class="slider round" 
-              [style.background-color]="form.get('include_in_net_worth')?.value ? 'rgb(' + themeColor() + ')' : '#cbd5e1'">
-            </span>
+            <span class="slider round" [style.background-color]="form.get('include_in_net_worth')?.value ? 'rgb(' + themeColor() + ')' : 'var(--border-light)'"></span>
           </label>
         </div>
       </div>
@@ -139,14 +121,7 @@
 
     <div class="actions">
       <button type="button" class="btn-cancel" (click)="close()">取消</button>
-      <button 
-        type="submit" 
-        class="btn-submit" 
-        [disabled]="form.invalid"
-        [style.background-color]="'rgb(' + themeColor() + ')'">
-        確認新增
-      </button>
+      <button type="submit" class="btn-submit" [disabled]="form.invalid" [style.background-color]="'rgb(' + themeColor() + ')'">確認新增</button>
     </div>
-
   </form>
 </div>

@@ -13,6 +13,7 @@ import { AuthStore } from '../../core/store/auth.store';
 import { AssetStore } from '../../core/store/asset.store';
 import { MarketStore } from '../../core/store/market.store';
 import { RateStore } from '../../core/store/exchange_rate.store';
+import { SettingsStore } from '../../core/store/settings.store';
 import { AssetType } from '../../core/models/asset.model';
 import { ASSET_CONFIG } from '../../core/config/asset.config';
 
@@ -38,6 +39,7 @@ export class DashboardComponent implements OnInit {
   readonly rateStore = inject(RateStore);
   readonly authStore = inject(AuthStore);
   readonly modalService = inject(ModalService);
+  readonly settingsStore = inject(SettingsStore); // 🔥 注入 SettingsStore
 
   private readonly RATE_CACHE_DURATION = 30 * 60 * 1000;
 
@@ -57,7 +59,7 @@ export class DashboardComponent implements OnInit {
         )
         .map((a) => ({
           ticker: a.symbol!,
-          region: a.currency === 'USD' ? 'US' : 'TW',
+          region: a.currency === 'USD' ? 'US' : 'TW', 
         }));
 
       this.marketStore.startTracking(symbolsToTrack);
@@ -66,23 +68,25 @@ export class DashboardComponent implements OnInit {
     // 2. Exchange rate update effect
     effect(() => {
       const assets = this.assetStore.assets();
+      const baseCurr = this.settingsStore.baseCurrency();
       if (assets.length === 0) return;
 
       const timestamps = this.rateStore.rateTimestamps();
       const now = Date.now();
 
+      // Only check currencies that are actually in the portfolio and different from base currency
       const foreignCurrencies = new Set(
-        assets.map((a) => a.currency).filter((curr) => curr !== 'TWD'),
+        assets.map((a) => a.currency).filter((curr) => curr !== baseCurr),
       );
 
       foreignCurrencies.forEach((currency) => {
-        const rateKey = `${currency}-TWD`;
+        const rateKey = `${currency}-${baseCurr}`;
         const lastUpdate = timestamps[rateKey];
         const isStale = !lastUpdate || now - lastUpdate > this.RATE_CACHE_DURATION;
 
         if (isStale) {
-          console.log(`[Dashboard] Updating rate for ${currency}...`);
-          this.rateStore.loadRate({ fromCurr: currency, toCurr: 'TWD' });
+          console.log(`[Dashboard] Updating rate for ${currency} to ${baseCurr}...`);
+          this.rateStore.loadRate({ fromCurr: currency, toCurr: baseCurr });
         }
       });
     });
@@ -90,7 +94,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.initThemeVariables();
-    // Only load assets if not already loaded (optional optimization)
     this.assetStore.loadAssets();
   }
 
@@ -99,11 +102,14 @@ export class DashboardComponent implements OnInit {
     const assets = this.assetStore.activeAssets();
     const prices = this.marketStore.priceMap();
     const rates = this.rateStore.rateMap();
+    const baseCurr = this.settingsStore.baseCurrency();
 
     return assets.map((asset) => {
       let marketPrice = 0;
-      let marketValue = asset.book_value;
-      const exchangeRate = rates[`${asset.currency}-TWD`] || 1;
+      let marketValue = asset.quantity; 
+      
+      const isBaseCurrency = asset.currency === baseCurr;
+      const exchangeRate = isBaseCurrency ? 1.0 : (rates[`${asset.currency}-${baseCurr}`] || 1.0);
       const isMarketAsset = asset.asset_type !== AssetType.CASH && asset.symbol;
 
       if (isMarketAsset) {
@@ -113,20 +119,21 @@ export class DashboardComponent implements OnInit {
         if (marketPrice > 0) {
           marketValue = asset.quantity * marketPrice;
         }
-      } else if (asset.asset_type === AssetType.CASH) {
-        marketValue = asset.quantity;
       }
 
-      const marketValueTwd = marketValue * exchangeRate;
-      const costTwd = asset.book_value * exchangeRate;
-      const unrealizedPnl = marketValueTwd - costTwd;
-      const returnRate = costTwd > 0 ? (unrealizedPnl / costTwd) * 100 : 0;
+      const costInBase = asset.book_value; 
+      
+      const marketValueInBase = marketValue * exchangeRate; 
+
+      const unrealizedPnl = marketValueInBase - costInBase;
+      const returnRate = costInBase !== 0 ? (unrealizedPnl / Math.abs(costInBase)) * 100 : 0;
 
       return {
         ...asset,
         marketPrice,
         marketValue,
-        marketValueTwd,
+        // 保留 marketValueTwd 這個名字，避免子元件 (TotalWealthCard) 報錯
+        marketValueTwd: marketValueInBase, 
         exchangeRate,
         unrealizedPnl,
         returnRate,

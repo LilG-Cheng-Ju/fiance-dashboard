@@ -40,14 +40,13 @@ class AssetService:
                 models.AssetType.PENDING, 
                 models.AssetType.CREDIT_CARD
             ]:
-                final_quantity = asset_in.initial_total_cost
-                final_avg_cost = 1.0
-                final_current_value = asset_in.initial_total_cost
-            else:
-                # For STOCK/GOLD, use user input. Avoid division by zero.
                 final_quantity = asset_in.initial_quantity
                 final_current_value = asset_in.initial_total_cost
-                final_avg_cost = (final_current_value / final_quantity) if final_quantity != 0 else 0.0
+                
+                if final_quantity != 0:
+                    final_avg_cost = final_current_value / final_quantity
+                else:
+                    final_avg_cost = 1.0
 
             # 2. Prepare Source Transaction (Funding Logic)
             related_tx_id = None

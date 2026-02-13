@@ -1,18 +1,12 @@
-// Variables
-$bg-color: #ffffff;
-$text-primary: #1e293b;
-$text-secondary: #64748b;
-$text-hint: #94a3b8;
-$border-color: #cbd5e1;
-$primary-blue: #3b82f6;
+@use '../../../assets/styles/theme';
 
 .form-card {
-  background: $bg-color;
+  background: var(--bg-card);
   width: 90vw;
   max-width: 420px;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(15, 40, 78, 0.15);
   display: flex;
   flex-direction: column;
   animation: fadeIn 0.2s ease-out;
@@ -34,7 +28,7 @@ $primary-blue: #3b82f6;
     background: transparent;
     border: none;
     cursor: pointer;
-    color: $text-secondary;
+    color: var(--text-sub);
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -58,11 +52,8 @@ $primary-blue: #3b82f6;
   display: flex;
   gap: 16px;
   
-  // Flex ratios for specific layout needs
   .group-name { flex: 2; }
   .group-currency { flex: 1; }
-  
-  // For Source & Deduct row
   .group-source { flex: 2; }
   .group-deduct { flex: 1.2; }
 }
@@ -75,37 +66,35 @@ $primary-blue: #3b82f6;
   label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #475569;
+    color: var(--text-sub);
   }
 
-  // Shared styles for inputs
   input, select {
     padding: 12px 14px;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-light);
     border-radius: 12px;
     font-size: 1rem;
-    color: $text-primary;
+    color: var(--text-main);
     outline: none;
     transition: all 0.2s;
-    background: #fff;
-    width: 100%; // Ensure full width within flex container
+    background: var(--bg-card);
+    width: 100%; 
 
     &:focus {
-      border-color: $primary-blue;
-      box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 40, 78, 0.1); 
     }
     
-    // Disabled state for auto-calculated fields
     &:disabled {
-        background-color: #f1f5f9;
-        color: $text-secondary;
+        background-color: var(--color-slate-100);
+        color: var(--text-sub);
         cursor: not-allowed;
     }
   }
 
   .hint {
     font-size: 0.75rem;
-    color: $text-hint;
+    color: var(--color-slate-500);
   }
 }
 
@@ -148,7 +137,7 @@ $primary-blue: #3b82f6;
 
 .segmented-control {
   display: flex;
-  background-color: #f1f5f9;
+  background-color: var(--color-slate-100);
   padding: 4px;
   border-radius: 12px;
   height: 46px; 
@@ -161,24 +150,25 @@ $primary-blue: #3b82f6;
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
-    color: $text-secondary;
+    color: var(--text-sub);
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
 
     &.active {
-      background-color: #ffffff;
-      color: #0f172a;
+      background-color: var(--bg-card);
+      color: var(--text-main);
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
   }
 }
 
 .highlight-bg {
-  background-color: #f8fafc;
+  background-color: var(--bg-main);
   padding: 16px;
   border-radius: 12px;
-  border: 1px dashed $border-color;
+  border: 1px dashed var(--border-light);
+  margin-top: 8px;
 }
 
 .input-suffix {
@@ -190,7 +180,7 @@ $primary-blue: #3b82f6;
   span {
     position: absolute;
     right: 14px;
-    color: $text-hint;
+    color: var(--color-slate-500);
     font-weight: 600;
     font-size: 0.85rem;
   }
@@ -207,18 +197,18 @@ $primary-blue: #3b82f6;
 
   .label { 
     font-size: 0.85rem; 
-    color: $text-secondary; 
+    color: var(--text-sub); 
     font-weight: 500;
   }
   
   .value { 
     font-size: 1.05rem; 
     font-weight: 700; 
-    color: $text-primary; 
+    color: var(--text-main); 
     
     small { 
       font-size: 0.75rem; 
-      color: $text-hint; 
+      color: var(--color-slate-500); 
       margin-left: 4px; 
       font-weight: 600;
     }
@@ -232,7 +222,6 @@ $primary-blue: #3b82f6;
   gap: 12px;
 }
 
-/* The Switch Component */
 .switch {
   position: relative;
   display: inline-block;
@@ -246,7 +235,7 @@ $primary-blue: #3b82f6;
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: $border-color;
+    background-color: var(--border-light);
     transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
     border-radius: 24px;
 
@@ -257,7 +246,7 @@ $primary-blue: #3b82f6;
       width: 18px;
       left: 3px;
       bottom: 3px;
-      background-color: white;
+      background-color: var(--color-white);
       transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
       border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -288,15 +277,15 @@ $primary-blue: #3b82f6;
   }
 
   .btn-cancel {
-    background-color: #f1f5f9;
-    color: $text-secondary;
-    &:hover { background-color: #e2e8f0; }
+    background-color: var(--color-slate-100);
+    color: var(--text-sub);
+    &:hover { background-color: var(--border-light); }
   }
 
   .btn-submit {
-    color: #ffffff;
+    color: var(--color-white);
     &:disabled {
-      background-color: $border-color !important;
+      background-color: var(--border-light) !important;
       cursor: not-allowed;
       opacity: 0.7;
     }
