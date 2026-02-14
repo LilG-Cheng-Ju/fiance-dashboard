@@ -1,0 +1,145 @@
+<div class="form-card">
+  
+  <header class="header" [style.background-color]="'rgba(' + themeColor() + ', 0.1)'">
+    <h3 [style.color]="'rgb(' + themeColor() + ')'">{{ config().title }}</h3>
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-body">
+    
+    <div class="row">
+      <div class="field group-name">
+        <label>名稱</label>
+        <input type="text" formControlName="name" [placeholder]="'e.g. ' + config().nameExample">
+      </div>
+    </div>
+
+    <div class="row">
+      @if (assetType() === 'STOCK') {
+        <div class="field" style="flex: 1.5;">
+          <label>市場</label>
+          <select formControlName="region">
+            <option value="TW">台股 (TW)</option>
+            <option value="US">美股 (US)</option>
+            <option value="JP">日股 (JP)</option>
+            <option value="FUND_TW">境內基金</option>
+            <option value="FUND_GLOBAL">境外基金</option>
+          </select>
+        </div>
+      }
+
+      @if (assetType() !== 'GOLD') {
+        <div class="field" style="flex: 1;">
+          <label>代號</label>
+          <input type="text" formControlName="symbol" style="text-transform: uppercase;">
+        </div>
+        <div class="field" style="flex: 1;">
+          <label>計價幣別</label>
+          <select formControlName="currency" 
+                  [style.pointer-events]="isCurrencyLocked() ? 'none' : 'auto'" 
+                  [style.opacity]="isCurrencyLocked() ? '0.6' : '1'">
+            @for (c of rateStore.currencies(); track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+    <div class="math-grid">
+      <div class="math-left">
+        <div class="field">
+          <label>交易數量</label>
+          @if (assetType() === 'GOLD') {
+            <div class="input-combined">
+              <input type="number" formControlName="quantity" placeholder="0" step="0.000001">
+              <select formControlName="gold_unit">
+                <option value="gram">克</option>
+                <option value="oz">盎司</option>
+              </select>
+            </div>
+          } @else {
+            <input type="number" formControlName="quantity" placeholder="0" step="0.000001">
+          }
+        </div>
+        
+        <div class="field">
+          <label>買入單價</label>
+          <input type="number" formControlName="price" step="0.000001"
+                 (focus)="onPriceFocus()"
+                 [placeholder]="referencePrice() ? '參考: ' + referencePrice() : '0.00'">
+        </div>
+      </div>
+
+      <div class="math-right highlight-bg" style="padding: 16px; border-radius: 12px;">
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-bottom: 8px;">資產總額</label>
+        <div style="display: flex; align-items: baseline; gap: 4px;">
+          <input type="number" formControlName="total_native_cost" placeholder="0.00" step="0.01" style="width: 100%; background: transparent; border: none; font-weight: bold; font-size: 1.25rem; padding: 0; color: var(--text-main);">
+          <span style="font-size: 0.85rem; opacity: 0.7; font-weight: 600;">{{ currentCurrency() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 4px;">
+      <div class="field" style="flex: 1;">
+        <label>資金來源 (扣款帳戶)</label>
+        <select formControlName="source_asset_id" (change)="onSourceAssetChange()">
+          <option [ngValue]="null">-- 無 (獨立新增) --</option>
+          @for (source of fundingSources(); track source.id) {
+            <option [value]="source.id">{{ source.name }} ({{ source.currency }})</option>
+          }
+        </select>
+      </div>
+
+      @if (selectedSourceId()) {
+        <div class="field" style="flex: 1;">
+          <label>實際扣款金額</label>
+          <div class="input-suffix">
+            <input type="number" formControlName="source_amount">
+            <span>{{ selectedSourceCurrency() }}</span>
+          </div>
+        </div>
+      } @else {
+        <div style="flex: 1;"></div>
+      }
+    </div>
+
+    @if (selectedSourceId() && impliedExchangeRate()) {
+      <div class="calc-result" style="margin-top: -8px;">
+        <span class="label">銀行換匯/手續成本</span>
+        <span class="value" style="color: var(--theme-danger);">
+          {{ impliedExchangeRate() | number:'1.2-4' }}
+          <small>{{ selectedSourceCurrency() }}</small>
+        </span>
+      </div>
+    }
+
+    <div class="row">
+      <div class="field group-name">
+        <label>日期</label>
+        <input type="date" formControlName="date">
+      </div>
+      <div class="field group-currency toggle-field">
+        <label>計入總資產</label>
+        <div class="switch-wrapper">
+          <label class="switch">
+            <input type="checkbox" formControlName="include_in_net_worth">
+            <span class="slider round" [style.background-color]="form.get('include_in_net_worth')?.value ? 'rgb(' + themeColor() + ')' : 'var(--border-light)'"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>備註 (選填)</label>
+      <input type="text" formControlName="note" placeholder="寫點備註...">
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-cancel" (click)="close()">取消</button>
+      <button type="submit" class="btn-submit" [disabled]="form.invalid" [style.background-color]="'rgb(' + themeColor() + ')'">確認新增</button>
+    </div>
+  </form>
+</div>
