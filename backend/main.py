@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src import database, models
 from src.api import assets, market, transactions
+from src.config import firebase
 
 models.Base.metadata.create_all(bind=database.engine)
 

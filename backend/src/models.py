@@ -37,6 +37,8 @@ class Asset(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+
+    user_id = Column(String, nullable=False, index=True)
     
     asset_type = Column(Enum(AssetType), nullable=False)
     
