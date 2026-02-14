@@ -1,0 +1,15 @@
+<span 
+  class="icon-wrapper" 
+  (touchstart)="onTouchStart()"
+  (mouseenter)="onMouseEnter()" 
+  (mouseleave)="onMouseLeave()"
+  (click)="onClick($event)"
+>
+  <span class="material-symbols-rounded">info</span>
+</span>
+
+@if (isOpen()) {
+  <div class="tooltip-box" [ngClass]="activePlacement()">
+    {{ text() }}
+  </div>
+}

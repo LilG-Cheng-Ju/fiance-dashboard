@@ -11,6 +11,7 @@ import { AssetCreate, AssetType } from '../../core/models/asset.model';
 import { RateStore } from '../../core/store/exchange_rate.store';
 import { getLocalISODate } from '../../core/helpers/date.helper';
 import { SettingsStore } from '../../core/store/settings.store';
+import { InfoTooltipComponent } from '../widgets/info-tooltip';
 
 interface FormConfig {
   title: string;
@@ -27,7 +28,7 @@ export interface SimpleAssetFormData {
 @Component({
   selector: 'app-simple-asset-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InfoTooltipComponent],
   templateUrl: './simple-asset-form.html',
   styleUrls: ['./simple-asset-form.scss']
 })

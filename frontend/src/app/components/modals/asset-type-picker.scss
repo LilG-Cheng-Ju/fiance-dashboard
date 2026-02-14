@@ -1,14 +1,16 @@
+@use '../../../assets/styles/theme';
+
 :host {
   display: block;
-  width: 100vw;
+  width: 90vw;
   max-width: 420px;
 }
 
 .picker-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(15, 40, 78, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -24,13 +26,13 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-main);
   }
 
   .close-btn {
     background: transparent;
     border: none;
-    color: #64748b;
+    color: var(--text-sub);
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -41,8 +43,8 @@
     transition: background 0.2s;
 
     &:hover {
-      background-color: #f1f5f9;
-      color: #0f172a;
+      background-color: var(--color-slate-100);
+      color: var(--text-main);
     }
 
     span {
@@ -58,7 +60,6 @@
 }
 
 .option-btn {
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,8 +67,8 @@
   gap: 12px;
   padding: 20px 16px;
 
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
 
   cursor: pointer;
@@ -82,8 +83,8 @@
     align-items: center;
     justify-content: center;
 
-    background-color: #f1f5f9;
-    color: #64748b;
+    background-color: var(--color-slate-100);
+    color: var(--text-sub);
     transition: all 0.2s;
 
     span {
@@ -94,14 +95,13 @@
   .label {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #475569;
+    color: var(--text-sub);
     transition: color 0.2s;
   }
 
-
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(15, 40, 78, 0.08);
 
     background-color: rgba(var(--theme-rgb), 0.04);
     border-color: rgba(var(--theme-rgb), 0.3);

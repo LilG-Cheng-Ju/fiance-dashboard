@@ -14,6 +14,7 @@ import { MarketService } from '../../core/services/market.service';
 import { getLocalISODate } from '../../core/helpers/date.helper';
 import { SettingsStore } from '../../core/store/settings.store';
 import { SimpleAssetFormData } from './simple-asset-form';
+import { InfoTooltipComponent } from '../widgets/info-tooltip';
 
 interface MarketFormConfig {
   title: string;
@@ -23,7 +24,7 @@ interface MarketFormConfig {
 @Component({
   selector: 'app-market-asset-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, InfoTooltipComponent],
   templateUrl: './market-asset-form.html',
   styleUrls: ['./simple-asset-form.scss']
 })

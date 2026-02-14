@@ -84,7 +84,13 @@
 
     <div class="row" style="margin-top: 4px;">
       <div class="field" style="flex: 1;">
-        <label>資金來源 (扣款帳戶)</label>
+        <label>
+          資金來源 (扣款帳戶)
+          <app-info-tooltip 
+            text="購買此資產的扣款來源。系統會自動扣除該帳戶餘額，並作為計算報酬率的基準。"
+            placement="top">
+          </app-info-tooltip>
+        </label>
         <select formControlName="source_asset_id" (change)="onSourceAssetChange()">
           <option [ngValue]="null">-- 無 (獨立新增) --</option>
           @for (source of fundingSources(); track source.id) {
@@ -122,7 +128,13 @@
         <input type="date" formControlName="date">
       </div>
       <div class="field group-currency toggle-field">
-        <label>計入總資產</label>
+        <label>
+          計入總資產
+          <app-info-tooltip 
+            text="如果啟用，此資產將被計入總資產淨值中。"
+            placement="top-left">
+          </app-info-tooltip>
+        </label>
         <div class="switch-wrapper">
           <label class="switch">
             <input type="checkbox" formControlName="include_in_net_worth">
