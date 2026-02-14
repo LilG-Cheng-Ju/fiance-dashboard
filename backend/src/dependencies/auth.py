@@ -1,5 +1,3 @@
-# src/core/auth.py
-
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth
