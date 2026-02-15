@@ -1,128 +1,188 @@
-// 變數設定 (可以之後抽出去)
-$primary-blue: #2563eb;
-$text-dark: #1e293b;
-$text-grey: #64748b;
-$bg-white: #ffffff;
+@use '../../../assets/styles/theme';
 
 :host {
   display: block;
   width: 100%;
-  height: 100%; // 確保它撐滿父容器
+  height: 100%;
 }
 
 .wealth-card {
-  position: relative; // 為了讓絕對定位的 SVG 背景參考
-  background-color: var(--bg-card, $bg-white);
-  border-radius: 24px; // ✅ 圓角回來了
-  padding: 28px; // ✅ 內容不會貼邊了 (加上足夠的內距)
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); // 極淡的陰影，營造空氣感
-  overflow: hidden; // ✅ 確保圓角裁切正常
+  position: relative;
+  background-color: var(--bg-card);
+  border-radius: 24px;
+  padding: 24px 28px;
+  
+  // 輕微陰影
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-light);
+  
+  overflow: hidden;
   height: 100%;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  // 加上一個很淡的邊框增加精緻度（使用 theme 邊框變數）
-  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.03));
 }
 
-// 內容層級要比背景高
 .content {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
+// --- Header ---
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
+  align-items: center;
+  margin-bottom: 4px;
 
   .label {
     margin: 0;
     font-size: 0.95rem;
     font-weight: 600;
-    color: $text-grey; // 標題用灰色，降低視覺干擾
+    color: var(--text-sub);
     letter-spacing: 0.5px;
-    text-transform: uppercase;
   }
 
-  .date-badge {
-    background-color: #f1f5f9; // 淺灰底
-    color: $text-grey;
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-weight: 500;
+  .refresh-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 12px;
+    transition: all 0.2s;
+    background-color: var(--color-slate-100);
+
+    &:hover {
+      background-color: var(--color-slate-200);
+      color: var(--primary); // 這裡也會變成月光藍
+    }
+
+    .icon { font-size: 16px; }
+    .update-time {
+      font-family: monospace;
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+    &.spinning .icon { animation: spin 1s linear infinite; }
   }
 }
 
+// --- Main Number (Hero) ---
 .main-number {
-  margin: 16px 0;
-  color: $text-dark;
+  margin-top: auto; 
+  margin-bottom: 24px;
+  color: var(--text-main);
+  display: flex;
+  align-items: baseline; 
+  gap: 12px; // ✅ 距離拉開
 
   .currency {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 500;
-    color: $text-grey; // 幣別符號淡一點
-    margin-right: 4px;
-    vertical-align: text-top;
+    color: var(--text-sub);
+    transform: translateY(-8px); // 幣別微調
   }
 
   .value {
-    font-size: 3rem; // 數字大一點
-    font-weight: 700; // 字體加粗
-    letter-spacing: -1px; // 數字緊湊一點比較好看
+    // 回歸舊版字體設定
+    font-size: 3.5rem; 
+    font-weight: 700;
+    letter-spacing: -1.5px;
     line-height: 1;
+    transform: translateY(-4px); // 數字微調向上
+    
+    // ✅ 套用月光藍主題色
+    color: var(--color-moonlight-blue); 
+  }
+
+  .amount-hidden {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    opacity: 0.3;
   }
 }
 
-.stats-row {
+// --- Stats Column (Secondary Info) ---
+.stats-column {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
+  flex-direction: column;
+  gap: 10px; // 增加行距
+  margin-top: auto;
+  border-top: 1px solid var(--border-light);
+  padding-top: 14px;
 
-  .stat-item {
+  .stat-row {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-weight: 600;
+    gap: 8px;
+    font-size: 1rem;
+    
+    .stat-label {
+      color: var(--text-sub);
+      font-weight: 500;
+      min-width: 100px;
+    }
 
-    &.positive {
-      color: #10b981; // 清爽的綠色
-      background-color: rgba(16, 185, 129, 0.1); // 淡淡的綠底
-      padding: 4px 8px;
-      border-radius: 8px;
+    .hidden-val {
+      color: var(--text-sub);
+      font-size: 0.9rem;
     }
   }
 
-  .separator {
-    color: #e2e8f0;
-  }
+  // ✅ 統一的 Badge 樣式 (P&L 和 Pending 共用)
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 1rem; // 字體放大
+    font-weight: 700;
+    
+    .arrow { font-size: 0.7rem; }
+    .amount { margin-right: 2px; }
+    .roi { opacity: 0.9; font-size: 0.9rem; font-weight: 500; }
 
-  .stat-info {
-    color: $text-grey;
-    font-size: 0.85rem;
+    // ✅ 你指定的顏色邏輯
+    &.positive {
+      background-color: rgba(239, 68, 68, 0.1); // 紅底
+      color: #dc2626; // 紅字
+    }
+    &.negative {
+      background-color: rgba(16, 185, 129, 0.1); // 綠底
+      color: #059669; // 綠字
+    }
   }
 }
 
-// ✅ 背景裝飾 (SVG 折線圖)
+// --- Background Decoration ---
 .chart-decoration {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 60%; // 佔下半部
-  z-index: 1; // 在內容下方
+  height: 60%;
+  z-index: 1;
   opacity: 0.8;
-  pointer-events: none; // 讓滑鼠點擊穿透
+  pointer-events: none;
 
   svg {
     width: 100%;
     height: 100%;
-    display: block; // 消除 SVG 下方空隙
+    display: block;
   }
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
 }

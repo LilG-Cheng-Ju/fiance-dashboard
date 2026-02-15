@@ -1,44 +1,75 @@
 <div class="wealth-card">
   <div class="content">
+    
     <div class="header">
-      <h3 class="label">Total Net Worth</h3>
-      <span class="date-badge">Today</span>
+      <h3 class="label">總資產淨值</h3>
+      
+      <button class="refresh-btn" (click)="onRefresh()" [class.spinning]="isRefreshing()" title="更新數據">
+        <span class="update-time">{{ lastUpdated() | date:'MM/dd HH:mm' }}</span>
+        <span class="material-symbols-rounded icon">sync</span>
+      </button>
     </div>
 
     <div class="main-number">
-      <span class="currency">NT$</span>
-      <span class="value">{{ totalAmountDisplay() | number: '1.0-0' }}</span>
+      <span class="currency">{{ baseCurrency() }}</span>
+      @if (privacyMode()) {
+        <span class="amount-hidden">****</span>
+      } @else {
+        <span class="value">{{ totalAmountDisplay() | number:'1.0-0' }}</span>
+      }
     </div>
 
-    <div class="stats-row">
-      <div class="stat-item positive">
-        <span class="icon">▲</span>
-        <span class="text"> {{ dayChange | number }} ({{ dayChangePercentage }}%) </span>
-      </div>
-      <span class="separator">|</span>
-      <div class="stat-info">vs. yesterday</div>
+    <div class="stats-column">
+      
+      @if (!privacyMode() && totalPnl() !== 0) {
+        <div class="stat-row">
+          <span class="stat-label">未實現損益：</span>
+          <div class="stat-badge" [class.positive]="totalPnl() > 0" [class.negative]="totalPnl() < 0">
+            <span class="arrow">{{ totalPnl() > 0 ? '▲' : '▼' }}</span>
+            <span class="amount">{{ totalPnl() | number:'1.0-0' }}</span>
+            <span class="roi">({{ totalRoi() | number:'1.2-2' }}%)</span>
+          </div>
+        </div>
+      } @else if (privacyMode()) {
+        <div class="stat-row neutral">
+          <span class="stat-label">未實現損益：</span>
+          <span class="hidden-val">已隱藏</span>
+        </div>
+      }
+
+      @if (netPending() !== 0) {
+        <div class="stat-row">
+          <span class="stat-label">待結清款項：</span>
+          <div class="stat-badge" [class.positive]="netPending() > 0" [class.negative]="netPending() < 0">
+            <span class="amount">
+              {{ netPending() > 0 ? '+' : '' }}{{ netPending() | number:'1.0-0' }}
+            </span>
+          </div>
+        </div>
+      }
     </div>
   </div>
 
   <div class="chart-decoration">
     <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="moonlight-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color: var(--color-moonlight-blue); stop-opacity: 0.08" />
+          <stop offset="100%" style="stop-color: var(--color-moonlight-blue); stop-opacity: 0" />
+        </linearGradient>
+      </defs>
       <path
         d="M0,80 C50,80 50,40 100,40 C150,40 150,70 200,70 C250,70 250,20 300,20"
         fill="none"
-        stroke="rgba(37, 99, 235, 0.1)"
+        stroke="var(--color-moonlight-blue)"
+        stroke-opacity="0.15"
         stroke-width="3"
       />
       <path
         d="M0,80 C50,80 50,40 100,40 C150,40 150,70 200,70 C250,70 250,20 300,20 L300,100 L0,100 Z"
-        fill="url(#gradient)"
+        fill="url(#moonlight-gradient)"
         stroke="none"
       />
-      <defs>
-        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style="stop-color: rgba(37, 99, 235, 0.05); stop-opacity: 1" />
-          <stop offset="100%" style="stop-color: rgba(37, 99, 235, 0); stop-opacity: 0" />
-        </linearGradient>
-      </defs>
     </svg>
   </div>
 </div>

@@ -3,83 +3,97 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 import { pipe, timer, of } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { switchMap, tap, filter } from 'rxjs/operators';
 
 import { MarketService } from '../services/market.service';
 import { StockPrice } from '../models/market.model';
 
-// 1. [State] 定義狀態 (MarketState)
 type MarketState = {
-  prices: Record<string, StockPrice>; // { "TSLA": { price: 175... } }
+  prices: Record<string, StockPrice>; 
+  trackingSymbols: { ticker: string; region: string }[]; 
   isLoading: boolean;
   error: any;
 };
 
 const initialState: MarketState = {
   prices: {},
+  trackingSymbols: [],
   isLoading: false,
   error: null,
 };
 
-// 常數定義 (跟 Effect 一樣)
-const FETCH_INTERVAL = 30000;
+const FETCH_INTERVAL = 120000; 
 
 export const MarketStore = signalStore(
   { providedIn: 'root' },
 
   withState(initialState),
 
-  // 2. [Selectors]
   withComputed((store) => ({
-    // 對應 selectPrices
     priceMap: computed(() => store.prices()),
-
-    // (Optional) 方便 UI 判斷是否正在追蹤任何股票
     hasPrices: computed(() => Object.keys(store.prices()).length > 0),
   })),
 
-  // 3. [Effects & Reducers]
-  withMethods((store, marketService = inject(MarketService)) => ({
-    // 這就是原本的 Effect + Action: startTracking
-    startTracking: rxMethod<{ ticker: string; region: string }[]>(
+  withMethods((store, marketService = inject(MarketService)) => {
+    
+    // 1. [Worker] The core logic for fetching prices
+    // isBackground: true = Silent update (no loading spinner)
+    const fetchPrices = rxMethod<{ symbols: { ticker: string; region: string }[]; isBackground: boolean }>(
       pipe(
-        // Step A: 收到指令，先將 isLoading 設為 true
-        tap(() => patchState(store, { isLoading: true, error: null })),
-
-        // Step B: 處理 Polling 邏輯 (SwitchMap 確保舊的 Timer 會被取消)
-        switchMap((symbols) => {
-          // 處理空陣列情況 (對應 Effect 裡的 if length === 0)
-          if (symbols.length === 0) {
-            patchState(store, { isLoading: false });
-            return of({}); // 結束這回合
-          }
-
-          // 啟動 Timer (0ms 開始, 每 30s 一次)
-          return timer(0, FETCH_INTERVAL).pipe(
-            // 呼叫 API
-            switchMap(() =>
-              marketService.fetchBatchPrices(symbols).pipe(
-                tapResponse({
-                  // [Reducer] 成功: 合併股價
-                  next: (newPrices) =>
-                    patchState(store, (state) => ({
-                      prices: { ...state.prices, ...newPrices }, // 這裡保留了 Spread Operator 邏輯
-                      isLoading: false,
-                      error: null,
-                    })),
-
-                  // [Reducer] 失敗: 紀錄錯誤
-                  error: (error) =>
-                    patchState(store, {
-                      isLoading: false,
-                      error,
-                    }),
-                }),
-              ),
-            ),
-          );
+        tap(({ isBackground }) => {
+          if (!isBackground) patchState(store, { isLoading: true });
         }),
+        switchMap(({ symbols, isBackground }) =>
+          marketService.fetchBatchPrices(symbols).pipe(
+            tapResponse({
+              next: (newPrices) =>
+                patchState(store, (state) => ({
+                  prices: { ...state.prices, ...newPrices },
+                  isLoading: false, 
+                  error: null,
+                })),
+              error: (error) => 
+                patchState(store, { 
+                   isLoading: false, 
+                   error: isBackground ? null : error // Ignore background errors to avoid annoying popups
+                }),
+            }),
+          ),
+        ),
       ),
-    ),
-  })),
+    );
+
+    return {
+      // Expose the worker if needed (usually private, but useful for debugging)
+      fetchPrices,
+
+      // 2. [Scheduler] Background Polling
+      startTracking: rxMethod<{ ticker: string; region: string }[]>(
+        pipe(
+          tap((symbols) => patchState(store, { trackingSymbols: symbols })), 
+          switchMap((symbols) => {
+            if (symbols.length === 0) return of(null);
+            
+            // Timer triggers the worker
+            return timer(0, FETCH_INTERVAL).pipe(
+              tap(() => fetchPrices({ symbols, isBackground: true }))
+            );
+          })
+        )
+      ),
+
+      // 3. [Trigger] Manual Refresh
+      refreshPrices: rxMethod<void>(
+        pipe(
+          tap(() => {
+            const symbols = store.trackingSymbols();
+            if (symbols.length > 0) {
+              // Manual trigger -> Show Loading
+              fetchPrices({ symbols, isBackground: false });
+            }
+          })
+        )
+      ),
+    };
+  }),
 );
