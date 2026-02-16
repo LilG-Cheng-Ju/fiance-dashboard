@@ -14,7 +14,7 @@ import { AssetStore } from '../../core/store/asset.store';
 import { MarketStore } from '../../core/store/market.store';
 import { RateStore } from '../../core/store/exchange_rate.store';
 import { SettingsStore } from '../../core/store/settings.store';
-import { AssetType } from '../../core/models/asset.model';
+import { AssetType, AssetView } from '../../core/models/asset.model';
 import { ASSET_CONFIG } from '../../core/config/asset.config';
 
 @Component({
@@ -95,8 +95,11 @@ export class DashboardComponent implements OnInit {
     this.assetStore.loadAssets();
   }
 
-  // Core Calculation Logic - The "Dual Track" Engine
-  readonly assetsWithMarketValue = computed(() => {
+  /**
+   * Core Calculation Logic - The "Dual Track" Engine
+   * Transforms raw Assets into AssetViews with computed market values and PnL.
+   */
+  readonly assetsWithMarketValue = computed<AssetView[]>(() => {
     const assets = this.assetStore.activeAssets();
     const prices = this.marketStore.priceMap();
     const rates = this.rateStore.rateMap();
@@ -104,42 +107,37 @@ export class DashboardComponent implements OnInit {
     const showOriginal = this.settingsStore.showOriginalCurrency();
 
     return assets.map((asset) => {
-      // --- A. Rate Preparation ---
+      // --- Step 1: Exchange Rate Preparation ---
       const isBaseCurrency = asset.currency === baseCurr;
       
-      // 1. Rate: Asset -> Base Currency (For Display)
-      // If asset is USD, Base is TWD, we need 32.
-      // If asset is TWD, Base is TWD, we need 1.
+      // Rate: Asset Currency -> Base Currency (e.g., USD -> TWD)
       const rateToBase = isBaseCurrency ? 1.0 : (rates[`${asset.currency}-${baseCurr}`] || 1.0);
 
-      // 2. Rate: Asset -> TWD (For Cash ROI Calculation - The "Home" Rate)
-      // Even if Base is USD, we need the TWD rate to calculate FX PnL against the TWD book_value.
+      // Rate: Asset Currency -> TWD (Specifically for FX PnL calculation if Base is not TWD)
+      // This logic attempts to find a path to TWD to calculate the "True Cost" in TWD.
       let rateToTwd = 1.0;
       if (asset.currency === 'TWD') {
         rateToTwd = 1.0;
       } else {
-        // Try direct look up: e.g. "USD-TWD"
         const directRate = rates[`${asset.currency}-TWD`];
         if (directRate) {
           rateToTwd = directRate;
         } else if (baseCurr === asset.currency) {
-           // If Base is USD, Asset is USD, we need USD->TWD. 
-           // We might have TWD->USD (0.031) in the store if TWD assets exist.
+           // If Base is USD and Asset is USD, we might have TWD->USD rate
            const reverseRate = rates[`TWD-${asset.currency}`];
            if (reverseRate) rateToTwd = 1 / reverseRate;
         } else {
            // Fallback: If Base is TWD, then rateToBase IS the rateToTwd
            if (baseCurr === 'TWD') rateToTwd = rateToBase;
-           // If Base is USD, and we have USD-TWD stored? 
-           // (This part relies on what's available in store, assuming USD-TWD is usually available)
+           // Fallback: Try to use cached rate if available
            const fallback = rates[`${asset.currency}-TWD`];
            if (fallback) rateToTwd = fallback;
         }
       }
 
-      // --- B. Market Value Calculation ---
-      let marketPrice = 0;       // Unit Price (Native)
-      let nativeMarketValue = 0; // Total Value (Native)
+      // --- Step 2: Market Value Calculation ---
+      let marketPrice = 0;       // Unit Price (in Native Currency)
+      let nativeMarketValue = 0; // Total Value (in Native Currency)
       
       const isCashLike = asset.asset_type === AssetType.CASH || 
                          asset.asset_type === AssetType.PENDING || 
@@ -147,62 +145,59 @@ export class DashboardComponent implements OnInit {
                          asset.asset_type === AssetType.CREDIT_CARD;
 
       if (isCashLike) {
+        // For cash, the value is simply the quantity
         nativeMarketValue = asset.quantity; 
       } else {
-        // Stock/Crypto Logic
+        // For stocks/crypto, value = quantity * current market price
         if (asset.symbol) {
           const stockData = prices[asset.symbol];
           marketPrice = stockData?.price || 0;
         }
+        // Fallback to book_value if price is not yet available
         nativeMarketValue = marketPrice > 0 ? (asset.quantity * marketPrice) : asset.book_value;
       }
 
-      // Calculate Base Market Value (For Total Wealth Card)
+      // Convert to Base Currency for total wealth aggregation
       const baseMarketValue = nativeMarketValue * rateToBase;
 
 
-      // --- C. PnL & ROI Calculation (Dual Track Logic) ---
-      let unrealizedPnl = 0; // Will be converted to Base Currency
+      // --- Step 3: PnL & ROI Calculation (Dual Track Logic) ---
+      let unrealizedPnl = 0; // In Base Currency
       let returnRate = 0;    // Percentage
 
       if (isCashLike) {
-        // [Track 1: Cash/FX]
-        // Concept: ROI = (Current TWD Value - TWD Cost) / TWD Cost
-        // book_value = TWD Cost (Historical)
+        // [Track 1: Cash/FX Assets]
+        // Logic: Compare current TWD value vs. Historical TWD Cost (book_value)
         
-        const costTwd = asset.book_value; 
+        const costTwd = asset.book_value; // Assuming book_value stores the historical TWD cost
         const currentValueTwd = asset.quantity * rateToTwd;
         
-        // 1. Calculate PnL in TWD first (The "True" PnL)
+        // Calculate PnL in TWD first
         const pnlTwd = currentValueTwd - costTwd;
 
-        // 2. Calculate ROI (Based on TWD)
+        // ROI based on TWD cost
         returnRate = costTwd !== 0 ? (pnlTwd / Math.abs(costTwd)) * 100 : 0;
 
-        // 3. Convert PnL to Base Currency for Display
-        // If Base is TWD: pnlTwd * 1
-        // If Base is USD: pnlTwd * (rate TWD->USD) ... which is (1 / rateToTwd) * rateToBase?
-        // Simpler: pnlTwd * (rateToBase / rateToTwd)
-        // Example: PnL=3200TWD. Base=USD. RateToTwd=32. RateToBase=1. => 3200 * (1/32) = 100 USD.
+        // Convert PnL to Base Currency for display
+        // Ratio = Rate(Asset->Base) / Rate(Asset->TWD)
         const twdToBaseRatio = rateToTwd !== 0 ? (rateToBase / rateToTwd) : 0;
         unrealizedPnl = pnlTwd * twdToBaseRatio;
 
       } else {
-        // [Track 2: Stock/Crypto]
-        // Concept: ROI = (Current Native Value - Native Cost) / Native Cost
-        // book_value = Native Cost (e.g., USD Cost for US Stock)
+        // [Track 2: Market Assets (Stocks/Crypto)]
+        // Logic: Compare current Native Value vs. Native Cost (book_value)
 
-        const costNative = asset.book_value;
+        const costNative = asset.book_value; // Assuming book_value stores the native cost (e.g., USD)
         const pnlNative = nativeMarketValue - costNative;
 
-        // 1. Calculate ROI (Based on Native Currency)
+        // ROI based on Native Currency
         returnRate = costNative !== 0 ? (pnlNative / Math.abs(costNative)) * 100 : 0;
 
-        // 2. Convert PnL to Base Currency for Display
+        // Convert PnL to Base Currency for display
         unrealizedPnl = pnlNative * rateToBase;
       }
 
-      // --- D. Display Formatting ---
+      // --- Step 4: Final Object Construction (AssetView) ---
       const displayCurrency = showOriginal ? asset.currency : baseCurr;
       const displayAmount = showOriginal ? nativeMarketValue : baseMarketValue;
 
@@ -214,8 +209,8 @@ export class DashboardComponent implements OnInit {
         displayCurrency,
         displayAmount,
         exchangeRate: rateToBase,
-        unrealizedPnl, // Correctly converted to Base Currency
-        returnRate,    // Correctly calculated based on specific track (TWD or Native)
+        unrealizedPnl,
+        returnRate,
       };
     });
   });

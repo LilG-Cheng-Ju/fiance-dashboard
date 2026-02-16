@@ -1,0 +1,108 @@
+<div class="modal-header">
+  <div class="title-group">
+    <h2>{{ asset().name }}</h2>
+    <span class="badge">{{ asset().symbol || asset().asset_type }}</span>
+  </div>
+  <div class="header-actions">
+    <!-- Delete Button -->
+    <button class="icon-btn delete-btn" (click)="onDeleteAsset()" title="Delete Asset">
+      <span class="material-symbols-rounded">delete</span>
+    </button>
+    
+    <button class="close-btn" (click)="close()">✕</button>
+  </div>
+</div>
+
+<div class="modal-body">
+  
+  <!-- Left Column: Summary & Chart -->
+  <div class="left-column">
+    <div class="summary-card" [style.--asset-color]="themeColor()">
+      <div class="main-value">
+        <span class="label">Current Value ({{ asset().displayCurrency }})</span>
+        <div class="amount">{{ asset().displayAmount | number:'1.0-2' }}</div>
+      </div>
+
+      <div class="stats-grid">
+        <!-- Quantity -->
+        <div class="stat-item">
+          <div class="stat-label">Holdings</div>
+          <div class="stat-val">
+            {{ asset().quantity | number }} 
+            <span style="font-size: 0.8em; font-weight: normal">{{ asset().meta_data?.unit || '' }}</span>
+          </div>
+        </div>
+
+        <!-- PnL (Only for Market Assets) -->
+        @if (asset().unrealizedPnl !== undefined && asset().unrealizedPnl !== 0) {
+          <div class="stat-item">
+            <div class="stat-label">Unrealized PnL</div>
+            <div class="stat-val" 
+                 [class.positive]="asset().unrealizedPnl > 0" 
+                 [class.negative]="asset().unrealizedPnl < 0">
+              {{ asset().unrealizedPnl > 0 ? '+' : '' }}{{ asset().unrealizedPnl | number:'1.0-0' }}
+              <span style="font-size: 0.8em">({{ asset().returnRate | number:'1.1-2' }}%)</span>
+            </div>
+          </div>
+        }
+
+        <!-- Average Cost -->
+        @if (asset().average_cost) {
+          <div class="stat-item">
+            <div class="stat-label">Avg. Cost</div>
+            <div class="stat-val">{{ asset().average_cost | number:'1.0-2' }}</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Trend Chart Placeholder -->
+    <div class="chart-section">
+      <p>📈 Price Trend (Coming Soon)</p>
+    </div>
+  </div>
+
+  <!-- Right Column: Transaction History -->
+  <div class="right-column history-section">
+    <div class="section-header">
+      <h3>History</h3>
+      <button class="fab-add" (click)="onAddTransaction()">+ Add</button>
+    </div>
+
+    <ul class="tx-list">
+      @if (transactionStore.isLoading()) {
+        <div class="empty-state">Loading...</div>
+      } @else if (transactionStore.transactions().length === 0) {
+        <div class="empty-state">No transactions yet</div>
+      } @else {
+        @for (tx of transactionStore.transactions(); track tx.id) {
+          <li class="tx-item">
+            <div class="tx-date">
+              <span class="day">{{ tx.transaction_date | date:'dd' }}</span>
+              <span class="month">{{ tx.transaction_date | date:'MMM' }}</span>
+            </div>
+            
+            <div class="tx-details">
+              <div class="tx-type">{{ tx.transaction_type }}</div>
+              <div class="tx-note">{{ tx.note || '-' }}</div>
+            </div>
+
+            <div class="tx-amounts">
+              <!-- Native Amount -->
+              <span class="main-amt" [class.inflow]="tx.amount > 0" [class.outflow]="tx.amount < 0">
+                {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | number }} {{ asset().currency }}
+              </span>
+              
+              <!-- Dual Track: Source Amount -->
+              @if (tx.source_amount) {
+                <span class="sub-amt">
+                  {{ tx.source_amount | number }} {{ tx.source_currency }}
+                </span>
+              }
+            </div>
+          </li>
+        }
+      }
+    </ul>
+  </div>
+</div>
