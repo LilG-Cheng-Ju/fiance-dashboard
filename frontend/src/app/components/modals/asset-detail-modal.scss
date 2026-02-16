@@ -2,20 +2,33 @@
 
 // Layout Variables
 $modal-padding: 24px;
-$radius: 24px;
+$radius: 24px; // 圓角變數，對齊 simple-asset-form
 
 :host {
-  display: block;
-  height: 100%;
-  background-color: var(--bg-main);
+  // --- 1. Modal Container Styling (比照 simple-asset-form) ---
   display: flex;
   flex-direction: column;
-  overflow: hidden; // Prevent double scrollbars
+  
+  background-color: var(--bg-card); // 白底
+  
+  // 尺寸設定：比 simple form 寬，因為我們要放圖表
+  width: 90vw;
+  max-width: 1000px; 
+  height: 85vh;      
+  max-height: 900px;
+
+  // 關鍵：圓角與陰影
+  border-radius: $radius;
+  box-shadow: 0 20px 40px rgba(15, 40, 78, 0.15);
+  overflow: hidden; // 確保內容不會超出圓角
+  
+  // 動畫
+  animation: fadeIn 0.2s ease-out;
 }
 
 // --- Header ---
 .modal-header {
-  padding: $modal-padding;
+  padding: 16px 24px; // 恢復適當的間距
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-light);
   display: flex;
@@ -23,41 +36,30 @@ $radius: 24px;
   align-items: center;
   flex-shrink: 0;
 
-  .title-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .header-content {
+    min-width: 0;
+    margin-right: 16px;
 
-    h2 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
 
-    .badge {
-      font-size: 0.75rem;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: var(--color-slate-100);
-      color: var(--text-sub);
-      font-weight: 600;
-    }
-  }
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-  .close-btn {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-sub);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 50%;
-    transition: background 0.2s;
-
-    &:hover {
-      background: var(--color-slate-100);
-      color: var(--text-main);
+      .symbol {
+        font-size: 0.9rem;
+        color: var(--text-sub);
+        font-weight: 500;
+      }
     }
   }
 }
@@ -66,6 +68,26 @@ $radius: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+
+  // --- 2. Badge Styling (比照 asset-card.scss) ---
+  .type-badge {
+    font-size: 0.75rem;     // 稍微大一點點以利閱讀
+    font-weight: 700;
+    padding: 4px 8px;       // 緊湊的內距
+    border-radius: 6px;     // ★ 關鍵：改回 6px 小圓角 (方方正正帶點圓)
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 8px;
+    
+    display: flex;
+    align-items: center;
+    height: 24px;
+    
+    @media (max-width: 400px) {
+      display: none;
+    }
+  }
 
   .icon-btn {
     background: transparent;
@@ -77,18 +99,20 @@ $radius: 24px;
     align-items: center;
     justify-content: center;
     transition: background 0.2s;
+    color: var(--text-sub);
 
-    // Google Material Symbols font settings
     span {
       font-size: 1.25rem; 
     }
 
-    &.delete-btn {
-      color: var(--text-sub);
-      &:hover {
-        background: #fee2e2; // Light red bg
-        color: #ef4444;       // Red icon
-      }
+    &.delete-btn:hover {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+
+    &.close-btn:hover {
+      background: var(--color-slate-100);
+      color: var(--text-main);
     }
   }
 }
@@ -108,13 +132,13 @@ $radius: 24px;
     align-items: flex-start;
 
     .left-column {
-      flex: 3; // Chart & Summary take more space
+      flex: 3;
       position: sticky;
       top: 0;
     }
 
     .right-column {
-      flex: 2; // History list
+      flex: 2;
       min-width: 320px;
     }
   }
@@ -123,7 +147,7 @@ $radius: 24px;
 // --- Summary Card ---
 .summary-card {
   background: var(--bg-card);
-  border-radius: $radius;
+  border-radius: 20px; // 內部卡片圓角稍微小一點
   padding: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-light);
@@ -131,33 +155,18 @@ $radius: 24px;
   position: relative;
   overflow: hidden;
 
-  // Decorative accent line on the left
   &::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; top: 0; bottom: 0;
     width: 6px;
     background-color: var(--asset-color, var(--primary));
   }
 
   .main-value {
     margin-bottom: 16px;
-    
-    .label {
-      font-size: 0.875rem;
-      color: var(--text-sub);
-      display: block;
-      margin-bottom: 4px;
-    }
-    
-    .amount {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--text-main);
-      letter-spacing: -1px;
-    }
+    .label { font-size: 0.875rem; color: var(--text-sub); display: block; margin-bottom: 4px; }
+    .amount { font-size: 2rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
   }
 
   .stats-grid {
@@ -168,17 +177,11 @@ $radius: 24px;
     border-top: 1px dashed var(--border-light);
 
     .stat-item {
-      .stat-label {
-        font-size: 0.75rem;
-        color: var(--text-sub);
-      }
+      .stat-label { font-size: 0.75rem; color: var(--text-sub); }
       .stat-val {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-main);
-        
-        &.positive { color: #10b981; } // Green
-        &.negative { color: #ef4444; } // Red
+        font-size: 1rem; font-weight: 600; color: var(--text-main);
+        &.positive { color: #10b981; }
+        &.negative { color: #ef4444; }
       }
     }
   }
@@ -187,7 +190,7 @@ $radius: 24px;
 // --- Chart Placeholder ---
 .chart-section {
   background: var(--bg-card);
-  border-radius: $radius;
+  border-radius: 20px;
   padding: 24px;
   border: 1px solid var(--border-light);
   min-height: 250px;
@@ -196,18 +199,18 @@ $radius: 24px;
   justify-content: center;
   color: var(--text-sub);
   font-weight: 500;
-  background-color: var(--color-slate-50); // Slightly darker bg for placeholder
+  background-color: var(--color-slate-50);
 }
 
 // --- Transaction List ---
 .history-section {
   background: var(--bg-card);
-  border-radius: $radius;
+  border-radius: 20px;
   border: 1px solid var(--border-light);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: 600px; // Limit height on desktop
+  // max-height: 600px; // 移除高度限制，讓它跟隨 modal-body 捲動
 
   .section-header {
     padding: 16px 20px;
@@ -218,18 +221,11 @@ $radius: 24px;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
 
-    h3 {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
-    }
+    h3 { margin: 0; font-size: 1rem; font-weight: 600; }
   }
 
   .tx-list {
-    overflow-y: auto;
-    padding: 0;
-    margin: 0;
-    list-style: none;
+    padding: 0; margin: 0; list-style: none;
 
     .tx-item {
       display: flex;
@@ -242,67 +238,29 @@ $radius: 24px;
       &:hover { background-color: var(--color-slate-50); }
 
       .tx-date {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-right: 16px;
-        min-width: 40px;
-        
+        display: flex; flex-direction: column; align-items: center; margin-right: 16px; min-width: 40px;
         .day { font-size: 1.1rem; font-weight: 700; color: var(--text-main); line-height: 1; }
         .month { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; }
       }
 
       .tx-details {
         flex: 1;
-        
-        .tx-type {
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: var(--text-main);
-          margin-bottom: 2px;
-        }
-        .tx-note {
-          font-size: 0.8rem;
-          color: var(--text-sub);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 150px;
-        }
+        .tx-type { font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
+        .tx-note { font-size: 0.8rem; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
       }
 
       .tx-amounts {
         text-align: right;
-
-        .main-amt {
-          font-size: 0.95rem;
-          font-weight: 600;
-          display: block;
-          
-          &.inflow { color: #10b981; }
-          &.outflow { color: var(--text-main); }
-        }
-
-        .sub-amt {
-          font-size: 0.75rem;
-          color: var(--text-sub);
-          display: block;
-          margin-top: 2px;
-        }
+        .main-amt { font-size: 0.95rem; font-weight: 600; display: block; &.inflow { color: #10b981; } &.outflow { color: var(--text-main); } }
+        .sub-amt { font-size: 0.75rem; color: var(--text-sub); display: block; margin-top: 2px; }
       }
     }
     
-    .empty-state {
-      padding: 40px;
-      text-align: center;
-      color: var(--text-sub);
-    }
+    .empty-state { padding: 40px; text-align: center; color: var(--text-sub); }
   }
 }
 
-// --- Floating Action Button (Mobile) or Header Button (Desktop) ---
 .fab-add {
-  // Default styling for button inside header
   background: var(--primary);
   color: white;
   border: none;
@@ -311,6 +269,10 @@ $radius: 24px;
   font-weight: 600;
   cursor: pointer;
   font-size: 0.9rem;
-  
   &:hover { background: var(--primary-hover); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
