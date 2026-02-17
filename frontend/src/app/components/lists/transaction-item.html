@@ -1,0 +1,65 @@
+<div class="tx-item">
+  <!-- 1. Date Column (Only YYYY/MM/DD) -->
+  <div class="tx-date">
+    <span class="full-date">{{ transaction().transaction_date | date:'yyyy/MM/dd' }}</span>
+  </div>
+  
+  <!-- 2. Details Column (Note wraps text) -->
+  <div class="tx-details">
+    <div class="tx-header">
+      <span class="tx-type" [class]="typeClass()">{{ typeLabel() }}</span>
+      @if (transaction().related_transaction_id) {
+        <span class="linked-badge">
+          <span class="material-symbols-rounded">link</span>
+        </span>
+      }
+    </div>
+    <!-- Note: CSS handles wrapping now -->
+    <div class="tx-note">{{ transaction().note || '-' }}</div>
+  </div>
+
+  <!-- 3. Amount Column (Smart Display) -->
+  <div class="tx-amounts">
+    
+    <!-- Case A: Market Assets (Stock/Crypto/Gold) -> Show Quantity Change -->
+    @if (isMarketAsset()) {
+      <!-- Main: Quantity Change -->
+      <span class="main-amt" 
+            [class.inflow]="transaction().quantity_change > 0" 
+            [class.outflow]="transaction().quantity_change < 0">
+        {{ transaction().quantity_change > 0 ? '+' : '' }}{{ transaction().quantity_change | number }} 
+        <span class="unit">單位</span>
+      </span>
+
+      <!-- Sub: Cost / Amount -->
+      <span class="sub-amt">
+        {{ transaction().amount | number }} {{ currency() }}
+      </span>
+    } 
+    
+    <!-- Case B: Cash Assets -> Show Amount Change -->
+    @else {
+      <!-- Main: Amount Change -->
+      <span class="main-amt" 
+            [class.inflow]="transaction().amount > 0" 
+            [class.outflow]="transaction().amount < 0">
+        {{ transaction().amount > 0 ? '+' : '' }}{{ transaction().amount | number }} 
+        <span class="currency">{{ currency() }}</span>
+      </span>
+
+      <!-- Sub: Source Amount (if cross-currency) -->
+      @if (transaction().source_amount) {
+        <span class="sub-amt">
+          {{ transaction().source_amount | number }} {{ transaction().source_currency }}
+        </span>
+      }
+    }
+  </div>
+
+  <!-- 4. Actions -->
+  @if (showSettleBtn()) {
+    <button class="icon-btn settle-btn" (click)="onSettle.emit(transaction())" title="結清此款項">
+      <span class="material-symbols-rounded">check_circle</span>
+    </button>
+  }
+</div>
