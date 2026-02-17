@@ -135,54 +135,15 @@ $radius: 24px; // 圓角變數，對齊 simple-asset-form
       flex: 3;
       position: sticky;
       top: 0;
+      // 新增：讓左側內容有間距
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
     .right-column {
       flex: 2;
       min-width: 320px;
-    }
-  }
-}
-
-// --- Summary Card ---
-.summary-card {
-  background: var(--bg-card);
-  border-radius: 20px; // 內部卡片圓角稍微小一點
-  padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  border: 1px solid var(--border-light);
-  margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 6px;
-    background-color: var(--asset-color, var(--primary));
-  }
-
-  .main-value {
-    margin-bottom: 16px;
-    .label { font-size: 0.875rem; color: var(--text-sub); display: block; margin-bottom: 4px; }
-    .amount { font-size: 2rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    padding-top: 16px;
-    border-top: 1px dashed var(--border-light);
-
-    .stat-item {
-      .stat-label { font-size: 0.75rem; color: var(--text-sub); }
-      .stat-val {
-        font-size: 1rem; font-weight: 600; color: var(--text-main);
-        &.positive { color: #10b981; }
-        &.negative { color: #ef4444; }
-      }
     }
   }
 }

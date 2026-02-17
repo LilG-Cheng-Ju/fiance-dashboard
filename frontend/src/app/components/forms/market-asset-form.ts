@@ -277,10 +277,28 @@ export class MarketAssetFormComponent implements OnInit, OnDestroy {
     
     let sourceCurrency = null;
     let finalRate = 1.0;
+    const nativeCost = val.total_native_cost;
 
     if (val.source_asset_id) {
         const sourceAsset = this.fundingSources().find(a => a.id == val.source_asset_id);
         sourceCurrency = sourceAsset?.currency || null;
+
+        // [情境 1: 使用資產扣款]
+        if (sourceAsset && nativeCost) {
+             if (sourceAsset.currency === val.currency) {
+                 // 情況 A: 同幣別 (例如 美金存款 -> 美股)
+                 // 使用來源資產的平均成本 (作為成本匯率)
+                 finalRate = sourceAsset.average_cost || 1.0;
+             } else if (val.source_amount) {
+                 // 情況 B: 跨幣別 (例如 台幣存款 -> 美股)
+                 // 匯率 = 扣款台幣金額 / 美金金額
+                 finalRate = val.source_amount / nativeCost;
+             }
+        }
+    } else {
+        // [情境 2: 外部資金 / 手動輸入]
+        // 如果使用者手動輸入匯率則使用之，否則預設為 1.0 或自動計算。
+        finalRate = val.exchange_rate || 1.0;
     }
 
     const metaData: any = { note: val.note };

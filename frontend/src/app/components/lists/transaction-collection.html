@@ -1,0 +1,28 @@
+<div class="collection-container">
+  <!-- 1. Action Buttons Header -->
+  <div class="action-header">
+    @for (btn of buttons(); track btn.action) {
+      <button class="action-btn" [class]="btn.class" (click)="handleAction(btn.action)">
+        <span class="material-symbols-rounded">{{ btn.icon }}</span>
+        {{ btn.label }}
+      </button>
+    }
+  </div>
+
+  <!-- 2. Transaction List -->
+  <div class="list-container">
+    @if (loading()) {
+      <div class="empty-state">Loading...</div>
+    } @else if (transactions().length === 0) {
+      <div class="empty-state">No transactions yet</div>
+    } @else {
+      @for (tx of transactions(); track tx.id) {
+        <app-transaction-item 
+          [transaction]="tx" 
+          [currency]="asset().currency"
+          [assetType]="asset().asset_type">
+        </app-transaction-item>
+      }
+    }
+  </div>
+</div>

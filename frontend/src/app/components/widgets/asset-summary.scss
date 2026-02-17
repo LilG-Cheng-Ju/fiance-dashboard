@@ -1,0 +1,110 @@
+:host {
+  display: block;
+}
+
+.summary-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+
+  // Left accent line
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background-color: var(--asset-color, var(--primary));
+  }
+
+  // [New] Top Grid Layout
+  .top-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Split 50/50
+    gap: 16px;
+    margin-bottom: 20px;
+
+    .grid-item {
+      display: flex;
+      flex-direction: column;
+      
+      .label { 
+        font-size: 0.875rem; 
+        color: var(--text-sub); 
+        margin-bottom: 6px; 
+      }
+
+      .amount, .quantity { 
+        font-size: 1.75rem; // Slightly smaller to fit columns
+        font-weight: 800; 
+        color: var(--text-main); 
+        letter-spacing: -0.5px; 
+        line-height: 1.1;
+        white-space: nowrap;
+      }
+
+      .quantity .unit {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-sub);
+        margin-left: 4px;
+      }
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border-light);
+
+    .stat-item {
+      .stat-label { 
+        font-size: 0.75rem; 
+        color: var(--text-sub); 
+        margin-bottom: 4px;
+      }
+      .stat-val {
+        font-size: 1rem; 
+        font-weight: 600; 
+        color: var(--text-main);
+        
+        .unit { 
+          font-size: 0.8em; 
+          font-weight: normal; 
+          color: var(--text-sub); 
+          margin-left: 4px; 
+        }
+      }
+
+      // [New] Badge Style (Copied from TotalWealthCard)
+      .stat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 1rem;
+        font-weight: 700;
+        
+        .arrow { font-size: 0.7rem; }
+        .amount { margin-right: 2px; }
+        .roi { opacity: 0.9; font-size: 0.85rem; font-weight: 500; }
+
+        &.positive {
+          color: #dc2626; // Red text
+        }
+        &.negative {
+          color: #059669; // Green text
+        }
+        
+        // Neutral / Zero
+        &:not(.positive):not(.negative) {
+           color: var(--text-sub);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+<div class="summary-card" [style.--asset-color]="themeColor()">
+  <!-- [Modified] Top Grid: Market Value & Holdings -->
+  <div class="top-grid">
+    <!-- Col 1: Market Value -->
+    <div class="grid-item">
+      <span class="label">{{ valueLabel() }} ({{ asset().displayCurrency }})</span>
+      <span class="amount">{{ asset().displayAmount | number:'1.0-2' }}</span>
+    </div>
+
+    <!-- Col 2: Holdings (if applicable) -->
+    @if (showHoldings()) {
+      <div class="grid-item">
+        <span class="label">持有數量</span>
+        <span class="quantity">
+          {{ asset().quantity | number }} 
+          <span class="unit">{{ asset().meta_data?.unit || '' }}</span>
+        </span>
+      </div>
+    }
+  </div>
+
+  <div class="stats-grid">
+    
+    <!-- Row 1: Prices (Market Price & Avg Cost) -->
+    <!-- Only for Market Assets (Stock/Crypto/Gold) -->
+    @if (isMarketAsset()) {
+      <div class="stat-item">
+        <div class="stat-label">平均成本</div>
+        <div class="stat-val">{{ asset().average_cost | number:'1.2-4' }}</div>
+      </div>
+      
+      <div class="stat-item">
+        <div class="stat-label">{{ marketPriceLabel() }}</div>
+        <div class="stat-val">{{ asset().marketPrice | number:'1.2-2' }}</div>
+      </div>
+    }
+
+    <!-- Row 2: Exchange Rates (Cost Rate & Current Rate) -->
+    <!-- Condition: Foreign Asset AND Cost Rate is available -->
+    @if (isForeign() && asset().avgExchangeRate) {
+      <div class="stat-item">
+        <div class="stat-label">成本匯率</div>
+        <div class="stat-val">{{ asset().avgExchangeRate | number:'1.2-2' }}</div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-label">目前匯率</div>
+        <div class="stat-val">{{ asset().exchangeRate | number:'1.2-2' }}</div>
+      </div>
+    }
+
+    <!-- Row 3: PnL (Unrealized & Total) -->
+    @if (showPnl() && asset().unrealizedPnl !== undefined) {
+      <div class="stat-item">
+        <div class="stat-label">{{ isCashLike() ? '匯差損益' : '帳面損益 (價差)' }}</div>
+        <div class="stat-badge" 
+             [class.positive]="asset().unrealizedPnl > 0" 
+             [class.negative]="asset().unrealizedPnl < 0">
+          <span class="arrow">{{ asset().unrealizedPnl > 0 ? '▲' : '▼' }}</span>
+          <span class="amount">{{ asset().unrealizedPnl | number:'1.0-0' }}</span>
+          <span class="roi">({{ asset().returnRate | number:'1.1-2' }}%)</span>
+        </div>
+      </div>
+
+      <!-- Total PnL (Only if available) -->
+      @if (asset().totalPnl !== undefined && !isCashLike() && isForeign()) {
+        <div class="stat-item">
+          <div class="stat-label">總損益 (含匯差)</div>
+          <div class="stat-badge"
+               [class.positive]="asset().totalPnl! > 0" 
+               [class.negative]="asset().totalPnl! < 0">
+            <span class="arrow">{{ asset().totalPnl! > 0 ? '▲' : '▼' }}</span>
+            <span class="amount">{{ asset().totalPnl | number:'1.0-0' }}</span>
+            <span class="roi">({{ asset().totalReturnRate | number:'1.1-2' }}%)</span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
