@@ -50,7 +50,10 @@ class AssetService:
                 # Fetch the source asset (e.g., Bank Account)
                 source_asset = (
                     db.query(models.Asset)
-                    .filter(models.Asset.id == asset_in.source_asset_id)
+                    .filter(
+                        models.Asset.id == asset_in.source_asset_id,
+                        models.Asset.user_id == current_user
+                    )
                     .first()
                 )
                 if not source_asset:
@@ -71,6 +74,7 @@ class AssetService:
                     # Using TRANSFER_OUT to indicate funds moved to another asset
                     source_tx = models.Transaction(
                         asset_id=source_asset.id,
+                        user_id=current_user, # [Fix] Add missing user_id
                         transaction_type=models.TransactionType.TRANSFER_OUT,
                         amount=-deduct_amount,  # Negative for deduction
                         # Estimate balance after deduction
