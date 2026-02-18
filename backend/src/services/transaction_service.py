@@ -35,7 +35,7 @@ class TransactionService:
             .join(models.Asset)
             .filter(
                 models.Transaction.asset_id == asset_id,
-                models.Asset.user_id == current_user,
+                models.Transaction.user_id == current_user,
             )
             .order_by(
                 desc(models.Transaction.transaction_date),
@@ -155,7 +155,7 @@ class TransactionService:
             .join(models.Asset)
             .filter(
                 models.Transaction.id == transaction_id,
-                models.Asset.user_id == current_user,
+                models.Transaction.user_id == current_user,
             )
             .first()
         )
