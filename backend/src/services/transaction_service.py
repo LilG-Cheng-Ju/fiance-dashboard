@@ -68,7 +68,7 @@ class TransactionService:
         related_tx_id = tx_in.related_transaction_id
         
         if tx_in.source_asset_id:
-            # [Fix] Ensure source asset belongs to the user
+            # Ensure source asset belongs to the user
             source_asset = (
                 db.query(models.Asset)
                 .filter(
@@ -86,7 +86,7 @@ class TransactionService:
             # Create the linked transaction (TRANSFER_OUT)
             source_tx = models.Transaction(
                 asset_id=source_asset.id,
-                user_id=current_user, # [Fix] Add missing user_id
+                user_id=current_user, # Add missing user_id
                 transaction_type=models.TransactionType.TRANSFER_OUT,
                 amount=-deduct_amount, # Negative for deduction
                 balance_after=source_asset.book_value - deduct_amount,

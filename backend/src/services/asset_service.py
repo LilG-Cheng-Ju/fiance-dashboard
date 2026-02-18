@@ -74,7 +74,7 @@ class AssetService:
                     # Using TRANSFER_OUT to indicate funds moved to another asset
                     source_tx = models.Transaction(
                         asset_id=source_asset.id,
-                        user_id=current_user, # [Fix] Add missing user_id
+                        user_id=current_user,
                         transaction_type=models.TransactionType.TRANSFER_OUT,
                         amount=-deduct_amount,  # Negative for deduction
                         # Estimate balance after deduction
