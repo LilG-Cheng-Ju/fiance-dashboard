@@ -93,6 +93,7 @@ class AssetService:
             db_asset = models.Asset(
                 name=asset_in.name,
                 asset_type=asset_in.asset_type,
+                user_id=current_user,
                 symbol=asset_in.symbol,
                 currency=asset_in.currency,
                 # Core Inventory Fields
@@ -124,6 +125,7 @@ class AssetService:
                     exchange_rate=asset_in.exchange_rate,
                     source_amount=asset_in.source_amount,
                     source_currency=asset_in.source_currency,
+                    user_id=current_user,
                 )
                 db.add(initial_tx)
 

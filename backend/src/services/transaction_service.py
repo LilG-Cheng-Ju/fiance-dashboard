@@ -48,11 +48,20 @@ class TransactionService:
         )
 
     @staticmethod
-    def create(db: Session, tx_in: schemas.TransactionCreate) -> models.Transaction:
+    def create(
+        db: Session, tx_in: schemas.TransactionCreate, current_user: str
+    ) -> models.Transaction:
         """
         Create a new transaction and update asset state (Inventory Model).
         """
-        asset = db.query(models.Asset).filter(models.Asset.id == tx_in.asset_id).first()
+        asset = (
+            db.query(models.Asset)
+            .filter(
+                models.Asset.id == tx_in.asset_id,
+                models.Transaction.user_id == current_user,
+            )
+            .first()
+        )
         if not asset:
             raise HTTPException(status_code=404, detail="Asset not found")
 
@@ -123,6 +132,7 @@ class TransactionService:
         # Create Transaction Record
         db_tx = models.Transaction(
             asset_id=tx_in.asset_id,
+            user_id=current_user,
             transaction_type=tx_in.transaction_type,
             amount=tx_in.amount,
             quantity_change=tx_in.quantity_change,
