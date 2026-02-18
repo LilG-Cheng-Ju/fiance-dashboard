@@ -10,11 +10,11 @@ export class AssetPerformanceService {
   private settingsStore = inject(SettingsStore);
 
   /**
-   * 計算資產的完整績效 (包含市值、損益、報酬率)
-   * @param asset 原始資產資料
-   * @param marketPrice 目前市場價格 (股票用)
-   * @param rateToBase 資產幣別 -> 本位幣的匯率
-   * @param transactions (選填) 歷史交易紀錄，如果有提供，就能算出精確的「總損益」
+   * Calculate complete asset performance (including market value, PnL, ROI)
+   * @param asset Raw asset data
+   * @param marketPrice Current market price (for stocks)
+   * @param rateToBase Exchange rate from Asset Currency -> Base Currency
+   * @param transactions (Optional) Historical records, required for calculating accurate "Total PnL"
    */
   computePerformance(
     asset: Asset, 

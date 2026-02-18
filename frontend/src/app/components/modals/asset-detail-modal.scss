@@ -14,8 +14,8 @@ $radius: 24px; // 圓角變數，對齊 simple-asset-form
   // 尺寸設定：比 simple form 寬，因為我們要放圖表
   width: 90vw;
   max-width: 1000px; 
-  height: 85vh;      
-  max-height: 900px;
+  height: auto;        // [Modified] Fit content height to remove whitespace
+  max-height: 85vh;    // Keep max constraint
 
   // 關鍵：圓角與陰影
   border-radius: $radius;
@@ -120,30 +120,42 @@ $radius: 24px; // 圓角變數，對齊 simple-asset-form
 // --- Main Scrollable Area ---
 .modal-body {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; // Allow body to scroll on mobile
   padding: $modal-padding;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  position: relative; // [New] For absolute positioning of right column on desktop
+
+  // [Fix] Apply flex layout to left-column globally to ensure gap on mobile
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
 
   // Desktop Layout: Split View
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: flex-start;
+  @media (min-width: 1024px) {
+    display: block; // [Modified] Switch to block to let left-column dictate height
+    overflow-y: visible; // Disable body scroll on desktop (inner containers scroll)
 
     .left-column {
-      flex: 3;
-      position: sticky;
-      top: 0;
-      // 新增：讓左側內容有間距
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+      width: calc(60% - 16px); // 3/5 of (100% - 32px gap)
+      // Remove sticky, just let it flow
     }
 
     .right-column {
-      flex: 2;
-      min-width: 320px;
+      // [Modified] Absolute positioning to match Left Column's height exactly
+      position: absolute;
+      top: $modal-padding;
+      bottom: $modal-padding;
+      right: $modal-padding;
+      width: calc(40% - 16px); // 2/5 of (100% - 32px gap)
+      
+      // Reset flex/min-width properties from previous version
+      flex: none;
+      min-width: 0;
+      height: auto; 
     }
   }
 }
@@ -165,12 +177,11 @@ $radius: 24px; // 圓角變數，對齊 simple-asset-form
 
 // --- Transaction List ---
 .history-section {
-  background: var(--bg-card);
-  border-radius: 20px;
-  border: 1px solid var(--border-light);
-  overflow: hidden;
+  // [Modified] Removed card styling from here. 
+  // Delegated to app-transaction-collection for better control.
   display: flex;
   flex-direction: column;
+  height: 100%; // Fill the right-column height
   // max-height: 600px; // 移除高度限制，讓它跟隨 modal-body 捲動
 
   .section-header {

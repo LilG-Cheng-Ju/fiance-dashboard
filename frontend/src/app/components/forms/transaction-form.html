@@ -1,0 +1,102 @@
+<div class="form-card">
+  <div class="header">
+    <h3>{{ uiConfig().title }}</h3>
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </div>
+
+  <div class="form-body" [formGroup]="form">
+    
+    <!-- Date -->
+    <div class="field">
+      <label>交易日期</label>
+      <input type="date" formControlName="date">
+    </div>
+
+    <!-- Market Asset Fields (Triangular) -->
+    @if (isMarketAsset()) {
+      <div class="row">
+        <div class="field" style="flex: 1">
+          <label>單價 ({{ currentCurrency() }})</label>
+          <input type="number" formControlName="price" placeholder="0.00">
+        </div>
+        <div class="field" style="flex: 1">
+          <label>數量</label>
+          <input type="number" formControlName="quantity" placeholder="0">
+          @if (maxSellQty()) {
+            <span class="hint">持有: {{ maxSellQty() | number }}</span>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Main Amount Field -->
+    <div class="field">
+      <label>{{ uiConfig().label }} ({{ currentCurrency() }})</label>
+      <div class="amount-row">
+        <input type="number" 
+               formControlName="amount" 
+               (input)="onAmountChange()"
+               [class.text-success]="isPositiveAction()"
+               [class.text-danger]="!isPositiveAction()"
+               placeholder="0.00">
+      </div>
+      <!-- Validation Error -->
+      @if (action() === 'SELL' && form.get('quantity')?.value > maxSellQty()!) {
+        <span class="error-msg">賣出數量超過持有庫存</span>
+      }
+    </div>
+
+    <!-- Funding Source -->
+    <div class="highlight-bg">
+      <div class="field">
+        <label>{{ isPositiveAction() ? '扣款帳戶 (來源)' : '入帳帳戶 (去向)' }}</label>
+        <div class="input-combined">
+          <select formControlName="source_asset_id">
+            <option [ngValue]="null">-- 不指定 (外部資金) --</option>
+            @for (source of fundingSources(); track source.id) {
+              <!-- Don't show self in dropdown -->
+              @if (source.id !== asset().id) {
+                <option [ngValue]="source.id">
+                  {{ source.name }} ({{ source.currency }})
+                </option>
+              }
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (selectedSourceId()) {
+        <div class="field" style="margin-top: 12px;">
+          <label>實際{{ isPositiveAction() ? '扣款' : '入帳' }}金額</label>
+          <div class="input-suffix">
+            <input type="number" formControlName="source_amount">
+            <!-- Find currency symbol of selected source -->
+            <span>
+              {{ selectedSourceCurrency() }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Note -->
+    <div class="field">
+      <label>備註</label>
+      <input type="text" formControlName="note" placeholder="選填...">
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn-cancel" (click)="close()">取消</button>
+      <button class="btn-submit" 
+              [style.background-color]="isPositiveAction() ? '#10b981' : '#ef4444'"
+              (click)="submit()"
+              [disabled]="form.invalid || (action() === 'SELL' && form.get('quantity')?.value > maxSellQty()!)">
+        {{ uiConfig().btn }}
+      </button>
+    </div>
+
+  </div>
+</div>

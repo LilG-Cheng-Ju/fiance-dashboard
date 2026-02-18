@@ -8,6 +8,7 @@ import { AssetView } from '../../core/models/asset.model';
 import { AssetSummaryComponent } from '../widgets/asset-summary';
 import { AssetPerformanceService } from '../../core/services/asset-performance.service';
 import { TransactionCollectionComponent } from '../lists/transaction-collection';
+import { TransactionFormComponent, TransactionFormData } from '../forms/transaction-form';
 
 @Component({
   selector: 'app-asset-detail-modal',
@@ -28,20 +29,25 @@ export class AssetDetailModalComponent implements OnInit, OnDestroy {
   // [修正] 使用 computed 代替 effect+signal 以避免無限迴圈。
   // 這會自動將基礎資產資料與交易歷史合併 (若有)。
   asset = computed(() => {
-    const baseAsset = this.data().asset;
+    const initialView = this.data().asset;
+    const id = initialView.id;
+    
+    // 1. 嘗試從 Store 取得最新的資產狀態 (Asset)，如果找不到則使用傳入的快照 (AssetView)
+    // 注意：Store 裡的 Asset 沒有 marketPrice/exchangeRate
+    const currentAsset = this.assetStore.activeAssets().find(a => a.id === id) || initialView;
+    
+    // 2. 沿用 Dashboard 傳入的市場數據 (因為 Store 裡沒有這些即時數據)
+    const marketPrice = initialView.marketPrice;
+    const exchangeRate = initialView.exchangeRate;
+    
     const txs = this.transactionStore.transactions();
 
-    // 如果還沒有交易紀錄，直接回傳基礎資產 (來自 Dashboard)
-    if (txs.length === 0) {
-      return baseAsset;
-    }
-
-    // 如果有交易紀錄，重新計算以取得真實總損益 & 平均匯率
-    // 我們沿用 dashboard 的市價/匯率以保持一致性
+    // 3. 重新計算績效 (這會回傳一個完整的 AssetView)
+    // 即使沒有交易紀錄 (txs 為空)，我們也透過這個函式將 Asset 升級為 AssetView
     return this.performanceService.computePerformance(
-      baseAsset, 
-      baseAsset.marketPrice, 
-      baseAsset.exchangeRate, 
+      currentAsset, 
+      marketPrice, 
+      exchangeRate, 
       txs
     );
   });
@@ -68,8 +74,17 @@ export class AssetDetailModalComponent implements OnInit, OnDestroy {
   }
 
   onTransactionAction(action: string) {
-    console.log('Action triggered:', action, 'for asset:', this.asset().name);
-    // 下一步：這裡會根據 action (例如 'BUY', 'DEPOSIT') 打開對應的 TransactionForm
+    // [Feature Flag] Dividend logic is complex (requires destination account), disabled for now.
+    if (action === 'DIVIDEND') {
+      alert('領息功能即將推出 (Coming Soon)');
+      return;
+    }
+
+    // Open Transaction Form
+    this.modalService.open(TransactionFormComponent, {
+      asset: this.asset(),
+      action: action
+    } as TransactionFormData);
   }
 
   // Delete Asset Logic

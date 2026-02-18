@@ -15,6 +15,7 @@ class TransactionCreate(BaseModel):
     exchange_rate: float = Field(1.0, description="Exchange rate at transaction")
     source_amount: Optional[float] = Field(None, description="Actual deducted amount in source currency")
     source_currency: Optional[str] = Field(None, description="Source currency code (e.g., TWD)")
+    source_asset_id: Optional[int] = Field(None, description="ID of the asset to deduct funds from (for BUY/DEPOSIT)")
     note: Optional[str] = None
     related_transaction_id: Optional[int] = None
 

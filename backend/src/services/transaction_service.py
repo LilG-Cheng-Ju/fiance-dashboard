@@ -38,6 +38,37 @@ class TransactionService:
         if not asset:
             raise HTTPException(status_code=404, detail="Asset not found")
 
+        # --- 1. Handle Funding Source (Deduction/Transfer) ---
+        related_tx_id = tx_in.related_transaction_id
+        
+        if tx_in.source_asset_id:
+            source_asset = db.query(models.Asset).filter(models.Asset.id == tx_in.source_asset_id).first()
+            if not source_asset:
+                raise HTTPException(status_code=404, detail="Source asset not found")
+            
+            # Determine deduction amount (use source_amount if provided, else calculate?)
+            # Frontend should provide source_amount if currency differs.
+            deduct_amount = tx_in.source_amount if tx_in.source_amount else abs(tx_in.amount)
+            
+            # Create the linked transaction (TRANSFER_OUT)
+            source_tx = models.Transaction(
+                asset_id=source_asset.id,
+                transaction_type=models.TransactionType.TRANSFER_OUT,
+                amount=-deduct_amount, # Negative for deduction
+                balance_after=source_asset.book_value - deduct_amount,
+                note=f"交易扣款: {asset.name} ({tx_in.transaction_type})",
+                transaction_date=datetime.now() # Should match tx_in date ideally
+            )
+            db.add(source_tx)
+            
+            # Update Source Asset
+            source_asset.book_value -= deduct_amount
+            if source_asset.asset_type == models.AssetType.CASH:
+                source_asset.quantity -= deduct_amount
+                
+            db.flush() # Generate ID
+            related_tx_id = source_tx.id
+
         realized_pnl = None
 
         # Logic Branch: Inventory System (Stock/Gold) vs Simple System (Cash)
@@ -108,7 +139,7 @@ class TransactionService:
             
             balance_after=asset.book_value, # Records the Book Value (Total Cost)
             realized_pnl=realized_pnl,
-            related_transaction_id=tx_in.related_transaction_id,
+            related_transaction_id=related_tx_id,
             note=tx_in.note,
             transaction_date=datetime.now()
         )

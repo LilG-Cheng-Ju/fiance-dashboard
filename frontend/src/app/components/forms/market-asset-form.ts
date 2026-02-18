@@ -278,6 +278,7 @@ export class MarketAssetFormComponent implements OnInit, OnDestroy {
     let sourceCurrency = null;
     let finalRate = 1.0;
     const nativeCost = val.total_native_cost;
+    let finalInitialCost = nativeCost; // [Fix] Default to calculated cost
 
     if (val.source_asset_id) {
         const sourceAsset = this.fundingSources().find(a => a.id == val.source_asset_id);
@@ -289,6 +290,11 @@ export class MarketAssetFormComponent implements OnInit, OnDestroy {
                  // 情況 A: 同幣別 (例如 美金存款 -> 美股)
                  // 使用來源資產的平均成本 (作為成本匯率)
                  finalRate = sourceAsset.average_cost || 1.0;
+                 
+                 // [Fix] If source amount is provided (e.g. includes fee), use it as the cost basis
+                 if (val.source_amount) {
+                     finalInitialCost = val.source_amount;
+                 }
              } else if (val.source_amount) {
                  // 情況 B: 跨幣別 (例如 台幣存款 -> 美股)
                  // 匯率 = 扣款台幣金額 / 美金金額
@@ -311,7 +317,7 @@ export class MarketAssetFormComponent implements OnInit, OnDestroy {
       currency: val.currency,
       symbol: val.symbol || null,
       initial_quantity: val.quantity,
-      initial_total_cost: val.total_native_cost, 
+      initial_total_cost: finalInitialCost, // [Fix] Use the adjusted cost
       source_asset_id: val.source_asset_id,
       source_amount: val.source_amount,
       source_currency: sourceCurrency,

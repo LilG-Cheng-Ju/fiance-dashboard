@@ -3,43 +3,52 @@
 :host {
   display: block;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .collection-container {
+  // [New] Card Styling moved here
   background: var(--bg-card);
   border-radius: 20px;
   border: 1px solid var(--border-light);
-  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  
   display: flex;
   flex-direction: column;
-  flex: 1; // Fill available height
+  height: 100%;
+  overflow: hidden; // Clip children to border-radius
 }
 
+// 1. Action Buttons Header
 .action-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-light);
+  padding: 16px;
   display: flex;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  overflow-x: auto; // Allow horizontal scroll on small screens
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-slate-100);
+  background-color: var(--bg-card); // Ensure bg matches
+  
+  // [Fix] Prevent header from covering top rounded corners
+  // Since .collection-container has overflow: hidden, this is usually fine.
+  // But if there's a border issue, we can add a tiny padding or ensure z-index.
+  position: relative;
+  z-index: 1;
 
   .action-btn {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
     border-radius: 12px;
-    font-weight: 600;
     font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     border: none;
     transition: all 0.2s;
     white-space: nowrap;
 
-    span { font-size: 1.2rem; }
+    span { font-size: 20px; }
 
     &.btn-primary {
       background-color: var(--primary);
@@ -55,10 +64,15 @@
   }
 }
 
+// 2. Transaction List
 .list-container {
   flex: 1;
-  overflow-y: auto; // Independent scroll
-  padding-bottom: 20px;
+  overflow-y: auto; // [New] Internal scrolling
+  
+  // Custom Scrollbar for cleaner look
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background-color: var(--color-slate-200); border-radius: 3px; }
 
   .empty-state {
     padding: 40px;

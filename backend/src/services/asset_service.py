@@ -63,13 +63,13 @@ class AssetService:
                         amount=-deduct_amount,  # Negative for deduction
                         # Estimate balance after deduction
                         balance_after=source_asset.book_value - deduct_amount, 
-                        note=f"Funded new asset: {asset_in.name}",
+                        note=f"扣款: 新增資產 {asset_in.name}",
                         transaction_date=asset_in.transaction_time or datetime.now()
                     )
                     db.add(source_tx)
                     db.flush() # Flush to generate source_tx.id immediately
                     
-                    # 🔄 Update Source Asset Balance
+                    # Update Source Asset Balance
                     source_asset.book_value -= deduct_amount
                     # For Cash assets, quantity usually tracks book_value
                     if source_asset.asset_type == models.AssetType.CASH:
@@ -106,7 +106,7 @@ class AssetService:
                     amount=asset_in.initial_total_cost, # Cost basis in Native Currency
                     quantity_change=final_quantity,     # Initial Qty
                     balance_after=final_current_value,
-                    note="Initial Balance",
+                    note="初始餘額",
                     transaction_date=tx_time,
                     
                     # Link to source transaction (if any)
