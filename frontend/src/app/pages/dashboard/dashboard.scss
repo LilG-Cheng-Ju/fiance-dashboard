@@ -95,8 +95,8 @@ $gap: 24px;
 }
 
 .section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.25rem; // [Modified] Match Widget Collection title size
+  font-weight: 700;
   color: var(--text-main, $text-main);
   margin-bottom: 16px;
 }
@@ -125,16 +125,62 @@ $gap: 24px;
     padding: 24px;
     display: flex;
     flex-direction: column;
+    transition: all 0.2s ease;
 
-    .chart-placeholder {
-      flex: 1;
+    // Header Layout
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      .section-title { margin-bottom: 0; }
+    }
+
+    // Collapse Button (Mobile Only)
+    .mobile-collapse-btn {
+      background: white;
+      border: 1px solid var(--border-light);
+      color: var(--text-sub);
+      width: 36px;       // [Modified] Match Widget Collection button size
+      height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #f1f5f9;
-      border-radius: 16px;
-      color: $text-sub;
-      font-weight: 500;
+      
+      @media (min-width: 1024px) {
+        display: none; // Hide on desktop
+      }
+    }
+
+    .chart-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      
+      .chart-placeholder {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f1f5f9;
+        border-radius: 16px;
+        color: $text-sub;
+        font-weight: 500;
+        min-height: 200px; // Ensure height when empty
+      }
+    }
+
+    // Collapsed State (Mobile Only Logic)
+    &.mobile-collapsed {
+      @media (max-width: 1023px) {
+        padding-bottom: 16px; // Reduce padding when collapsed
+        
+        .card-header { margin-bottom: 0; }
+        .chart-container { display: none; }
+      }
     }
   }
 }

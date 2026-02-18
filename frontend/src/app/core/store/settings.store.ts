@@ -14,6 +14,8 @@ export interface AppSettings {
   privacyMode: boolean;           // Hide sensitive amounts (****)
   theme: 'light' | 'dark';        // UI Theme
   autoFillExchangeRate: boolean;  // Auto-fill reference rate in forms
+  widgetsCollapsed: boolean;      // [New] Collapse the widget collection section
+  trendChartCollapsed: boolean;   // [New] Collapse the trend chart (mobile only)
 }
 
 // 2. Default fallback values
@@ -23,6 +25,8 @@ const defaultSettings: AppSettings = {
   privacyMode: false,
   theme: 'light',
   autoFillExchangeRate: true,
+  widgetsCollapsed: false,
+  trendChartCollapsed: false,
 };
 
 const STORAGE_KEY = 'app_settings';
@@ -44,6 +48,16 @@ export const SettingsStore = signalStore(
     // A handy helper specifically for toggling privacy mode from anywhere (e.g., Dashboard header)
     togglePrivacyMode() {
       patchState(store, (state) => ({ privacyMode: !state.privacyMode }));
+    },
+
+    // Toggle widget collection collapse state
+    toggleWidgetsCollapsed() {
+      patchState(store, (state) => ({ widgetsCollapsed: !state.widgetsCollapsed }));
+    },
+
+    // Toggle trend chart collapse state
+    toggleTrendChartCollapsed() {
+      patchState(store, (state) => ({ trendChartCollapsed: !state.trendChartCollapsed }));
     }
 
   })),

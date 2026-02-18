@@ -19,6 +19,11 @@ $radius: 24px;
 
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-light);
+  
+  // [New] Reduce padding when collapsed to match Asset Trend card
+  &.is-collapsed {
+    padding-bottom: 16px;
+  }
 }
 
 .header-row {
@@ -26,6 +31,11 @@ $radius: 24px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  transition: margin-bottom 0.2s ease;
+
+  &.is-collapsed {
+    margin-bottom: 0;
+  }
 
   .title-group {
     display: flex;
@@ -38,6 +48,12 @@ $radius: 24px;
       font-weight: 700;
       color: var(--text-main);
     }
+  }
+
+  .tools-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .btn-icon-sm {

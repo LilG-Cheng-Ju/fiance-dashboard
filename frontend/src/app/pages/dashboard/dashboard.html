@@ -15,9 +15,25 @@
         </app-total-wealth-card>
       </div>
 
-      <div class="trend-wrapper card">
-        <div class="section-title">Asset Trend</div>
-        <div class="chart-placeholder">Trend Chart Coming Soon...</div>
+      <div class="trend-wrapper card" [class.mobile-collapsed]="settingsStore.trendChartCollapsed()">
+        <div class="card-header">
+          <div class="section-title">資產趨勢</div>
+          
+          <!-- Collapse Button: Visible only on mobile (< 1024px) via CSS -->
+          <button 
+            class="btn-icon-sm mobile-collapse-btn"
+            (click)="settingsStore.toggleTrendChartCollapsed()"
+            [title]="settingsStore.trendChartCollapsed() ? '展開' : '收合'"
+          >
+            <span class="material-symbols-rounded">
+              {{ settingsStore.trendChartCollapsed() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+            </span>
+          </button>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-placeholder">Trend Chart Coming Soon...</div>
+        </div>
       </div>
     </section>
 

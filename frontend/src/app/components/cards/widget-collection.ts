@@ -15,6 +15,7 @@ import { AllocationPieComponent } from '../widgets/allocation-pie';
 import { WIDGET_REGISTRY } from '../../core/config/widget.config';
 import { WidgetStore } from '../../core/store/widget.store';
 import { getAssetRgb } from '../../core/config/asset.config';
+import { SettingsStore } from '../../core/store/settings.store';
 import { PieChartData } from '../widgets/allocation-pie';
 
 // Define the correct interface matching Dashboard output
@@ -35,6 +36,7 @@ export class WidgetCollectionComponent {
   loading = input<boolean>(false);
 
   readonly widgetStore = inject(WidgetStore);
+  readonly settingsStore = inject(SettingsStore);
   readonly registry = WIDGET_REGISTRY;
 
   toggleBtnRef = viewChild.required<ElementRef>('toggleBtn');

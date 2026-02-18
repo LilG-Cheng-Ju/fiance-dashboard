@@ -1,67 +1,83 @@
-<div class="collection-container">
-  <div class="header-row">
+<div class="collection-container" [class.is-collapsed]="settingsStore.widgetsCollapsed()">
+  <div class="header-row" [class.is-collapsed]="settingsStore.widgetsCollapsed()">
     <div class="title-group">
       <h3 class="section-title">概況總覽</h3>
     </div>
 
     <div class="tools-group">
-      <button
-        #toggleBtn
-        class="btn-icon-sm"
-        (click)="widgetStore.toggleSettings()"
-        [class.active]="widgetStore.isSettingsOpen()"
-        title="設定顯示圖表"
+      <!-- Settings Button (Only show when expanded) -->
+      @if (!settingsStore.widgetsCollapsed()) {
+        <button
+          #toggleBtn
+          class="btn-icon-sm"
+          (click)="widgetStore.toggleSettings()"
+          [class.active]="widgetStore.isSettingsOpen()"
+          title="設定顯示圖表"
+        >
+          <span class="material-symbols-rounded">tune</span>
+        </button>
+      }
+
+      <!-- Collapse/Expand Button -->
+      <button 
+        class="btn-icon-sm" 
+        (click)="settingsStore.toggleWidgetsCollapsed()"
+        [title]="settingsStore.widgetsCollapsed() ? '展開' : '收合'"
       >
-        <span class="material-symbols-rounded">tune</span>
+        <span class="material-symbols-rounded">
+          {{ settingsStore.widgetsCollapsed() ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+        </span>
       </button>
     </div>
   </div>
 
-  @if (widgetStore.isSettingsOpen()) {
-    <div #settingsPanel class="settings-panel">
-      <div class="panel-title">選擇顯示卡片</div>
-      <div class="toggles-list">
-        @for (state of widgetStates(); track state.def.id) {
-          <button
-            class="toggle-chip"
-            [class.selected]="state.isSelected"
-            [class.disabled]="!state.isAvailable"
-            (click)="toggleWidget(state.def.id, state.isAvailable)"
-          >
-            @if (state.isSelected) {
-              <span class="material-symbols-rounded check-icon">check</span>
-            } @else if (!state.isAvailable) {
-              <span class="material-symbols-rounded lock-icon">block</span>
-            }
-            {{ state.def.label }}
-          </button>
-        }
-      </div>
-    </div>
-  }
-
-  <div class="grid-layout">
-    @for (widget of visibleWidgets(); track widget.def.id) {
-      <div class="grid-item">
-        <app-widget-card [title]="widget.def.label" [loading]="loading()">
-          @switch (widget.def.id) {
-            @case ('PIE_ASSET') {
-              <app-allocation-pie [data]="assetPieData()" seriesName="資產分佈">
-              </app-allocation-pie>
-            }
-
-            @case ('PIE_TW') {
-              <app-allocation-pie [data]="twStockData()" seriesName="台股配置">
-              </app-allocation-pie>
-            }
-
-            @case ('PIE_US') {
-              <app-allocation-pie [data]="usStockData()" seriesName="美股配置">
-              </app-allocation-pie>
-            }
+  @if (!settingsStore.widgetsCollapsed()) {
+    @if (widgetStore.isSettingsOpen()) {
+      <div #settingsPanel class="settings-panel">
+        <div class="panel-title">選擇顯示卡片</div>
+        <div class="toggles-list">
+          @for (state of widgetStates(); track state.def.id) {
+            <button
+              class="toggle-chip"
+              [class.selected]="state.isSelected"
+              [class.disabled]="!state.isAvailable"
+              (click)="toggleWidget(state.def.id, state.isAvailable)"
+            >
+              @if (state.isSelected) {
+                <span class="material-symbols-rounded check-icon">check</span>
+              } @else if (!state.isAvailable) {
+                <span class="material-symbols-rounded lock-icon">block</span>
+              }
+              {{ state.def.label }}
+            </button>
           }
-        </app-widget-card>
+        </div>
       </div>
     }
-  </div>
+
+    <div class="grid-layout">
+      @for (widget of visibleWidgets(); track widget.def.id) {
+        <div class="grid-item">
+          <app-widget-card [title]="widget.def.label" [loading]="loading()">
+            @switch (widget.def.id) {
+              @case ('PIE_ASSET') {
+                <app-allocation-pie [data]="assetPieData()" seriesName="資產分佈">
+                </app-allocation-pie>
+              }
+
+              @case ('PIE_TW') {
+                <app-allocation-pie [data]="twStockData()" seriesName="台股配置">
+                </app-allocation-pie>
+              }
+
+              @case ('PIE_US') {
+                <app-allocation-pie [data]="usStockData()" seriesName="美股配置">
+                </app-allocation-pie>
+              }
+            }
+          </app-widget-card>
+        </div>
+      }
+    </div>
+  }
 </div>
