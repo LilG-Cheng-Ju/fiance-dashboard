@@ -45,35 +45,42 @@ $border-light: #e2e8f0;
     }
   }
 
-  .filter-pills {
+  .tools-group {
     display: flex;
     gap: 8px;
-    background: var(--bg-main, #f8fafc);
-    padding: 4px;
-    border-radius: 12px;
+  }
+}
 
-    button {
-      border: none;
-      background: transparent;
-      padding: 6px 16px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: #64748b;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
+// Filter Button Style (Consistent with Widget Collection)
+.btn-icon-sm {
+  background: white;
+  border: 1px solid var(--border-light, $border-light);
+  color: var(--text-sub, #64748b);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
 
-      &:hover {
-        color: $text-main;
-      }
+  &:hover, &.active {
+    background-color: var(--primary, $primary);
+    color: white;
+    border-color: var(--primary, $primary);
+  }
 
-      &.active {
-        background: white;
-        color: $primary;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        font-weight: 600;
-      }
-    }
+  .dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 6px;
+    height: 6px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    border: 1px solid white;
   }
 }
 

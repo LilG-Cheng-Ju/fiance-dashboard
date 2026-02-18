@@ -1,0 +1,41 @@
+<!-- Filter Panel (Controlled by isPanelOpen) -->
+@if (isPanelOpen()) {
+  <div class="filter-panel">
+    
+    <!-- 1. Asset Type -->
+    <div class="filter-group">
+      <label>資產類別</label>
+      <div class="chip-container">
+        @for (opt of availableTypes(); track opt.value) {
+          <button 
+            class="chip" 
+            [class.selected]="pendingFilter().type === opt.value"
+            (click)="setPendingType(opt.value)">
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- 2. Currency -->
+    <div class="filter-group">
+      <label>幣別</label>
+      <div class="chip-container">
+        @for (curr of availableCurrencies(); track curr) {
+          <button 
+            class="chip" 
+            [class.selected]="pendingFilter().currency === curr"
+            (click)="setPendingCurrency(curr)">
+            {{ curr === 'ALL' ? '全部' : curr }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="panel-actions">
+      <button class="btn-text" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="applyFilter()">套用篩選</button>
+    </div>
+  </div>
+}
