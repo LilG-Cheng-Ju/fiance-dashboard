@@ -20,7 +20,7 @@
     background-color: var(--asset-color, var(--primary));
   }
 
-  // [New] Top Grid Layout
+  // Top Grid Layout
   .top-grid {
     display: grid;
     grid-template-columns: 1fr 1fr; // Split 50/50
@@ -81,7 +81,7 @@
         }
       }
 
-      // [New] Badge Style (Copied from TotalWealthCard)
+      // Badge Style (Copied from TotalWealthCard)
       .stat-badge {
         display: inline-flex;
         align-items: center;

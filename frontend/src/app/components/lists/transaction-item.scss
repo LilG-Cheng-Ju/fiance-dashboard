@@ -75,7 +75,7 @@
       color: var(--text-main);
       line-height: 1.5;
       
-      // [Fix] Allow text wrapping for long notes
+      // Allow text wrapping for long notes
       white-space: pre-wrap; 
       word-break: break-word;
     }

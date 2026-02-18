@@ -117,16 +117,13 @@ export class AssetPerformanceService {
       exchangeRate: rateToBase,
       unrealizedPnl,
       returnRate,
-      totalPnl,        // 只有在有 transactions 時才會有值
+      totalPnl,
       totalReturnRate,
-      avgExchangeRate  // [New]
+      avgExchangeRate
     };
   }
 
-  /**
-   * 從交易紀錄計算 "歷史總本位幣成本" (Total Base Cost)
-   * 這是最核心的會計邏輯
-   */
+
   private calculateTotalBaseCost(transactions: Transaction[], isForeign: boolean): number | null {
     let currentBaseCost = 0;
     

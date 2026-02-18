@@ -54,7 +54,7 @@ export interface TransactionCreate {
   // --- Dual Track Mechanism Fields ---
   source_amount?: number;
   source_currency?: string;
-  source_asset_id?: number | null; // [New] ID of the asset to deduct funds from
+  source_asset_id?: number | null; // ID of the asset to deduct funds from
 
   note?: string;
   

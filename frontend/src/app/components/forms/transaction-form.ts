@@ -31,7 +31,7 @@ export class TransactionFormComponent {
   private fb = inject(FormBuilder);
   private modalService = inject(ModalService);
   private assetStore = inject(AssetStore);
-  private transactionStore = inject(TransactionStore); // [Fix] Inject to refresh list
+  private transactionStore = inject(TransactionStore);
   private transactionService = inject(TransactionService);
   public rateStore = inject(RateStore);
   public settingsStore = inject(SettingsStore);
@@ -77,8 +77,6 @@ export class TransactionFormComponent {
   // Computed Values for UI
   currentCurrency = computed(() => this.asset().currency);
   selectedSourceId = computed(() => this.formValues()?.source_asset_id || null);
-
-  // [Fix] Move logic from template to computed signal to avoid TS error
   selectedSourceCurrency = computed(() => {
     const id = this.selectedSourceId();
     if (!id) return null;
@@ -107,7 +105,7 @@ export class TransactionFormComponent {
     effect(() => {
       if (!this.isMarketAsset()) return;
       
-      // [Fix] Read from signal (formValues) to ensure effect tracks changes
+      // Read from signal (formValues) to ensure effect tracks changes
       const vals = this.formValues();
       const p = vals.price;
       const q = vals.quantity;
@@ -288,7 +286,7 @@ export class TransactionFormComponent {
       next: () => {
         // Refresh asset to show new balance
         this.assetStore.loadAssets();
-        // [Fix] Refresh transaction list in the background modal
+        // Refresh transaction list in the background modal
         this.transactionStore.loadTransactionsByAsset({ assetId: this.asset().id });
         
         this.close();

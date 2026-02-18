@@ -14,8 +14,8 @@ export interface AppSettings {
   privacyMode: boolean;           // Hide sensitive amounts (****)
   theme: 'light' | 'dark';        // UI Theme
   autoFillExchangeRate: boolean;  // Auto-fill reference rate in forms
-  widgetsCollapsed: boolean;      // [New] Collapse the widget collection section
-  trendChartCollapsed: boolean;   // [New] Collapse the trend chart (mobile only)
+  widgetsCollapsed: boolean;      // Collapse the widget collection section
+  trendChartCollapsed: boolean;   // Collapse the trend chart (mobile only)
 }
 
 // 2. Default fallback values

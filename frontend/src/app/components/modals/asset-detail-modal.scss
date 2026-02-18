@@ -125,9 +125,9 @@ $radius: 24px; // 圓角變數，對齊 simple-asset-form
   display: flex;
   flex-direction: column;
   gap: 24px;
-  position: relative; // [New] For absolute positioning of right column on desktop
+  position: relative; // For absolute positioning of right column on desktop
 
-  // [Fix] Apply flex layout to left-column globally to ensure gap on mobile
+  // Apply flex layout to left-column globally to ensure gap on mobile
   .left-column {
     display: flex;
     flex-direction: column;
