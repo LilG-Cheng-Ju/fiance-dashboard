@@ -1,0 +1,52 @@
+<div class="modal-header">
+  <div class="header-content">
+    <div class="title-row">
+      <h2>{{ asset().name }}</h2>
+      @if (asset().symbol) {
+        <span class="symbol">{{ asset().symbol }}</span>
+      }
+    </div>
+  </div>
+  <div class="header-actions">
+    <!-- Moved Type Badge Here -->
+    <span class="type-badge" 
+          [style.color]="'rgb(' + themeColor() + ')'" 
+          [style.background-color]="'rgba(' + themeColor() + ', 0.1)'">
+      {{ asset().asset_type }}
+    </span>
+
+    <!-- Delete Button -->
+    <button class="icon-btn delete-btn" (click)="onDeleteAsset()" title="Delete Asset">
+      <span class="material-symbols-rounded">delete</span>
+    </button>
+    
+    <!-- Close Button (Updated) -->
+    <button class="icon-btn close-btn" (click)="close()" title="Close">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </div>
+</div>
+
+<div class="modal-body">
+  
+  <!-- Left Column: Summary & Chart -->
+  <div class="left-column">
+    <!-- Summary Component (Replaces the old card) -->
+    <app-asset-summary [asset]="asset()"></app-asset-summary>
+
+    <!-- Trend Chart Placeholder -->
+    <div class="chart-section">
+      <p>📈 Price Trend (Coming Soon)</p>
+    </div>
+  </div>
+
+  <!-- Right Column: Transaction History -->
+  <div class="right-column history-section">
+    <app-transaction-collection
+      [asset]="asset()"
+      [transactions]="transactionStore.transactions()"
+      [loading]="transactionStore.isLoading()"
+      (onAction)="onTransactionAction($event)">
+    </app-transaction-collection>
+  </div>
+</div>

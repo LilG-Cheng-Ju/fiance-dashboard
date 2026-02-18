@@ -1,5 +1,8 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, inject, computed } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { ModalService } from '../../core/services/modal.service';
+import { AssetDetailModalComponent } from '../modals/asset-detail-modal';
+import { AssetView } from '../../core/models/asset.model';
 
 @Component({
   selector: 'app-asset-card',
@@ -7,21 +10,29 @@ import { CommonModule, DecimalPipe } from '@angular/common';
   imports: [CommonModule, DecimalPipe],
   templateUrl: './asset-card.html',
   styleUrls: ['./asset-card.scss'],
+  host: {
+    '(click)': 'openDetail()',
+    '[style.cursor]': '"pointer"'
+  }
 })
 export class AssetCard {
-  asset = input.required<any>(); 
-  marketPrice = input<number>(0);
+  asset = input.required<AssetView>(); 
+  marketPrice = computed(() => this.asset().marketPrice);
   
-  displayCurrency = input<string>('TWD');
-  displayAmount = input<number>(0);
+  displayCurrency = computed(() => this.asset().displayCurrency);
+  displayAmount = computed(() => this.asset().displayAmount);
   
-  pnl = input<number>(0);
-  roi = input<number | string>(0);
-  exchangeRate = input<number>(1);
+  pnl = computed(() => this.asset().unrealizedPnl || 0);
 
-  delete = output<number>();
+  roi = computed(() => this.asset().returnRate || 0);
+  
+  exchangeRate = computed(() => this.asset().exchangeRate || 1);
 
-  onDelete() {
-    this.delete.emit(this.asset().id);
+  private modalService = inject(ModalService);
+
+  openDetail() {
+    this.modalService.open(AssetDetailModalComponent, {
+      asset: this.asset()
+    });
   }
 }

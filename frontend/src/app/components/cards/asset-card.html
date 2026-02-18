@@ -32,6 +32,15 @@
       <span class="detail-item">{{ asset().quantity | number }} 股</span>
       <span class="divider">/</span>
       <span class="detail-item price">@ {{ marketPrice() | number: '1.2-2' }}</span>
+    } @else if (asset().asset_type === 'GOLD') {
+      <span class="detail-item">
+        {{ asset().quantity | number: '1.2-4' }} 
+        {{ asset().meta_data?.unit === 'oz' ? '盎司' : '公克' }}
+      </span>
+      @if (marketPrice()) {
+        <span class="divider">/</span>
+        <span class="detail-item price">@ {{ marketPrice() | number: '1.2-2' }}</span>
+      }
     } @else if (asset().asset_type === 'CASH' && exchangeRate() !== 1) {
       <span class="detail-item">匯率</span>
       <span class="divider">:</span>

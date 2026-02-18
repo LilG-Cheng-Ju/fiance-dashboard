@@ -14,7 +14,8 @@ import { AssetStore } from '../../core/store/asset.store';
 import { MarketStore } from '../../core/store/market.store';
 import { RateStore } from '../../core/store/exchange_rate.store';
 import { SettingsStore } from '../../core/store/settings.store';
-import { AssetType } from '../../core/models/asset.model';
+import { AssetType, AssetView } from '../../core/models/asset.model';
+import { AssetPerformanceService } from '../../core/services/asset-performance.service';
 import { ASSET_CONFIG } from '../../core/config/asset.config';
 
 @Component({
@@ -40,10 +41,12 @@ export class DashboardComponent implements OnInit {
   readonly authStore = inject(AuthStore);
   readonly modalService = inject(ModalService);
   readonly settingsStore = inject(SettingsStore);
+  readonly performanceService = inject(AssetPerformanceService);
 
   private readonly RATE_CACHE_DURATION = 30 * 60 * 1000;
 
   constructor() {
+    // 1. Auto-track stock prices
     effect(() => {
       const assets = this.assetStore.activeAssets();
 
@@ -58,12 +61,13 @@ export class DashboardComponent implements OnInit {
         )
         .map((a) => ({
           ticker: a.symbol!,
-          region: a.currency === 'USD' ? 'US' : 'TW', 
+          region: a.currency === 'USD' ? 'US' : 'TW',
         }));
 
       this.marketStore.startTracking(symbolsToTrack);
     });
 
+    // 2. Auto-track exchange rates
     effect(() => {
       const assets = this.assetStore.assets();
       const baseCurr = this.settingsStore.baseCurrency();
@@ -93,75 +97,33 @@ export class DashboardComponent implements OnInit {
     this.assetStore.loadAssets();
   }
 
-  readonly assetsWithMarketValue = computed(() => {
+  /**
+   * 核心計算邏輯 - "雙軌" 引擎
+   * 將原始 Asset 轉換為包含市值與損益的 AssetView。
+   */
+  readonly assetsWithMarketValue = computed<AssetView[]>(() => {
     const assets = this.assetStore.activeAssets();
     const prices = this.marketStore.priceMap();
     const rates = this.rateStore.rateMap();
     const baseCurr = this.settingsStore.baseCurrency();
-    const showOriginal = this.settingsStore.showOriginalCurrency();
 
     return assets.map((asset) => {
-      let marketPrice = 0;
-      let nativeMarketValue = 0;
-      let baseMarketValue = 0;
-      let unrealizedPnl = 0;
-      let returnRate = 0;
-      
+      // --- 步驟 1: 準備匯率 ---
       const isBaseCurrency = asset.currency === baseCurr;
-      const exchangeRate = isBaseCurrency ? 1.0 : (rates[`${asset.currency}-${baseCurr}`] || 1.0);
       
-      // 區分是「現金型」還是「市場型」資產
-      const isCashLike = asset.asset_type === AssetType.CASH || 
-                         asset.asset_type === AssetType.PENDING || 
-                         asset.asset_type === AssetType.LIABILITY ||
-                         asset.asset_type === AssetType.CREDIT_CARD;
+      // 匯率: 資產幣別 -> 本位幣 (例如 USD -> TWD)
+      const rateToBase = isBaseCurrency ? 1.0 : (rates[`${asset.currency}-${baseCurr}`] || 1.0);
 
-      if (isCashLike) {
-        // 💵 【現金型邏輯】：追蹤「本位幣匯差」
-        // 你的設計：book_value 是台幣總成本 (e.g. 31000)
-        nativeMarketValue = asset.quantity; 
-        baseMarketValue = nativeMarketValue * exchangeRate; 
-
-        const costInBase = asset.book_value; 
-        unrealizedPnl = baseMarketValue - costInBase; // 賺賠多少台幣匯差
-        returnRate = costInBase !== 0 ? (unrealizedPnl / Math.abs(costInBase)) * 100 : 0;
-
-      } else {
-        // 📈 【市場型邏輯 (股票/加密貨幣)】：單純追蹤「原幣漲幅」
-        // 你的設計：book_value 是原幣總成本 (e.g. 6050)
-        if (asset.symbol) {
-          const stockData = prices[asset.symbol];
-          marketPrice = stockData?.price || 0;
-        }
-
-        if (marketPrice > 0) {
-          nativeMarketValue = asset.quantity * marketPrice;
-        } else {
-          nativeMarketValue = asset.book_value; // 沒股價時顯示購買成本
-        }
-        
-        baseMarketValue = nativeMarketValue * exchangeRate;
-
-        const costInNative = asset.book_value; 
-        unrealizedPnl = nativeMarketValue - costInNative; // 賺賠多少美元
-        returnRate = costInNative !== 0 ? (unrealizedPnl / Math.abs(costInNative)) * 100 : 0;
+      // --- 步驟 2: 取得市場價格 ---
+      let marketPrice = 0;
+      if (asset.symbol) {
+        marketPrice = prices[asset.symbol]?.price || 0;
       }
 
-      // 最終交給小卡的顯示字串與數字 (這點我們剛重構得很棒，不用改)
-      const displayCurrency = showOriginal ? asset.currency : baseCurr;
-      const displayAmount = showOriginal ? nativeMarketValue : baseMarketValue;
-
-      return {
-        ...asset,
-        marketPrice,
-        nativeMarketValue,
-        baseMarketValue,
-        displayCurrency,
-        displayAmount,
-        exchangeRate,
-        unrealizedPnl,
-        returnRate,
-      };
+      // --- 步驟 3: 委派給 Service 進行計算 ---
+      // 注意: 這裡不傳入交易紀錄，因此股票的 'totalPnl' (歷史損益) 會是 undefined。
+      // 這是為了 Dashboard 效能的刻意設計。
+      return this.performanceService.computePerformance(asset, marketPrice, rateToBase);
     });
   });
 

@@ -14,17 +14,7 @@
 
   <div class="grid-layout">
     @for (asset of displayedAssets(); track asset.id) {
-      <app-asset-card
-        [asset]="asset"
-        [marketPrice]="asset.marketPrice"
-        [displayCurrency]="asset.displayCurrency"
-        [displayAmount]="asset.displayAmount"
-        [pnl]="asset.unrealizedPnl"
-        [roi]="asset.returnRate"
-        [exchangeRate]="asset.exchangeRate ?? 1"
-        (delete)="onDelete($event)"
-      >
-      </app-asset-card>
+      <app-asset-card [asset]="asset"></app-asset-card>
     }
 
     <div class="add-card-btn">

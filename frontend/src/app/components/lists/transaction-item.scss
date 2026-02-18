@@ -1,0 +1,136 @@
+@use '../../../assets/styles/theme';
+
+:host {
+  display: block;
+}
+
+.tx-item {
+  display: flex;
+  align-items: flex-start; // Align top to handle multi-line notes
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-slate-100);
+  transition: background 0.2s;
+  gap: 16px;
+
+  &:hover {
+    background-color: var(--color-slate-50);
+  }
+
+  // 1. Date Column
+  .tx-date {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 2px; // Align with title
+    min-width: 90px;  // Fixed width for alignment
+    flex-shrink: 0;
+    
+    .full-date {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-sub); // Use sub color for date to reduce visual noise
+      font-family: monospace; // Monospace for better number alignment
+      letter-spacing: -0.5px;
+    }
+  }
+
+  // 2. Details Column
+  .tx-details {
+    flex: 1;
+    min-width: 0; // Crucial for flex child text wrapping
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .tx-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tx-type {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background-color: var(--color-slate-100);
+      color: var(--text-main);
+      
+      &.type-buy { color: #dc2626; background-color: rgba(220, 38, 38, 0.1); }
+      &.type-sell { color: #059669; background-color: rgba(5, 150, 105, 0.1); }
+      &.type-deposit { color: #059669; background-color: rgba(5, 150, 105, 0.1); }
+      &.type-withdraw { color: var(--text-main); }
+    }
+
+    .linked-badge {
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      span { font-size: 16px; }
+    }
+
+    .tx-note {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      line-height: 1.5;
+      
+      // [Fix] Allow text wrapping for long notes
+      white-space: pre-wrap; 
+      word-break: break-word;
+    }
+  }
+
+  // 3. Amount Column
+  .tx-amounts {
+    text-align: right;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    padding-top: 2px;
+
+    .main-amt {
+      font-size: 1rem;
+      font-weight: 700;
+      display: block;
+      white-space: nowrap;
+      
+      &.inflow { color: #dc2626; } // Red for Increase
+      &.outflow { color: #059669; } // Green for Decrease
+      
+      .currency, .unit {
+        font-size: 0.75em;
+        color: var(--text-sub);
+        font-weight: normal;
+        margin-left: 2px;
+      }
+    }
+
+    .sub-amt {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      display: block;
+      white-space: nowrap;
+    }
+  }
+
+  // 4. Actions
+  .settle-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-slate-200);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+    
+    &:hover {
+      color: var(--primary);
+    }
+    
+    span { font-size: 24px; }
+  }
+}

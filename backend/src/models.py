@@ -37,6 +37,7 @@ class TransactionType(str, enum.Enum):
     WITHDRAW = "WITHDRAW"  # 出金
     BUY = "BUY"  # 買入
     SELL = "SELL"  # 賣出
+    DIVIDEND = "DIVIDEND"  # 股息 / 利息
     TRANSFER_OUT = "TRANSFER_OUT"  # 轉帳 (轉出)
     TRANSFER_IN = "TRANSFER_IN"  # 轉帳 (轉入)
     ADJUSTMENT = "ADJUSTMENT"  # 校正

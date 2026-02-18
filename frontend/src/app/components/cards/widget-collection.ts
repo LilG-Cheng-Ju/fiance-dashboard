@@ -17,9 +17,10 @@ import { WidgetStore } from '../../core/store/widget.store';
 import { getAssetRgb } from '../../core/config/asset.config';
 import { PieChartData } from '../widgets/allocation-pie';
 
+// Define the correct interface matching Dashboard output
 interface AssetWithMarketValue extends Asset {
-  marketValue?: number;
-  marketValueTwd?: number;
+  baseMarketValue: number;   // Converted to Base Currency (e.g., TWD)
+  nativeMarketValue: number; // Original Currency Value (e.g., USD)
 }
 
 @Component({
@@ -56,9 +57,7 @@ export class WidgetCollectionComponent {
     if (!this.widgetStore.isSettingsOpen()) return;
 
     const target = event.target as Node;
-
     const clickedInsidePanel = this.settingsPanelRef()?.nativeElement.contains(target);
-
     const clickedOnButton = this.toggleBtnRef().nativeElement.contains(target);
 
     if (!clickedInsidePanel && !clickedOnButton) {
@@ -66,16 +65,19 @@ export class WidgetCollectionComponent {
     }
   }
 
+  // 1. Asset Allocation (Main Pie Chart)
   readonly assetPieData = computed<PieChartData[]>(() => {
     const assets = this.assets() as AssetWithMarketValue[];
     const EXCLUDED_TYPES = [AssetType.CREDIT_CARD, AssetType.LIABILITY, AssetType.PENDING];
 
-    // Group By Logic
+    // Group By Asset Type
     const grouped = assets
       .filter(a => a.include_in_net_worth && !EXCLUDED_TYPES.includes(a.asset_type))
       .reduce(
         (acc, curr) => {
-          const value = curr.marketValueTwd ?? curr.book_value;
+          // FIX: Use 'baseMarketValue' (TWD) to ensure apple-to-apple comparison
+          // If baseMarketValue is missing (edge case), fallback to 0 to safeguard chart
+          const value = curr.baseMarketValue || 0;
           
           if (value > 0) {
             acc[curr.asset_type] = (acc[curr.asset_type] || 0) + value;
@@ -96,23 +98,27 @@ export class WidgetCollectionComponent {
     });
   });
 
+  // 2. TW Stock Breakdown (Optional Widget)
   readonly twStockData = computed<PieChartData[]>(() => {
     const assets = this.assets() as AssetWithMarketValue[];
     return assets
       .filter((a) => a.asset_type === AssetType.STOCK && a.currency === 'TWD')
       .map((a) => ({
         name: a.name,
-        value: a.marketValue ?? a.book_value,
+        // For specific breakdown, we can use native value (since it is all TWD)
+        value: a.nativeMarketValue || 0,
       }));
   });
 
+  // 3. US Stock Breakdown (Optional Widget)
   readonly usStockData = computed<PieChartData[]>(() => {
     const assets = this.assets() as AssetWithMarketValue[];
     return assets
       .filter((a) => a.asset_type === AssetType.STOCK && a.currency === 'USD')
       .map((a) => ({
         name: a.name,
-        value: a.marketValue ?? a.book_value,
+        // For US stocks, we usually want to see USD distribution
+        value: a.nativeMarketValue || 0,
       }));
   });
 
