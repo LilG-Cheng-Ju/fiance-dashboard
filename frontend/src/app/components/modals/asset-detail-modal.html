@@ -1,46 +1,69 @@
 <div class="modal-header">
-  <div class="header-content">
-    <div class="title-row">
-      <h2>{{ asset().name }}</h2>
-      @if (asset().symbol) {
-        <span class="symbol">{{ asset().symbol }}</span>
-      }
-    </div>
-  </div>
-  <div class="header-actions">
-    <!-- Moved Type Badge Here -->
+  
+  <div class="header-left">
+    
     <span class="type-badge" 
           [style.color]="'rgb(' + themeColor() + ')'" 
           [style.background-color]="'rgba(' + themeColor() + ', 0.1)'">
       {{ asset().asset_type }}
     </span>
 
-    <!-- Delete Button -->
+    <div class="name-wrapper">
+      @if (isEditingName()) {
+        <input 
+          type="text" 
+          [formControl]="nameControl" 
+          class="name-input" 
+          (keydown.enter)="saveName()"
+          (blur)="saveName()"
+          autoFocus
+        >
+      } @else {
+        <h2 class="name">{{ asset().name }}</h2>
+        <button class="icon-btn edit-btn" (click)="startEditName()" title="Rename">
+          <span class="material-symbols-rounded">edit</span>
+        </button>
+      }
+    </div>
+
+    @if (asset().symbol) {
+      <span class="symbol">{{ asset().symbol }}</span>
+    }
+
+    <div class="net-worth-toggle">
+      <span class="label">計入總資產：</span>
+      <label class="switch">
+        <input 
+          type="checkbox" 
+          [checked]="asset().include_in_net_worth" 
+          (change)="onToggleNetWorth($event)"
+        >
+        <span class="slider"></span>
+      </label>
+    </div>
+
+  </div>
+
+  <div class="header-right">
     <button class="icon-btn delete-btn" (click)="onDeleteAsset()" title="Delete Asset">
       <span class="material-symbols-rounded">delete</span>
     </button>
     
-    <!-- Close Button (Updated) -->
     <button class="icon-btn close-btn" (click)="close()" title="Close">
       <span class="material-symbols-rounded">close</span>
     </button>
   </div>
+
 </div>
 
 <div class="modal-body">
-  
-  <!-- Left Column: Summary & Chart -->
   <div class="left-column">
-    <!-- Summary Component (Replaces the old card) -->
     <app-asset-summary [asset]="asset()"></app-asset-summary>
-
-    <!-- Trend Chart Placeholder -->
     <div class="chart-section">
       <p>📈 Price Trend (Coming Soon)</p>
     </div>
   </div>
 
-  <!-- Right Column: Transaction History -->
   <div class="right-column history-section">
     <app-transaction-collection
       [asset]="asset()"

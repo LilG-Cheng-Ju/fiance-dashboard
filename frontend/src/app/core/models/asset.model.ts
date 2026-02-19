@@ -100,6 +100,13 @@ export interface AssetCreate {
   meta_data?: any;
 }
 
+export interface AssetUpdate {
+  name?: string;
+  symbol?: string;
+  include_in_net_worth?: boolean;
+  meta_data?: any;
+}
+
 // for UI display with market data
 export interface AssetWithMarketValue extends Asset {
   market_price?: number;

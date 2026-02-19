@@ -13,7 +13,7 @@ import { pipe } from 'rxjs';
 import { switchMap, tap, mergeMap, take } from 'rxjs/operators';
 
 import { AssetService } from '../services/asset.service';
-import { Asset, AssetCreate, AssetStatus, AssetType } from '../models/asset.model';
+import { Asset, AssetCreate, AssetUpdate, AssetStatus, AssetType } from '../models/asset.model';
 
 type AssetState = {
   assets: Asset[];
@@ -129,6 +129,29 @@ export const AssetStore = signalStore(
                 patchState(store, {
                   isLoading: false,
                   error: err?.message || 'Failed to add asset',
+                }),
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    // Update Asset
+    updateAsset: rxMethod<{ id: number; data: AssetUpdate }>(
+      pipe(
+        tap(() => patchState(store, { isLoading: true, error: null })),
+        mergeMap(({ id, data }) =>
+          assetService.updateAsset(id, data).pipe(
+            tapResponse({
+              next: (updatedAsset) =>
+                patchState(store, (state) => ({
+                  assets: state.assets.map((a) => (a.id === id ? updatedAsset : a)),
+                  isLoading: false,
+                })),
+              error: (err: any) =>
+                patchState(store, {
+                  isLoading: false,
+                  error: err?.message || 'Failed to update asset',
                 }),
             }),
           ),
