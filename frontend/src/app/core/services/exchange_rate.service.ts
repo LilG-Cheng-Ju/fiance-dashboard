@@ -8,10 +8,10 @@ import { ExchangeRate } from '../models/market.model';
 })
 export class RateService {
   private http = inject(HttpClient);
-  private readonly API_BASE = 'http://localhost:8000';
+  private readonly API_BASE = '/api/market';
 
   getExchangeRate(fromCurr: string, toCurr: string): Observable<ExchangeRate> {
-    return this.http.get<ExchangeRate>(`${this.API_BASE}/market/rate`, {
+    return this.http.get<ExchangeRate>(`${this.API_BASE}/rate`, {
       params: { from_curr: fromCurr, to_curr: toCurr },
     });
   }

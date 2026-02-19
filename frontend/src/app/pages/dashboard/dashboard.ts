@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect, computed } from '@angular/core';
+import { Component, inject, OnInit, effect, computed, untracked } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 
 import { AssetCollectionComponent } from '../../components/cards/asset-collection';
@@ -72,22 +72,24 @@ export class DashboardComponent implements OnInit {
       const assets = this.assetStore.assets();
       const baseCurr = this.settingsStore.baseCurrency();
       if (assets.length === 0) return;
-
-      const timestamps = this.rateStore.rateTimestamps();
-      const now = Date.now();
-
+      
       const foreignCurrencies = new Set(
         assets.map((a) => a.currency).filter((curr) => curr !== baseCurr),
       );
 
-      foreignCurrencies.forEach((currency) => {
-        const rateKey = `${currency}-${baseCurr}`;
-        const lastUpdate = timestamps[rateKey];
-        const isStale = !lastUpdate || now - lastUpdate > this.RATE_CACHE_DURATION;
+      untracked(() => {
+        const timestamps = this.rateStore.rateTimestamps();
+        const now = Date.now();
 
-        if (isStale) {
-          this.rateStore.loadRate({ fromCurr: currency, toCurr: baseCurr });
-        }
+        foreignCurrencies.forEach((currency) => {
+          const rateKey = `${currency}-${baseCurr}`;
+          const lastUpdate = timestamps[rateKey];
+          const isStale = !lastUpdate || now - lastUpdate > this.RATE_CACHE_DURATION;
+
+          if (isStale) {
+            this.rateStore.loadRate({ fromCurr: currency, toCurr: baseCurr });
+          }
+        });
       });
     });
   }

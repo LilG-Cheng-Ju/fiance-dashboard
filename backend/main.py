@@ -17,9 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(assets.router)
-app.include_router(transactions.router)
-app.include_router(market.router)
+app.include_router(assets.router, prefix="/api")
+app.include_router(transactions.router, prefix="/api")
+app.include_router(market.router, prefix="/api")
 
 @app.get("/")
 def root():

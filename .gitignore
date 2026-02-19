@@ -6,3 +6,12 @@ __pycache__/
 
 # Credentials
 /backend/config/firebase-service-account.json
+
+# --- Firebase ---
+.firebase/
+firebase-debug.log
+
+# --- Angular / Frontend Build ---
+frontend/.angular/
+frontend/dist/
+frontend/node_modules/

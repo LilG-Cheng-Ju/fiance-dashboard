@@ -1,12 +1,12 @@
 export const environment = {
   production: false,
   firebaseConfig: {
-    apiKey: 'AIzaSyAMPVSHncBwwebWN8ZYw-TbYN-q5MhNF5g',
-    authDomain: 'finance-dashboard-802b8.firebaseapp.com',
-    projectId: 'finance-dashboard-802b8',
-    storageBucket: 'finance-dashboard-802b8.firebasestorage.app',
-    messagingSenderId: '927823620438',
-    appId: '1:927823620438:web:17b2048b8532ba77630ef7',
-    measurementId: 'G-4SB1R5LJ2F',
+    apiKey: "AIzaSyBHKMBh7dOVQOM20TmD0qaMB1tjLKW2Cfk",
+    authDomain: "finance-dashboard-487816.firebaseapp.com",
+    projectId: "finance-dashboard-487816",
+    storageBucket: "finance-dashboard-487816.firebasestorage.app",
+    messagingSenderId: "92351951006",
+    appId: "1:92351951006:web:d353227ce71b07aa39cb8f",
+    measurementId: "G-TEQ9TBWPRH"
   },
 };

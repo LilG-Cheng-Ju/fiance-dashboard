@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "finance-dashboard-802b8",
+    "prod": "finance-dashboard-487816"
+  },
+  "targets": {},
+  "etags": {}
+}

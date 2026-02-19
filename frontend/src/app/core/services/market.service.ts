@@ -11,7 +11,7 @@ export type PriceMap = Record<string, StockPrice>;
 })
 export class MarketService {
   private http = inject(HttpClient);
-  private readonly API_BASE = 'http://localhost:8000';
+  private readonly API_BASE = '/api/market';
 
   /**
    * batch fetch stock prices
@@ -22,7 +22,7 @@ export class MarketService {
 
     const requests = targets.map((target) =>
       this.http
-        .get<StockPrice>(`${this.API_BASE}/market/stock/${target.ticker}`, {
+        .get<StockPrice>(`${this.API_BASE}/stock/${target.ticker}`, {
           params: { region: target.region },
         })
         .pipe(
