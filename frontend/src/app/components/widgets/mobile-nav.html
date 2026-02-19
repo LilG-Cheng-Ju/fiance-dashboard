@@ -1,10 +1,11 @@
-<nav class="mobile-bottom-bar">
+<nav class="mobile-bottom-bar" [class.menu-open]="userMenu.isOpen()">
   <div class="mobile-logo">
     <span class="material-symbols-rounded">account_balance_wallet</span>
     <span>MyWealth</span>
   </div>
 
   <app-user-menu
+    #userMenu
     class="bottom-menu"
     [user]="user()"
     (logout)="logout.emit()"

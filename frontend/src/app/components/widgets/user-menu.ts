@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UserProfile } from '../../core/models/user.model';
 import { ModalService } from '../../core/services/modal.service';
 import { SettingsModalComponent } from '../modals/settings-modal';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user-menu',
@@ -19,6 +20,17 @@ export class UserMenuComponent {
   logout = output<void>();
 
   isOpen = signal(false);
+
+  appVersion = environment.appVersion;
+
+  displayVersion = computed(() => {
+    return this.appVersion.split('-')[0];
+  });
+
+  versionLabel = computed(() => {
+    const parts = this.appVersion.split('-');
+    return parts.length > 1 ? parts[1] : null;
+  });
 
   userInitial = computed(() => {
     const u = this.user();

@@ -17,7 +17,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  
   z-index: 50;
+  transition: z-index 0s linear 0.2s;
+
+  &.menu-open {
+    z-index: 110; 
+    transition: none;
+  }
 
   .mobile-logo {
     display: flex;

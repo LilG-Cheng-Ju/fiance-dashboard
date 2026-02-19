@@ -27,6 +27,16 @@
         <span class="material-symbols-rounded icon">logout</span>
         <span>Logout</span>
       </button>
+
+      <!-- Version Display -->
+      <div class="version-footer">
+        <span class="ver-num">v{{ displayVersion() }}</span>
+        
+        @if (versionLabel()) {
+          <span class="ver-badge">{{ versionLabel() }}</span>
+        }
+      </div>
+
     </div>
 
     <div class="backdrop" (click)="closeMenu()"></div>
