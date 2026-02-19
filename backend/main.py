@@ -5,6 +5,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from src import database, models  # noqa: E402
 from src.api import assets, market, transactions  # noqa: E402
+from src.config import firebase  # noqa: E402
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -18,6 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+firebase.init_app()
 
 app.include_router(assets.router, prefix="/api")
 app.include_router(transactions.router, prefix="/api")

@@ -17,7 +17,6 @@ def get_current_user(
 ):
     id_token = credentials.credentials
     
-    print(IS_DEV_ENV, DEV_USER_ID, id_token)  # Debug print to verify values
     if IS_DEV_ENV and DEV_USER_ID and secrets.compare_digest(id_token, DEV_USER_ID):
         return DEV_USER_ID
 
