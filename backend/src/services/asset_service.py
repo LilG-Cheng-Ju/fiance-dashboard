@@ -144,6 +144,29 @@ class AssetService:
             raise e
 
     @staticmethod
+    def update_asset(
+        db: Session, asset_id: int, asset_update: schemas.AssetUpdate, current_user: str
+    ) -> models.Asset:
+        """
+        Update asset details (Name, Symbol, Metadata, etc.)
+        """
+        asset = (
+            db.query(models.Asset)
+            .filter(models.Asset.id == asset_id, models.Asset.user_id == current_user)
+            .first()
+        )
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset not found")
+
+        update_data = asset_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(asset, key, value)
+
+        db.commit()
+        db.refresh(asset)
+        return asset
+
+    @staticmethod
     def delete_asset(db: Session, asset_id: int, current_user: str) -> None:
         """
         Delete an asset and all its transactions.

@@ -63,6 +63,12 @@ class AssetCreate(BaseModel):
     include_in_net_worth: bool = True
     meta_data: Optional[Dict[str, Any]] = {}
 
+class AssetUpdate(BaseModel):
+    name: Optional[str] = None
+    symbol: Optional[str] = None
+    include_in_net_worth: Optional[bool] = None
+    meta_data: Optional[Dict[str, Any]] = None
+
 class AssetResponse(BaseModel):
     id: int
     name: str

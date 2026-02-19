@@ -26,6 +26,15 @@ def create_asset(
 ):
     return asset_service.AssetService.create_asset(db, asset_in, current_user)
 
+@router.patch("/{asset_id}", response_model=schemas.AssetResponse)
+def update_asset(
+    asset_id: int,
+    asset_update: schemas.AssetUpdate,
+    db: Session = Depends(database.get_db),
+    current_user: str = Depends(get_current_user),
+):
+    return asset_service.AssetService.update_asset(db, asset_id, asset_update, current_user)
+
 @router.delete("/{asset_id}")
 def delete_asset(
     asset_id: int,

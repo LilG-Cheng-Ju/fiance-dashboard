@@ -1,8 +1,10 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from src import database, models
-from src.api import assets, market, transactions
-from src.config import firebase
+from dotenv import load_dotenv
+load_dotenv()
+
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from src import database, models  # noqa: E402
+from src.api import assets, market, transactions  # noqa: E402
 
 models.Base.metadata.create_all(bind=database.engine)
 
