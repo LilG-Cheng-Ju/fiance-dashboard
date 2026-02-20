@@ -114,3 +114,15 @@ class Transaction(Base):
     transaction_date = Column(DateTime, default=datetime.now)
 
     asset = relationship("Asset", back_populates="transactions")
+
+
+class Stock(Base):
+    __tablename__ = "stocks"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    symbol = Column(String)
+
+    website = Column(String)
+
+    logo = Column(String)
