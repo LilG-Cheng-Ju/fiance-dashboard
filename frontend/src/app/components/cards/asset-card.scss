@@ -57,6 +57,13 @@
       display: block;
     }
 
+    .asset-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
     .status-badge {
       font-size: 0.65rem;
       font-weight: 700;
