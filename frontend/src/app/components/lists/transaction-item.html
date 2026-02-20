@@ -1,7 +1,8 @@
 <div class="tx-item">
-  <!-- 1. Date Column (Only YYYY/MM/DD) -->
+  <!-- 1. Date Column (Stacked Design) -->
   <div class="tx-date">
-    <span class="full-date">{{ transaction().transaction_date | date:'yyyy/MM/dd' }}</span>
+    <span class="date-day">{{ transaction().transaction_date | date:'MM/dd' }}</span>
+    <span class="date-year">{{ transaction().transaction_date | date:'yyyy' }}</span>
   </div>
   
   <!-- 2. Details Column (Note wraps text) -->

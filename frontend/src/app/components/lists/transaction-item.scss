@@ -7,7 +7,7 @@
 .tx-item {
   display: flex;
   align-items: flex-start; // Align top to handle multi-line notes
-  padding: 16px 20px;
+  padding: 12px var(--card-padding);
   border-bottom: 1px solid var(--color-slate-100);
   transition: background 0.2s;
   gap: 16px;
@@ -20,17 +20,26 @@
   .tx-date {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding-top: 2px; // Align with title
-    min-width: 90px;  // Fixed width for alignment
+    align-items: flex-start; // 左對齊
+    justify-content: center;
+    padding-top: 0; 
+    min-width: 48px;  // ✨ 大幅縮減寬度 (原本 90px)
+    width: 48px;
     flex-shrink: 0;
     
-    .full-date {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-sub); // Use sub color for date to reduce visual noise
-      font-family: monospace; // Monospace for better number alignment
-      letter-spacing: -0.5px;
+    .date-day {
+      font-size: 0.95rem; // ✨ 日期大一點
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.2;
+      font-family: monospace;
+    }
+
+    .date-year {
+      font-size: 0.7rem;  // ✨ 年份小一點
+      color: var(--text-sub);
+      line-height: 1;
+      font-family: monospace;
     }
   }
 
@@ -50,7 +59,7 @@
     }
 
     .tx-type {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       padding: 2px 8px;
       border-radius: 6px;
@@ -71,8 +80,8 @@
     }
 
     .tx-note {
-      font-size: 0.9rem;
-      color: var(--text-main);
+      font-size: var(--fs-small); // ✨ 字體變小 (0.85rem / 0.75rem)
+      color: var(--text-sub);     // ✨ 改用次要顏色，讓視覺層次更好
       line-height: 1.5;
       
       // Allow text wrapping for long notes
@@ -92,13 +101,13 @@
     padding-top: 2px;
 
     .main-amt {
-      font-size: 1rem;
+      font-size: var(--fs-body);
       font-weight: 700;
       display: block;
       white-space: nowrap;
       
-      &.inflow { color: #dc2626; } // Red for Increase
-      &.outflow { color: #059669; } // Green for Decrease
+      &.inflow { color: #dc2626; }
+      &.outflow { color: #059669; }
       
       .currency, .unit {
         font-size: 0.75em;
@@ -109,7 +118,7 @@
     }
 
     .sub-amt {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-sub);
       display: block;
       white-space: nowrap;

@@ -19,7 +19,7 @@ $radius: 24px;
 
 // --- Header ---
 .modal-header {
-  padding: 16px 24px;
+  padding: 16px var(--modal-padding);
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-light);
   
@@ -195,7 +195,7 @@ $radius: 24px;
     align-items: flex-start; 
     height: auto;
     gap: 8px;
-    padding: 16px;
+    padding: 16px var(--modal-padding);
 
     .header-left {
       flex-wrap: wrap;
@@ -244,10 +244,10 @@ $radius: 24px;
 .modal-body {
   flex: 1;
   overflow-y: auto;
-  padding: $modal-padding;
+  padding: var(--modal-padding);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--gap-lg);
   position: relative;
 
   .left-column {

@@ -1,4 +1,3 @@
-$gap: 16px;
 $primary: #2563eb;
 $text-main: #1e293b;
 $border-light: #e2e8f0;
@@ -10,7 +9,7 @@ $border-light: #e2e8f0;
 .collection-container {
   background: var(--bg-card, #ffffff);
   border-radius: 24px;
-  padding: 24px;
+  padding: var(--card-padding);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-light, rgba(0, 0, 0, 0.03));
 }
@@ -30,7 +29,7 @@ $border-light: #e2e8f0;
 
     h3 {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: var(--fs-h2);
       font-weight: 700;
       color: $text-main;
     }
@@ -86,7 +85,7 @@ $border-light: #e2e8f0;
 
 .grid-layout {
   display: grid;
-  gap: $gap;
+  gap: var(--gap-md);
 
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 

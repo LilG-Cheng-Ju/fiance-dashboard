@@ -10,7 +10,7 @@
   background-color: white;
   border: 1px solid var(--border-light);
   border-radius: 16px;
-  padding: 20px;
+  padding: var(--card-padding);
   margin-bottom: 24px;
   animation: slideDown 0.2s ease-out;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -20,7 +20,7 @@
     
     label {
       display: block;
-      font-size: 0.85rem;
+      font-size: var(--fs-small);
       font-weight: 600;
       color: var(--text-sub);
       margin-bottom: 8px;
@@ -39,7 +39,7 @@
     color: var(--text-main);
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.9rem;
+    font-size: var(--fs-small);
     cursor: pointer;
     transition: all 0.2s;
 
@@ -66,7 +66,7 @@
       padding: 8px 16px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: var(--fs-body);
       cursor: pointer;
       border: none;
       transition: all 0.2s;

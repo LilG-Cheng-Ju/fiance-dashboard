@@ -1,55 +1,89 @@
-:root {
-  --color-moonlight-blue: #0f284e; // 🌙 Moonlight Blue
-  --color-blue-light: #1e3a66;
+@mixin global-styles {
+  :root {
+    --color-moonlight-blue: #0f284e;
+    --color-blue-light: #1e3a66;
 
-  --color-slate-50: #f8fafc;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-500: #64748b;
-  --color-slate-800: #1e293b;
-  --color-white: #ffffff;
+    --color-slate-50: #f8fafc;
+    --color-slate-100: #f1f5f9;
+    --color-slate-200: #e2e8f0;
+    --color-slate-500: #64748b;
+    --color-slate-800: #1e293b;
+    --color-white: #ffffff;
+    
+    // Layout
+    --card-padding: 24px;
+    --modal-padding: 24px;
+    
+    --input-height: 48px;
+    --input-padding: 12px 14px;
+    
+    // Typography
+    --fs-hero: 3.5rem;
+    --fs-h1: 1.5rem;
+    --fs-h2: 1.25rem;
+    --fs-body: 1rem;
+    --fs-small: 0.85rem;
+    
+    // Spacing
+    --gap-lg: 24px;
+    --gap-md: 16px;
+    --gap-sm: 8px;
 
-  // --- 2. Semantic Variables ---
-  // [Brand]
-  --primary: var(--color-moonlight-blue);
-  --primary-hover: var(--color-blue-light);
+    // Semantic Variables
+    --primary: var(--color-moonlight-blue);
+    --primary-hover: var(--color-blue-light);
 
-  // [Background]
-  --bg-main: var(--color-slate-50);
-  --bg-card: var(--color-white);
-  --bg-glass: rgba(255, 255, 255, 0.9);
+    --bg-main: var(--color-slate-50);
+    --bg-card: var(--color-white);
+    --bg-glass: rgba(255, 255, 255, 0.9);
 
-  // [Text]
-  --text-main: var(--color-slate-800);
-  --text-sub: var(--color-slate-500);
-  --text-inverse: var(--color-white);
+    --text-main: var(--color-slate-800);
+    --text-sub: var(--color-slate-500);
+    --text-inverse: var(--color-white);
 
-  // [Border]
-  --border-light: var(--color-slate-200);
+    --border-light: var(--color-slate-200);
 
-  // --- Header specific styling (used for top sticky bar) ---
-  --header-gradient-start: rgba(255, 255, 255, 0.66);
-  --header-gradient-end: rgba(255, 255, 255, 0.48);
-  --header-glass-opacity: 0.6;
-  --header-shadow: 0 2px 12px rgba(15, 40, 78, 0.06);
-  --header-border: rgba(226, 232, 240, 0.8);
+    // Header specific
+    --header-gradient-start: rgba(255, 255, 255, 0.66);
+    --header-gradient-end: rgba(255, 255, 255, 0.48);
+    --header-glass-opacity: 0.6;
+    --header-shadow: 0 2px 12px rgba(15, 40, 78, 0.06);
+    --header-border: rgba(226, 232, 240, 0.8);
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --card-padding: 16px;
+      --modal-padding: 16px;
+
+      --input-height: 42px;
+      --input-padding: 10px 12px;
+
+      --fs-hero: 2.2rem;
+      --fs-h1: 1.05rem;
+      --fs-h2: 0.95rem;
+      --fs-body: 0.85rem;
+      --fs-small: 0.75rem;
+
+      --gap-lg: 16px;
+      --gap-md: 12px;
+    }
+  }
 }
 
-// --- 3. SCSS Variables Compatibility (for legacy code) ---
+// SCSS Variables
 $primary: var(--primary);
 $bg-color: var(--bg-main);
 $text-main: var(--text-main);
 $text-sub: var(--text-sub);
 $border-light: var(--border-light);
 
-// Header legacy SCSS fallbacks
 $header-gradient-start: var(--header-gradient-start);
 $header-gradient-end: var(--header-gradient-end);
 $header-glass-opacity: var(--header-glass-opacity);
 $header-shadow: var(--header-shadow);
 $header-border: var(--header-border);
 
-// Legacy variables preserved
 $card-bg: #ffffff;
 $radius: 24px;
 $gap: 24px;

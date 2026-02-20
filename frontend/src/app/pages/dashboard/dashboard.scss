@@ -9,7 +9,6 @@ $text-main: #1e293b;
 $text-sub: #64748b;
 $border-light: #e2e8f0;
 $radius: 24px;
-$gap: 24px;
 
 // --- 1. Global Layout ---
 .app-layout {
@@ -20,14 +19,14 @@ $gap: 24px;
 }
 
 .main-content {
-  padding: $gap;
+  padding: var(--gap-lg); // ✨ 24px -> 16px (Mobile)
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: $gap;
+  gap: var(--gap-lg); // ✨ 24px -> 16px (Mobile)
 }
 
 // --- 2. Global Buttons ---
@@ -95,7 +94,7 @@ $gap: 24px;
 }
 
 .section-title {
-  font-size: 1.25rem; // [Modified] Match Widget Collection title size
+  font-size: var(--fs-h2); // ✨ 1.25rem -> 0.95rem (Mobile)
   font-weight: 700;
   color: var(--text-main, $text-main);
   margin-bottom: 16px;
@@ -105,7 +104,7 @@ $gap: 24px;
 .header-section {
   display: flex;
   flex-direction: column;
-  gap: $gap;
+  gap: var(--gap-lg); // ✨ 24px -> 16px (Mobile)
 
   @media (min-width: 1024px) {
     flex-direction: row;
@@ -122,7 +121,7 @@ $gap: 24px;
 
   .trend-wrapper {
     flex: 1;
-    padding: 24px;
+    padding: var(--card-padding); // ✨ 24px -> 16px (Mobile)
     display: flex;
     flex-direction: column;
     transition: all 0.2s ease;

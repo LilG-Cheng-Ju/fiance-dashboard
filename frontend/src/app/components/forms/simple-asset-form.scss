@@ -14,7 +14,7 @@
 }
 
 .header {
-  padding: 20px 24px;
+  padding: var(--modal-padding);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,7 +22,7 @@
 
   h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--fs-h2);
     font-weight: 700;
   }
 
@@ -44,16 +44,16 @@
 }
 
 .form-body {
-  padding: 24px;
+  padding: var(--modal-padding);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--gap-lg);
   overflow-y: auto; 
 }
 
 .row {
   display: flex;
-  gap: 16px;
+  gap: var(--gap-md); // ✨ 16px -> var
   
   .group-name { flex: 2; }
   .group-currency { flex: 1; }
@@ -64,7 +64,7 @@
 .math-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
-  gap: 16px;
+  gap: var(--gap-md); // ✨ 16px -> var
 
   .math-left {
     display: flex;
@@ -87,16 +87,21 @@
   gap: 8px;
 
   label {
-    font-size: 0.85rem;
+    font-size: var(--fs-small);
     font-weight: 600;
     color: var(--text-sub);
+    
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   input, select {
-    padding: 12px 14px;
+    height: var(--input-height);
+    padding: var(--input-padding);
     border: 1px solid var(--border-light);
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: var(--fs-small);
     color: var(--text-main);
     outline: none;
     transition: all 0.2s;
@@ -159,7 +164,7 @@
 
 .amount-row {
   display: flex;
-  gap: 12px;
+  gap: var(--gap-md);
   align-items: center;
 
   input {
@@ -199,7 +204,7 @@
   background-color: var(--color-slate-100);
   padding: 4px;
   border-radius: 12px;
-  height: 46px; 
+  height: var(--input-height);
   align-items: center;
 
   button {
@@ -207,7 +212,7 @@
     background: transparent;
     padding: 6px 14px;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: var(--fs-body);
     font-weight: 600;
     color: var(--text-sub);
     cursor: pointer;
@@ -248,7 +253,7 @@
 
 .calc-result {
   margin-top: 12px;
-  padding: 10px 14px;
+  padding: var(--input-padding);
   background-color: rgba(0, 0, 0, 0.04);
   border-radius: 10px;
   display: flex;
@@ -256,13 +261,13 @@
   align-items: center;
 
   .label { 
-    font-size: 0.85rem; 
+    font-size: var(--fs-small);
     color: var(--text-sub); 
     font-weight: 500;
   }
   
   .value { 
-    font-size: 1.05rem; 
+    font-size: var(--fs-body);
     font-weight: 700; 
     color: var(--text-main); 
     
@@ -276,7 +281,7 @@
 }
 
 .switch-wrapper {
-  height: 45px; 
+  height: var(--input-height);
   display: flex;
   align-items: center; 
   gap: 12px;
@@ -321,7 +326,7 @@
 .actions {
   margin-top: 12px;
   display: flex;
-  gap: 12px;
+  gap: var(--gap-md);
   flex-shrink: 0;
 
   button {
@@ -329,7 +334,7 @@
     padding: 14px;
     border-radius: 12px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: var(--fs-body);
     cursor: pointer;
     border: none;
     transition: all 0.2s;

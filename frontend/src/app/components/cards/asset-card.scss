@@ -41,7 +41,7 @@
 
     .asset-name {
       margin: 0;
-      font-size: 1rem;
+      font-size: var(--fs-body); // ✨ 1rem -> 0.85rem (Mobile)
       font-weight: 700;
       color: var(--text-main);
       white-space: nowrap;
@@ -50,7 +50,7 @@
     }
 
     .asset-symbol {
-      font-size: 0.75rem;
+      font-size: 0.75rem; // 保持小字體，或者用 var(--fs-small) 但那樣電腦版會變大一點點
       color: var(--text-sub);
       font-weight: 500;
       letter-spacing: 0.5px;
@@ -101,7 +101,7 @@
       }
 
       .amount {
-        font-size: 1.5rem;
+        font-size: var(--fs-h1); // ✨ 1.5rem -> 1.05rem (Mobile)
         font-weight: 700;
         color: var(--text-main);
         letter-spacing: -0.5px;
