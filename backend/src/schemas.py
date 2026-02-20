@@ -101,7 +101,6 @@ class AssetResponse(BaseModel):
 
     currency: str
     symbol: Optional[str]
-    logo_url: Optional[str]
 
     quantity: float  # Current holding quantity
     average_cost: float  # Average cost (used for profit and loss calculation)

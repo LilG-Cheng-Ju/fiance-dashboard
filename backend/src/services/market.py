@@ -30,6 +30,9 @@ def normalize_ticker(ticker: str, region: str = "US") -> list[str]:
     if region == "TW":
         if not (ticker.endswith(".TW") or ticker.endswith(".TWO")):
             target_ticker = f"{ticker}.TW"
+    elif region == "JP":
+        if not (ticker.endswith(".T")):
+            target_ticker = f"{ticker}.T"
 
     tickers_to_try = [target_ticker]
 

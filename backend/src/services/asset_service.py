@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src import models, schemas
 
-from market import get_stock_profile
+from .market import get_stock_profile
 
 
 class AssetService:
