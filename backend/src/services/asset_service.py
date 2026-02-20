@@ -5,6 +5,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src import models, schemas
 
+from market import get_stock_profile
+
 
 class AssetService:
 
@@ -52,7 +54,7 @@ class AssetService:
                     db.query(models.Asset)
                     .filter(
                         models.Asset.id == asset_in.source_asset_id,
-                        models.Asset.user_id == current_user
+                        models.Asset.user_id == current_user,
                     )
                     .first()
                 )
@@ -92,6 +94,16 @@ class AssetService:
                         source_asset.quantity -= deduct_amount
 
                     related_tx_id = source_tx.id
+            #  [For Stocks Only] Get Website and Logo URL
+            if asset_in.symbol:
+                region = asset_in.meta_data.get("region", "US")
+                profile = get_stock_profile(asset_in.symbol, region)
+                asset_in.meta_data["website"] = profile["website"]
+                asset_in.meta_data["logo_url"] = profile["logo_url"]
+            else:
+                # If symbol isn't found
+                asset_in.meta_data["website"] = None
+                asset_in.meta_data["logo_url"] = None
 
             # 3. Create Asset Record
             db_asset = models.Asset(
