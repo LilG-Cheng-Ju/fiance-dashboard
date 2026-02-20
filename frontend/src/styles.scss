@@ -1,7 +1,7 @@
-/* Import theme variables */
 @use 'assets/styles/theme';
 
-/* Global Reset */
+@include theme.global-styles;
+
 html,
 body {
   margin: 0;

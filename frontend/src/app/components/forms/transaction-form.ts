@@ -13,7 +13,6 @@ import { TransactionService } from '../../core/services/transaction.service';
 import { AssetView, AssetType, TransactionType } from '../../core/models/asset.model';
 import { TransactionCreate } from '../../core/models/transaction.model';
 import { getLocalISODate } from '../../core/helpers/date.helper';
-import { InfoTooltipComponent } from '../widgets/info-tooltip';
 
 export interface TransactionFormData {
   asset: AssetView;
@@ -23,7 +22,7 @@ export interface TransactionFormData {
 @Component({
   selector: 'app-transaction-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, InfoTooltipComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './transaction-form.html',
   styleUrls: ['./transaction-form.scss']
 })
