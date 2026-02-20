@@ -20,7 +20,7 @@
 
 // 1. Action Buttons Header
 .action-header {
-  padding: 16px;
+  padding: var(--card-padding);
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -41,7 +41,7 @@
     gap: 6px;
     padding: 10px 16px;
     border-radius: 12px;
-    font-size: 0.9rem;
+    font-size: var(--fs-body);
     font-weight: 600;
     cursor: pointer;
     border: none;

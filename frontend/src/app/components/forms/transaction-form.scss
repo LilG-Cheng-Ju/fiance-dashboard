@@ -14,13 +14,13 @@
 }
 
 .header {
-  padding: 20px 24px;
+  padding: var(--modal-padding);
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-light);
 
-  h3 { margin: 0; font-size: 1.1rem; font-weight: 700; }
+  h3 { margin: 0; font-size: var(--fs-h2); font-weight: 700; }
   .close-btn {
     background: transparent; border: none; cursor: pointer; color: var(--text-sub);
     span { font-size: 24px; }
@@ -28,25 +28,27 @@
 }
 
 .form-body {
-  padding: 24px;
+  padding: var(--modal-padding);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--gap-lg);
 }
 
 .field {
   display: flex; flex-direction: column; gap: 8px;
-  label { font-size: 0.85rem; font-weight: 600; color: var(--text-sub); }
+  label { font-size: var(--fs-small); font-weight: 600; color: var(--text-sub); }
   input, select {
-    padding: 12px 14px; border: 1px solid var(--border-light); border-radius: 12px;
-    font-size: 1rem; color: var(--text-main); width: 100%; box-sizing: border-box;
+    height: var(--input-height);
+    padding: var(--input-padding); 
+    border: 1px solid var(--border-light); border-radius: 12px;
+    font-size: var(--fs-body); color: var(--text-main); width: 100%; box-sizing: border-box;
     &:focus { border-color: var(--primary); outline: none; }
   }
   .hint { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
   .error-msg { font-size: 0.75rem; color: #ef4444; margin-top: 2px; font-weight: 600; }
 }
 
-.row { display: flex; gap: 16px; }
+.row { display: flex; gap: var(--gap-md); }
 
 .amount-row input {
   font-weight: 700; font-size: 1.2rem;
@@ -71,7 +73,7 @@
 .actions {
   display: flex; gap: 12px; margin-top: 12px;
   button {
-    flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; border: none;
+    flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; font-size: var(--fs-body); cursor: pointer; border: none;
     &:disabled { opacity: 0.5; cursor: not-allowed; }
   }
   .btn-cancel { background: var(--color-slate-100); color: var(--text-sub); }

@@ -1,6 +1,5 @@
 @use '../../../assets/styles/theme';
 
-$gap: 16px;
 $radius: 24px;
 
 :host {
@@ -15,7 +14,7 @@ $radius: 24px;
   );
 
   border-radius: $radius;
-  padding: 24px;
+  padding: var(--card-padding);
 
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-light);
@@ -44,7 +43,7 @@ $radius: 24px;
 
     .section-title {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: var(--fs-h2);
       font-weight: 700;
       color: var(--text-main);
     }
@@ -131,9 +130,9 @@ $radius: 24px;
 
 .grid-layout {
   display: grid;
-  gap: $gap;
+  gap: var(--gap-md);
 
-  // Mobile Default: 1 column (一排一個，解決太擠的問題)
+  // Mobile Default: 1 column
   grid-template-columns: 1fr;
 
   // Tablet (e.g. iPad Portrait): 2 columns

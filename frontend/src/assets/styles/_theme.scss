@@ -8,6 +8,26 @@
   --color-slate-500: #64748b;
   --color-slate-800: #1e293b;
   --color-white: #ffffff;
+  
+  // 1. Card Padding
+  --card-padding: 24px;
+  --modal-padding: 24px;
+  
+  // 2. Input Height
+  --input-height: 48px;
+  --input-padding: 12px 14px;
+  
+  // 3. Typography
+  --fs-hero: 3.5rem;      // 總資產大數字
+  --fs-h1: 1.5rem;        // 頁面標題
+  --fs-h2: 1.25rem;       // 卡片標題
+  --fs-body: 1rem;        // 一般內文
+  --fs-small: 0.85rem;    // 輔助文字
+  
+  // 4. Gap
+  --gap-lg: 24px;
+  --gap-md: 16px;
+  --gap-sm: 8px;
 
   // --- 2. Semantic Variables ---
   // [Brand]
@@ -33,6 +53,26 @@
   --header-glass-opacity: 0.6;
   --header-shadow: 0 2px 12px rgba(15, 40, 78, 0.06);
   --header-border: rgba(226, 232, 240, 0.8);
+}
+
+// --- Mobile Override ---
+@media (max-width: 768px) {
+  :root {
+    --card-padding: 16px;
+    --modal-padding: 16px;
+
+    --input-height: 42px;
+    --input-padding: 10px 12px;
+
+    --fs-hero: 2.2rem;
+    --fs-h1: 1.05rem;
+    --fs-h2: 0.95rem;
+    --fs-body: 0.85rem;
+    --fs-small: 0.75rem;
+
+    --gap-lg: 16px;
+    --gap-md: 12px;
+  }
 }
 
 // --- 3. SCSS Variables Compatibility (for legacy code) ---
