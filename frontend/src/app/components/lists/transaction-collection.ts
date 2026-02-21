@@ -24,6 +24,7 @@ export class TransactionCollectionComponent {
   loading = input<boolean>(false);
 
   onAction = output<string>(); // Emits action ID (e.g., 'BUY', 'DEPOSIT')
+  onSettle = output<Transaction>();
 
   // Button Logic Configuration
   buttons = computed<ActionButton[]>(() => {
@@ -73,5 +74,9 @@ export class TransactionCollectionComponent {
 
   handleAction(action: string) {
     this.onAction.emit(action);
+  }
+
+  handleSettle(tx: Transaction) {
+    this.onSettle.emit(tx);
   }
 }

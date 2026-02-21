@@ -69,7 +69,8 @@
       [asset]="asset()"
       [transactions]="transactionStore.transactions()"
       [loading]="transactionStore.isLoading()"
-      (onAction)="onTransactionAction($event)">
+      (onAction)="onTransactionAction($event)"
+      (onSettle)="onSettleTransaction($event)">
     </app-transaction-collection>
   </div>
 </div>

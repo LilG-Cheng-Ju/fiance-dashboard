@@ -10,7 +10,7 @@
   padding: 12px var(--card-padding);
   border-bottom: 1px solid var(--color-slate-100);
   transition: background 0.2s;
-  gap: 16px;
+  gap: var(--gap-md);
 
   &:hover {
     background-color: var(--color-slate-50);
@@ -20,15 +20,15 @@
   .tx-date {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; // 左對齊
+    align-items: flex-start;
     justify-content: center;
     padding-top: 0; 
-    min-width: 48px;  // ✨ 大幅縮減寬度 (原本 90px)
+    min-width: 48px;
     width: 48px;
     flex-shrink: 0;
     
     .date-day {
-      font-size: 0.95rem; // ✨ 日期大一點
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--text-main);
       line-height: 1.2;
@@ -36,7 +36,7 @@
     }
 
     .date-year {
-      font-size: 0.7rem;  // ✨ 年份小一點
+      font-size: 0.7rem;
       color: var(--text-sub);
       line-height: 1;
       font-family: monospace;
@@ -80,8 +80,8 @@
     }
 
     .tx-note {
-      font-size: var(--fs-small); // ✨ 字體變小 (0.85rem / 0.75rem)
-      color: var(--text-sub);     // ✨ 改用次要顏色，讓視覺層次更好
+      font-size: var(--fs-small);
+      color: var(--text-sub);
       line-height: 1.5;
       
       // Allow text wrapping for long notes
@@ -127,19 +127,29 @@
 
   // 4. Actions
   .settle-btn {
+    // Reset & Base
     border: none;
-    background: transparent;
+    background-color: var(--primary);
     cursor: pointer;
-    color: var(--color-slate-200);
-    padding: 4px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    transition: color 0.2s;
+    
+    // Typography & Sizing
+    color: white;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
     
     &:hover {
-      color: var(--primary);
+      background-color: var(--primary-hover);
     }
-    
-    span { font-size: 24px; }
+
+    // Mobile Optimization
+    @media (max-width: 768px) {
+      padding: 4px 8px;
+    }
   }
 }

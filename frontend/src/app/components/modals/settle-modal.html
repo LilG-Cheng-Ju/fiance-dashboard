@@ -1,0 +1,54 @@
+<div class="modal-card">
+  <div class="header">
+    <h3>結清款項</h3>
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </div>
+
+  <div class="body">
+    <!-- 1. Transaction Info Card -->
+    <div class="info-card" [class.inflow]="direction() === 'INFLOW'" [class.outflow]="direction() === 'OUTFLOW'">
+      <div class="amount-row">
+        <span class="label">{{ direction() === 'INFLOW' ? '待收金額' : '待付金額' }}</span>
+        <span class="amount">
+          {{ tx().amount > 0 ? '+' : '' }}{{ tx().amount | number }}
+          <span class="currency">{{ pendingAsset().currency }}</span>
+        </span>
+      </div>
+      <div class="note-row">
+        <span class="date">{{ tx().transaction_date | date:'yyyy/MM/dd' }}</span>
+        <span class="note">{{ tx().note || '無備註' }}</span>
+      </div>
+    </div>
+
+    <!-- 2. Action Selection -->
+    <div class="action-section">
+      <div class="label-row">
+        <label class="section-label">{{ actionLabel() }} (選填)</label>
+        <app-info-tooltip 
+          text="若選擇連動帳戶，系統將自動在該帳戶建立對應的交易紀錄，並刪除此待結算項目。 若不連動，則僅刪除此待結算項目，不會影響其他資產餘額。">
+        </app-info-tooltip>
+      </div>
+      
+      <div class="select-wrapper">
+        <select [(ngModel)]="selectedTargetId">
+          <option [ngValue]="null">不連動 (僅刪除紀錄)</option>
+          @for (asset of availableTargets(); track asset.id) {
+            <option [ngValue]="asset.id">
+              {{ asset.name }}
+            </option>
+          }
+        </select>
+        <span class="material-symbols-rounded arrow">expand_more</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn-cancel" (click)="close()">取消</button>
+    <button class="btn-confirm" (click)="confirm()" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? '處理中...' : '確認結清' }}
+    </button>
+  </div>
+</div>

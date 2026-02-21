@@ -59,8 +59,8 @@
 
   <!-- 4. Actions -->
   @if (showSettleBtn()) {
-    <button class="icon-btn settle-btn" (click)="onSettle.emit(transaction())" title="結清此款項">
-      <span class="material-symbols-rounded">check_circle</span>
+    <button class="settle-btn" (click)="onSettle.emit(transaction())">
+      結清
     </button>
   }
 </div>

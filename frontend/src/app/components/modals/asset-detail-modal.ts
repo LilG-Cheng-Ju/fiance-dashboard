@@ -10,6 +10,7 @@ import { AssetSummaryComponent } from '../widgets/asset-summary';
 import { AssetPerformanceService } from '../../core/services/asset-performance.service';
 import { TransactionCollectionComponent } from '../lists/transaction-collection';
 import { TransactionFormComponent, TransactionFormData } from '../forms/transaction-form';
+import { SettleModalComponent } from './settle-modal';
 
 @Component({
   selector: 'app-asset-detail-modal',
@@ -105,6 +106,13 @@ export class AssetDetailModalComponent implements OnInit, OnDestroy {
       asset: this.asset(),
       action: action
     } as TransactionFormData);
+  }
+
+  onSettleTransaction(tx: any) {
+    this.modalService.open(SettleModalComponent, {
+      asset: this.asset(),
+      transaction: tx
+    });
   }
 
   onDeleteAsset() {
