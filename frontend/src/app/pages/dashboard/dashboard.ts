@@ -52,6 +52,12 @@ export class DashboardComponent implements OnInit {
 
       if (assets.length === 0) return;
 
+      const currencyRegionMap: Record<string, string> = {
+        USD: 'US',
+        JPY: 'JP',
+        TWD: 'TW',
+      };
+
       const symbolsToTrack = assets
         .filter(
           (a) =>
@@ -61,7 +67,7 @@ export class DashboardComponent implements OnInit {
         )
         .map((a) => ({
           ticker: a.symbol!,
-          region: a.currency === 'USD' ? 'US' : 'TW',
+          region: a.meta_data?.region || currencyRegionMap[a.currency] || 'TW',
         }));
 
       this.marketStore.startTracking(symbolsToTrack);

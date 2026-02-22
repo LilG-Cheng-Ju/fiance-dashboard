@@ -124,12 +124,15 @@ export const AssetStore = signalStore(
                         isLoading: false,
                     }));
 
-                    setTimeout(() => {
-                      assetService.getAssets().pipe(take(1)).subscribe({
-                        next: (assets) => patchState(store, { assets }),
-                        error: (err) => console.error('Silent logo refresh failed', err)
-                      });
-                    }, 5000);
+                    if ([AssetType.STOCK, AssetType.CRYPTO, AssetType.GOLD].includes(newAssetData.asset_type)) {
+                        setTimeout(() => {
+                          // Silent Refresh: Call service directly to avoid TS error and loading spinner
+                          assetService.getAssets().pipe(take(1)).subscribe({
+                            next: (assets) => patchState(store, { assets }),
+                            error: (err) => console.error('Silent logo refresh failed', err)
+                          });
+                        }, 5000);
+                    }
                 }
               },
               error: (err: any) =>
