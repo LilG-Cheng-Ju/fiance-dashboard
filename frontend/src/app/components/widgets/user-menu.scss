@@ -123,6 +123,15 @@
     }
   }
 
+  &.admin-btn {
+    color: var(--primary);
+    font-weight: 600;
+    
+    .icon { color: var(--primary); }
+    
+    &:hover { background-color: rgba(15, 40, 78, 0.05); }
+  }
+
   &.logout {
     color: #ef4444;
 

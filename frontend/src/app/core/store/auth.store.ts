@@ -1,29 +1,47 @@
-import { inject } from '@angular/core';
+import { inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, tap, switchMap } from 'rxjs';
+import { tapResponse } from '@ngrx/operators';
+import { pipe, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { UserProfile } from '../models/user.model';
+import { UserService } from '../services/user.service';
+import { UserProfile, User, UserRole } from '../models/user.model';
 
 interface AuthState {
   user: UserProfile | null;
+  backendUser: User | null;
   loading: boolean;
   error: string | null;
+  initialized: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
+  backendUser: null,
   loading: true, // Start with true to block UI while checking auth status
   error: null,
+  initialized: false,
 };
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
 
+  withComputed(({ backendUser, user }) => ({
+    isAuthenticated: computed(() => !!user()),
+    role: computed(() => backendUser()?.role || UserRole.USER),
+    isAdmin: computed(() => {
+      const r = backendUser()?.role;
+      return r === UserRole.ADMIN || r === UserRole.OWNER;
+    }),
+    isOwner: computed(() => backendUser()?.role === UserRole.OWNER),
+  })),
+
   withMethods((store) => {
     const authService = inject(AuthService);
+    const userService = inject(UserService);
     const router = inject(Router);
 
     return {
@@ -31,21 +49,49 @@ export const AuthStore = signalStore(
       _connectUserStream: rxMethod<void>(
         pipe(
           switchMap(() => authService.user$),
-          tap((user) => {
-            patchState(store, {
-              user,
-              loading: false,
-              error: null,
-            });
-
-            // Redirect logic could be placed here or in a Guard
-            if (user) {
-              // Optional: Redirect to dashboard if on login page
-              const currentUrl = router.url;
-              if (currentUrl.includes('/login')) {
-                router.navigate(['/dashboard']);
-              }
+          switchMap((user) => {
+            if (!user) {
+              // Case: Logout
+              patchState(store, {
+                user: null,
+                backendUser: null,
+                loading: false,
+                error: null,
+                initialized: true,
+              });
+              return of(null);
             }
+
+            // Case: Firebase Login Success -> Set basic info
+            patchState(store, { user, loading: true, error: null });
+
+            // Chain: Fetch Backend User Role
+            return userService.getMe().pipe(
+              tapResponse({
+                next: (backendUser) => {
+                  patchState(store, {
+                    backendUser,
+                    loading: false,
+                    initialized: true,
+                  });
+
+                  // Redirect logic
+                  const currentUrl = router.url;
+                  if (currentUrl.includes('/login')) {
+                    router.navigate(['/dashboard']);
+                  }
+                },
+                error: (err) => {
+                  console.error('[AuthStore] Failed to fetch backend user', err);
+                  // Fallback: User is logged in Firebase but backend failed
+                  patchState(store, {
+                    loading: false,
+                    error: 'Backend sync failed',
+                    initialized: true,
+                  });
+                },
+              })
+            );
           }),
         ),
       ),

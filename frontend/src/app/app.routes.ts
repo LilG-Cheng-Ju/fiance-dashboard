@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, loginGuard } from './core/guards/auth.guard'; // Import guards
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,11 @@ export const routes: Routes = [
     children: [
       // ... your dashboard child routes
     ],
+  },
+  {
+    path: 'admin/users',
+    loadComponent: () => import('./pages/user-management/user-management').then((m) => m.UserManagementComponent),
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: '',

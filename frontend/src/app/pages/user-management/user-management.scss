@@ -1,0 +1,227 @@
+@use '../../../assets/styles/theme';
+
+.page-container {
+  padding: var(--gap-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .left-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .back-btn {
+    background: white;
+    border: 1px solid var(--border-light);
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-sub);
+    transition: all 0.2s;
+    &:hover { background: var(--color-slate-100); color: var(--text-main); }
+  }
+
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    h1 { margin: 0; font-size: var(--fs-h1); color: var(--text-main); }
+    .badge { 
+      background: var(--color-slate-800); color: white; 
+      padding: 4px 8px; border-radius: 6px; font-size: var(--fs-tiny); font-weight: 700; 
+    }
+  }
+
+  .refresh-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    &:hover { background: var(--color-slate-100); color: var(--primary); }
+    &.spinning { animation: spin 1s linear infinite; color: var(--primary); }
+  }
+
+  .search-box {
+    position: relative;
+    input {
+      padding: 10px 16px; padding-left: 40px;
+      border-radius: 12px; border: 1px solid var(--border-light);
+      width: 250px;
+      &:focus { outline: none; border-color: var(--primary); }
+    }
+    .icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--text-sub); font-size: 20px;
+    }
+  }
+}
+
+.filter-tabs {
+  display: flex; 
+  gap: 8px; 
+  margin-bottom: 16px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    background: transparent; border: none; padding: 8px 16px;
+    color: var(--text-sub); font-weight: 600; cursor: pointer;
+    border-bottom: 2px solid transparent;
+    &.active { color: var(--primary); border-bottom-color: var(--primary); }
+    &:hover { color: var(--text-main); }
+  }
+}
+
+.table-container {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  overflow-x: auto;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+
+  table {
+    width: 100%; border-collapse: collapse; min-width: 800px;
+    th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--color-slate-100); }
+    
+    th { 
+      color: var(--text-sub); font-size: var(--fs-small); font-weight: 600; background: var(--color-slate-50); 
+      &.sortable { cursor: pointer; user-select: none; &:hover { color: var(--text-main); background: var(--color-slate-100); } }
+      .sort-icon { font-size: var(--fs-tiny); margin-left: 4px; }
+    }
+    
+    tr:last-child td { border-bottom: none; }
+  }
+
+  .action-col {
+    width: 48px;
+    text-align: center;
+  }
+}
+
+.user-cell {
+  display: flex; align-items: center; gap: 12px;
+  .avatar {
+    width: 36px; height: 36px; background: var(--color-slate-200);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--text-sub);
+  }
+  .info {
+    display: flex; flex-direction: column;
+    .email { font-weight: 600; color: var(--text-main); font-size: var(--fs-body); }
+    .uid { font-size: var(--fs-tiny); color: var(--text-sub); font-family: monospace; }
+  }
+  
+  .me-badge {
+    background: var(--primary);
+    color: white;
+    font-size: var(--fs-tiny); font-weight: 700;
+    padding: 2px 6px; border-radius: 4px;
+    margin-left: 8px;
+  }
+}
+
+.role-select {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-light); font-size: var(--fs-small);
+  background: white; font-weight: 600; color: var(--text-main); cursor: pointer; 
+}
+
+.role-badge {
+  padding: 4px 8px; border-radius: 6px; font-size: var(--fs-small); font-weight: 700;
+  background: var(--color-slate-100); color: var(--text-sub);
+  
+  &[data-role="OWNER"] { background: #fef3c7; color: #d97706; }
+  &[data-role="ADMIN"] { background: #e0e7ff; color: #4338ca; }
+  &[data-role="PAID"] { background: #dcfce7; color: #15803d; }
+}
+
+.view-mode-group {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.edit-mode-group {
+  display: flex; align-items: center; gap: 4px;
+}
+
+.btn-icon-xs {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--text-sub);
+
+  span { font-size: 18px; }
+
+  &:hover { background: var(--color-slate-100); color: var(--text-main); }
+  
+  &.edit:hover { color: var(--primary); background: rgba(15, 40, 78, 0.1); }
+  &.save { color: #15803d; background: #dcfce7; &:hover { background: #bbf7d0; } }
+  &.cancel { color: #b91c1c; background: #fee2e2; &:hover { background: #fecaca; } }
+
+  &.delete {
+    color: var(--text-sub);
+    &:hover { background: var(--color-slate-200); color: var(--text-main); }
+  }
+}
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-small); font-weight: 500; color: var(--text-main);
+  line-height: 1; /* ✨ 收緊行高 */
+  padding-top: 1px; /* ✨ 微調：視覺上把字往上推 1px */
+
+  .dot { 
+    width: 8px; 
+    height: 8px; 
+    border-radius: 50%; 
+    background: 
+    var(--color-slate-200); 
+  }
+
+  &.active { 
+    .dot { background: #22c55e; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2); }
+  }
+  &.inactive { 
+    color: var(--text-sub);
+    .dot { background: var(--color-slate-300); }
+  }
+  &.new { 
+    .dot { background: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+  }
+}
+
+.date-cell { color: var(--text-sub); font-size: var(--fs-small); }
+
+.pagination {
+  display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 16px;
+  button {
+    padding: 8px 16px; border: 1px solid var(--border-light); background: white;
+    border-radius: 8px; cursor: pointer;
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  .page-info { font-size: var(--fs-small); color: var(--text-sub); }
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

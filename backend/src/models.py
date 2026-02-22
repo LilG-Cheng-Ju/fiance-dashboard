@@ -42,6 +42,14 @@ class TransactionType(str, enum.Enum):
     TRANSFER_IN = "TRANSFER_IN"  # 轉帳 (轉入)
     ADJUSTMENT = "ADJUSTMENT"  # 校正
     INTEREST = "INTEREST"  # 利息/股息
+    
+    
+class UserRole(str, enum.Enum):
+    OWNER = "OWNER"      # 專案擁有者
+    ADMIN = "ADMIN"      # 管理員
+    FRIEND = "FRIEND"    # 朋友
+    PAID = "PAID"        # 付費使用者
+    USER = "USER"        # 一般使用者
 
 
 class Asset(Base):
@@ -114,3 +122,14 @@ class Transaction(Base):
     transaction_date = Column(DateTime, default=datetime.now)
 
     asset = relationship("Asset", back_populates="transactions")
+
+    
+class User(Base):
+    __tablename__ = "users"
+
+    uid = Column(String, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=True)
+    role = Column(Enum(UserRole), nullable=False, default=UserRole.USER)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    last_login_at = Column(DateTime, nullable=True)

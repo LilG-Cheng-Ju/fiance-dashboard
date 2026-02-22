@@ -101,3 +101,16 @@ class ExchangeRateResponse(BaseModel):
 
     class Config:
         populate_by_name = True # Allows using "from_currency" in code
+        
+class UserRead(BaseModel):
+    uid: str
+    email: Optional[str]
+    role: models.UserRole
+    created_at: datetime
+    last_login_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
+
+class UserRoleUpdate(BaseModel):
+    role: models.UserRole

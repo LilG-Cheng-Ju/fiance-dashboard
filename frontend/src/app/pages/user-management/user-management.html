@@ -1,0 +1,178 @@
+<div class="page-container">
+  
+  <header class="page-header">
+    <div class="left-group">
+      <button class="btn-icon back-btn" (click)="goBack()" title="Back to Dashboard">
+        <span class="material-symbols-rounded">arrow_back</span>
+      </button>
+      
+      <div class="title-group">
+        <h1>User Management</h1>
+        <span class="badge">Admin Panel</span>
+      </div>
+
+      <!-- Refresh Button -->
+      <button class="btn-icon refresh-btn" (click)="onRefresh()" [class.spinning]="store.loading()" title="Refresh Data">
+        <span class="material-symbols-rounded">sync</span>
+      </button>
+    </div>
+    
+    <div class="controls">
+      <div class="search-box">
+        <span class="material-symbols-rounded icon">search</span>
+        <input 
+          type="text" 
+          placeholder="Search by email..." 
+          [value]="store.searchQuery()"
+          (input)="onSearch($event)"
+        >
+      </div>
+    </div>
+  </header>
+
+  <div class="filter-tabs">
+    <button 
+      class="tab" 
+      [class.active]="store.filterRole() === null"
+      (click)="store.setFilterRole(null)">
+      All Users
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="store.filterRole() === UserRole.ADMIN"
+      (click)="store.setFilterRole(UserRole.ADMIN)">
+      Admins
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="store.filterRole() === UserRole.FRIEND"
+      (click)="store.setFilterRole(UserRole.FRIEND)">
+      Friends
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="store.filterRole() === UserRole.PAID"
+      (click)="store.setFilterRole(UserRole.PAID)">
+      Paid
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="store.filterRole() === UserRole.USER"
+      (click)="store.setFilterRole(UserRole.USER)">
+      Users
+    </button>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th (click)="store.setSort('email')" class="sortable">
+            User 
+            @if(store.sortBy() === 'email') { <span class="sort-icon">{{ store.sortOrder() === 'asc' ? '▲' : '▼' }}</span> }
+          </th>
+          <th (click)="store.setSort('role')" class="sortable">
+            Role
+            @if(store.sortBy() === 'role') { <span class="sort-icon">{{ store.sortOrder() === 'asc' ? '▲' : '▼' }}</span> }
+          </th>
+          <th>Status</th>
+          <th (click)="store.setSort('created_at')" class="sortable">
+            Joined
+            @if(store.sortBy() === 'created_at') { <span class="sort-icon">{{ store.sortOrder() === 'asc' ? '▲' : '▼' }}</span> }
+          </th>
+          <th (click)="store.setSort('last_login_at')" class="sortable">
+            Last Login
+            @if(store.sortBy() === 'last_login_at') { <span class="sort-icon">{{ store.sortOrder() === 'asc' ? '▲' : '▼' }}</span> }
+          </th>
+          @if (authStore.isOwner()) {
+            <th class="action-col"></th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @if (store.loading()) {
+          <tr><td colspan="5" class="loading-cell">Loading...</td></tr>
+        } @else {
+          @for (user of store.users(); track user.uid) {
+            <tr>
+              <!-- User Info -->
+              <td>
+                <div class="user-cell">
+                  <div class="avatar">{{ user.email.charAt(0).toUpperCase() }}</div>
+                  <div class="info">
+                    <span class="email">{{ user.email }}</span>
+                    <span class="uid">ID: {{ user.uid | slice:0:8 }}...</span>
+                  </div>
+                  @if (isMe(user.uid)) {
+                    <span class="me-badge">You</span>
+                  }
+                </div>
+              </td>
+
+              <!-- Role Editor -->
+              <td>
+                <!-- ✨ Edit Mode -->
+                @if (editingUid() === user.uid) {
+                  <div class="edit-mode-group">
+                    <select #roleSelect [value]="user.role" class="role-select">
+                      @for (r of roles; track r) {
+                        <option [value]="r">{{ r }}</option>
+                      }
+                    </select>
+                    <button class="btn-icon-xs save" (click)="saveRole(user.uid, roleSelect)">
+                      <span class="material-symbols-rounded">check</span>
+                    </button>
+                    <button class="btn-icon-xs cancel" (click)="cancelEdit()">
+                      <span class="material-symbols-rounded">close</span>
+                    </button>
+                  </div>
+                } @else {
+                  <!-- ✨ View Mode -->
+                  <div class="view-mode-group">
+                    <span class="role-badge" [attr.data-role]="user.role">{{ user.role }}</span>
+                    
+                    @if (canEdit(user.role) && !isMe(user.uid)) {
+                      <button class="btn-icon-xs edit" (click)="startEdit(user.uid)" title="Edit Role">
+                        <span class="material-symbols-rounded">edit</span>
+                      </button>
+                    }
+                  </div>
+                }
+              </td>
+
+              <!-- Status (Dynamic) -->
+              <td>
+                @let status = getUserStatus(user.last_login_at, user.created_at);
+                <span class="status-badge" [class]="status.toLowerCase()">
+                  <span class="dot"></span> {{ status }}
+                </span>
+              </td>
+
+              <!-- Dates -->
+              <td class="date-cell">{{ user.created_at | date:'mediumDate' }}</td>
+              <td class="date-cell">{{ user.last_login_at | date:'short' }}</td>
+
+              <!-- Action Column (Owner Only) -->
+              @if (authStore.isOwner()) {
+                <td class="action-col">
+                  @if (!isMe(user.uid)) {
+                    <button class="btn-icon-xs delete" (click)="onDeleteUser(user.uid, user.email)" title="Delete User">
+                      <span class="material-symbols-rounded">delete</span>
+                    </button>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button [disabled]="store.page() === 0" (click)="store.prevPage()">Previous</button>
+    <span class="page-info">Page {{ store.page() + 1 }} (Total: {{ store.totalCount() }})</span>
+    <button [disabled]="!store.hasMore()" (click)="store.nextPage()">Next</button>
+  </div>
+
+</div>
