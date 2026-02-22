@@ -4,6 +4,9 @@ from typing import List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src import models, schemas
+from src.database import SessionLocal
+
+from .market import get_stock_profile
 
 
 class AssetService:
@@ -18,7 +21,9 @@ class AssetService:
 
     @staticmethod
     def create_asset(
-        db: Session, asset_in: schemas.AssetCreate, current_user: str
+        db: Session,
+        asset_in: schemas.AssetCreate,
+        current_user: str,
     ) -> models.Asset:
         """
         Create a new asset.
@@ -52,7 +57,7 @@ class AssetService:
                     db.query(models.Asset)
                     .filter(
                         models.Asset.id == asset_in.source_asset_id,
-                        models.Asset.user_id == current_user
+                        models.Asset.user_id == current_user,
                     )
                     .first()
                 )
@@ -92,6 +97,10 @@ class AssetService:
                         source_asset.quantity -= deduct_amount
 
                     related_tx_id = source_tx.id
+            #  [For Stocks Only] Get Website and Logo URL (Create columns only, contents wait for background tasks)
+            if asset_in.symbol:
+                asset_in.meta_data["website"] = None
+                asset_in.meta_data["logo_url"] = None
 
             # 3. Create Asset Record
             db_asset = models.Asset(
@@ -181,3 +190,32 @@ class AssetService:
 
         db.delete(asset)
         db.commit()
+
+    @staticmethod
+    def fetch_and_update_logo(asset_id: int):
+        db = SessionLocal()
+        try:
+            asset = db.query(models.Asset).filter(models.Asset.id == asset_id).first()
+
+            if not asset:
+                return
+
+            symbol = asset.symbol
+            region = asset.meta_data.get("region", "US")
+
+            try:
+                profile = get_stock_profile(symbol, region)
+
+                if not profile:
+                    return
+
+                asset.meta_data["website"] = profile.get("website")
+                asset.meta_data["logo_url"] = profile.get("logo_url")
+
+                db.commit()
+
+            except Exception:
+                return
+
+        finally:
+            db.close()

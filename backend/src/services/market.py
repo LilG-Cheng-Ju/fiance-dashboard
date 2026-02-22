@@ -1,10 +1,46 @@
 import yfinance as yf
 from src.utils import TTLCache
+from urllib.parse import urlparse
+import os
 
-SUPPORTED_CURRENCIES = {"TWD", "JPY", "SGD", "USD", "KRW", "CNY", "RMB", "EUR", "GBP", "AUD", "CAD"}
+LOGO_DEV_TOKEN = os.getenv("LOGO_DEV_TOKEN")
+
+SUPPORTED_CURRENCIES = {
+    "TWD",
+    "JPY",
+    "SGD",
+    "USD",
+    "KRW",
+    "CNY",
+    "RMB",
+    "EUR",
+    "GBP",
+    "AUD",
+    "CAD",
+}
 
 stock_cache = TTLCache(ttl_seconds=60)
 rate_cache = TTLCache(ttl_seconds=300)
+
+
+def normalize_ticker(ticker: str, region: str = "US") -> list[str]:
+    ticker = ticker.upper().strip()
+    target_ticker = ticker
+
+    if region == "TW":
+        if not (ticker.endswith(".TW") or ticker.endswith(".TWO")):
+            target_ticker = f"{ticker}.TW"
+    elif region == "JP":
+        if not (ticker.endswith(".T")):
+            target_ticker = f"{ticker}.T"
+
+    tickers_to_try = [target_ticker]
+
+    if region == "TW" and target_ticker.endswith(".TW"):
+        tickers_to_try.append(target_ticker.replace(".TW", ".TWO"))
+
+    return tickers_to_try
+
 
 def get_stock_data(ticker: str, region: str = "US") -> dict:
     """
@@ -17,40 +53,70 @@ def get_stock_data(ticker: str, region: str = "US") -> dict:
     Raises:
         ValueError: If the stock cannot be found for the given ticker and region.
     """
-    ticker = ticker.upper().strip()
-    
-    target_ticker = ticker
-    if region == "TW":
-        if not (ticker.endswith(".TW") or ticker.endswith(".TWO")):
-             target_ticker = f"{ticker}.TW"
-    
-    cached_data = stock_cache.get(f"STOCK_{target_ticker}")
-    if cached_data:
-        return cached_data
 
-    tickers_to_try = [target_ticker]
-    if region == "TW" and target_ticker.endswith(".TW"):
-        tickers_to_try.append(target_ticker.replace(".TW", ".TWO"))
+    tickers_to_try = normalize_ticker(ticker, region)
 
     for t in tickers_to_try:
         try:
+            cached_data = stock_cache.get(f"STOCK_{t}")
+            if cached_data:
+                return cached_data
+
             stock = yf.Ticker(t)
-            
+
             price = stock.fast_info.last_price
             currency = stock.fast_info.currency
-            
+
             if price and currency:
-                result_data = {
-                    "symbol": t,
-                    "price": price,
-                    "currency": currency
-                }
-                stock_cache.set(f"STOCK_{target_ticker}", result_data)
+                result_data = {"symbol": t, "price": price, "currency": currency}
+                stock_cache.set(f"STOCK_{t}", result_data)
                 return result_data
         except Exception:
             continue
 
     raise ValueError(f"無法找到股票: {ticker} (Region: {region})")
+
+
+def build_logo_url(website: str) -> str | None:
+    """
+    Build stock website URL.
+    """
+
+    domain = urlparse(website).netloc.replace("www.", "")
+
+    if LOGO_DEV_TOKEN:
+        return f"https://img.logo.dev/{domain}?token={LOGO_DEV_TOKEN}"
+    else:
+        return None
+
+
+def get_stock_profile(ticker: str, region: str = "US") -> dict:
+    """
+    Fetch stock profile information including website and logo URL.
+    """
+
+    tickers_to_try = normalize_ticker(ticker, region)
+
+    for t in tickers_to_try:
+        try:
+            stock = yf.Ticker(t)
+
+            info = stock.get_info()
+            website = info.get("website")
+
+            if not website:
+                continue
+
+            # 解析 domain
+            logo_url = build_logo_url(website)
+
+            return {"symbol": t, "website": website, "logo_url": logo_url}
+
+        except Exception:
+            continue
+
+    return {"symbol": ticker, "website": None, "logo_url": None}
+
 
 def get_exchange_rate(from_curr: str, to_curr: str) -> float:
     """
@@ -71,7 +137,7 @@ def get_exchange_rate(from_curr: str, to_curr: str) -> float:
     Example:
         >>> get_exchange_rate('TWD', 'EUR')
         0.0295  # 1 TWD = 0.0295 EUR
-    
+
     """
     from_curr = from_curr.upper()
     to_curr = to_curr.upper()
@@ -94,11 +160,12 @@ def get_exchange_rate(from_curr: str, to_curr: str) -> float:
             usd_to_to = _fetch_yahoo_currency(to_curr)
 
         rate = usd_to_to / usd_to_from
-        
+
         return round(rate, 4)
 
     except Exception as e:
         raise ValueError(f"匯率查詢失敗: {e}")
+
 
 def _fetch_yahoo_currency(currency: str) -> float:
     """
@@ -115,16 +182,16 @@ def _fetch_yahoo_currency(currency: str) -> float:
         symbol = "CNY=X"
     else:
         symbol = f"{currency}=X"
-    
+
     cached_price = rate_cache.get(f"RATE_{symbol}")
     if cached_price:
         return cached_price
 
     ticker = yf.Ticker(symbol)
     price = ticker.fast_info.last_price
-    
+
     if not price:
         raise ValueError(f"Yahoo 查無此匯率: {symbol}")
-        
+
     rate_cache.set(f"RATE_{symbol}", price)
     return price
