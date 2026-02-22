@@ -13,6 +13,7 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.mutable import MutableDict
 from src.database import Base
 
 
@@ -65,7 +66,7 @@ class Asset(Base):
 
     currency = Column(String(3), default="TWD", nullable=False)
     symbol = Column(String, nullable=True)
-    meta_data = Column(JSON, default={})
+    meta_data = Column(MutableDict.as_mutable(JSON), default=dict)
 
     transactions = relationship(
         "Transaction", back_populates="asset", cascade="all, delete-orphan"
