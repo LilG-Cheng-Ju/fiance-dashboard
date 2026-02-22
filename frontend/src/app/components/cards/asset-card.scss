@@ -33,15 +33,27 @@
     align-items: flex-start;
     margin-bottom: 8px;
 
-    .name-group {
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
       flex: 1;
       margin-right: 8px;
       min-width: 0;
     }
 
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      width: 100%;
+    }
+
     .asset-name {
       margin: 0;
-      font-size: var(--fs-body); // ✨ 1rem -> 0.85rem (Mobile)
+      font-size: var(--fs-body);
       font-weight: 700;
       color: var(--text-main);
       white-space: nowrap;
@@ -50,7 +62,7 @@
     }
 
     .asset-symbol {
-      font-size: 0.75rem; // 保持小字體，或者用 var(--fs-small) 但那樣電腦版會變大一點點
+      font-size: 0.75rem;
       color: var(--text-sub);
       font-weight: 500;
       letter-spacing: 0.5px;
@@ -58,10 +70,12 @@
     }
 
     .asset-logo {
-      width: 32px;
-      height: 32px;
+      width: 20px;
+      height: 20px;
       border-radius: 6px;
       object-fit: contain;
+      flex-shrink: 0;
+      background-color: white;
     }
 
     .status-badge {
@@ -101,7 +115,7 @@
       }
 
       .amount {
-        font-size: var(--fs-h1); // ✨ 1.5rem -> 1.05rem (Mobile)
+        font-size: var(--fs-h1);
         font-weight: 700;
         color: var(--text-main);
         letter-spacing: -0.5px;

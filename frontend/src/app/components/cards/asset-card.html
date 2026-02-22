@@ -1,14 +1,13 @@
 <div class="card-container type-{{ asset().asset_type.toLowerCase() }}">
   <div class="card-header">
-    <div class="name-group">
-      @if (asset().meta_data?.logo_url) {
-      <img
-        class="asset-logo"
-        [src]="asset().meta_data.logo_url"
-        alt="logo"
-      />
-      }
-      <h3 class="asset-name">{{ asset().name }}</h3>
+    <div class="header-left">
+      <div class="title-row">
+        @if (asset().symbol && asset().meta_data?.logo_url) {
+          <img [src]="asset().meta_data.logo_url" class="asset-logo" alt="logo" loading="lazy">
+        }
+        <h3 class="asset-name">{{ asset().name }}</h3>
+      </div>
+      
       @if (asset().asset_type === 'STOCK') {
         <span class="asset-symbol">{{ asset().symbol }}</span>
       }

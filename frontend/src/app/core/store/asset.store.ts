@@ -123,6 +123,13 @@ export const AssetStore = signalStore(
                         assets: [...state.assets, newAsset],
                         isLoading: false,
                     }));
+
+                    setTimeout(() => {
+                      assetService.getAssets().pipe(take(1)).subscribe({
+                        next: (assets) => patchState(store, { assets }),
+                        error: (err) => console.error('Silent logo refresh failed', err)
+                      });
+                    }, 5000);
                 }
               },
               error: (err: any) =>
