@@ -1,9 +1,11 @@
 import { Component, computed, input, output, signal, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserProfile } from '../../core/models/user.model';
 import { ModalService } from '../../core/services/modal.service';
 import { SettingsModalComponent } from '../modals/settings-modal';
 import { environment } from '../../../environments/environment';
+import { AuthStore } from '../../core/store/auth.store';
 
 @Component({
   selector: 'app-user-menu',
@@ -14,6 +16,8 @@ import { environment } from '../../../environments/environment';
 })
 export class UserMenuComponent {
   private modalService = inject(ModalService);
+  private router = inject(Router);
+  public authStore = inject(AuthStore); // Inject Store to check permissions
 
   user = input<UserProfile | null>(null);
 
@@ -53,6 +57,11 @@ export class UserMenuComponent {
 
   onSettings() {
     this.modalService.open(SettingsModalComponent);
+    this.closeMenu();
+  }
+
+  onAdminPanel() {
+    this.router.navigate(['/admin/users']);
     this.closeMenu();
   }
 }

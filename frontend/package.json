@@ -1,6 +1,6 @@
 {
   "name": "g-dashboard",
-  "version": "0.3.0-beta",
+  "version": "0.4.0-beta",
   "scripts": {
     "ng": "ng",
     "config": "node scripts/set-env.js",

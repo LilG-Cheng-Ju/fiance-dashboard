@@ -18,6 +18,14 @@
 
       <div class="divider"></div>
 
+      <!-- ✨ Admin Panel Button (Only for Admin/Owner) -->
+      @if (authStore.isAdmin()) {
+        <button class="menu-item admin-btn" (click)="onAdminPanel()">
+          <span class="material-symbols-rounded icon">admin_panel_settings</span>
+          <span>Admin Panel</span>
+        </button>
+      }
+
       <button class="menu-item" (click)="onSettings()">
         <span class="material-symbols-rounded icon">settings</span>
         <span>Settings</span>

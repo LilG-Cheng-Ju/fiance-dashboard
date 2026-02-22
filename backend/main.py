@@ -4,7 +4,7 @@ load_dotenv()
 from fastapi import FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from src import database, models  # noqa: E402
-from src.api import assets, market, transactions  # noqa: E402
+from src.api import assets, market, transactions, user  # noqa: E402
 from src.config import firebase  # noqa: E402
 
 models.Base.metadata.create_all(bind=database.engine)
@@ -25,6 +25,7 @@ firebase.init_app()
 app.include_router(assets.router, prefix="/api")
 app.include_router(transactions.router, prefix="/api")
 app.include_router(market.router, prefix="/api")
+app.include_router(user.router, prefix="/api")
 
 @app.get("/")
 def root():
