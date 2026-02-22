@@ -38,9 +38,16 @@
         <input type="number" 
                formControlName="amount" 
                (input)="onAmountChange()"
-               [class.text-success]="isPositiveAction()"
-               [class.text-danger]="!isPositiveAction()"
+               [class.text-success]="action() === 'ADD_ITEM' ? pendingDirection() === 'RECEIVABLE' : isPositiveAction()"
+               [class.text-danger]="action() === 'ADD_ITEM' ? pendingDirection() === 'PAYABLE' : !isPositiveAction()"
                placeholder="0.00">
+
+        @if (asset().asset_type === 'PENDING') {
+          <div class="segmented-control">
+            <button type="button" [class.active]="pendingDirection() === 'RECEIVABLE'" (click)="setPendingDirection('RECEIVABLE')">應收</button>
+            <button type="button" [class.active]="pendingDirection() === 'PAYABLE'" (click)="setPendingDirection('PAYABLE')">應付</button>
+          </div>
+        }
       </div>
       <!-- Validation Error -->
       @if (action() === 'SELL' && form.get('quantity')?.value > maxSellQty()!) {
@@ -49,37 +56,39 @@
     </div>
 
     <!-- Funding Source -->
-    <div class="highlight-bg">
-      <div class="field">
-        <label>{{ isPositiveAction() ? '扣款帳戶 (來源)' : '入帳帳戶 (去向)' }}</label>
-        <div class="input-combined">
-          <select formControlName="source_asset_id">
-            <option [ngValue]="null">-- 不指定 (外部資金) --</option>
-            @for (source of fundingSources(); track source.id) {
-              <!-- Don't show self in dropdown -->
-              @if (source.id !== asset().id) {
-                <option [ngValue]="source.id">
-                  {{ source.name }} ({{ source.currency }})
-                </option>
+    @if (asset().asset_type !== 'PENDING') {
+      <div class="highlight-bg">
+        <div class="field">
+          <label>{{ isPositiveAction() ? '扣款帳戶 (來源)' : '入帳帳戶 (去向)' }}</label>
+          <div class="input-combined">
+            <select formControlName="source_asset_id">
+              <option [ngValue]="null">-- 不指定 (外部資金) --</option>
+              @for (source of fundingSources(); track source.id) {
+                <!-- Don't show self in dropdown -->
+                @if (source.id !== asset().id) {
+                  <option [ngValue]="source.id">
+                    {{ source.name }} ({{ source.currency }})
+                  </option>
+                }
               }
-            }
-          </select>
-        </div>
-      </div>
-
-      @if (selectedSourceId()) {
-        <div class="field" style="margin-top: 12px;">
-          <label>實際{{ isPositiveAction() ? '扣款' : '入帳' }}金額</label>
-          <div class="input-suffix">
-            <input type="number" formControlName="source_amount">
-            <!-- Find currency symbol of selected source -->
-            <span>
-              {{ selectedSourceCurrency() }}
-            </span>
+            </select>
           </div>
         </div>
-      }
-    </div>
+
+        @if (selectedSourceId()) {
+          <div class="field" style="margin-top: 12px;">
+            <label>實際{{ isPositiveAction() ? '扣款' : '入帳' }}金額</label>
+            <div class="input-suffix">
+              <input type="number" formControlName="source_amount">
+              <!-- Find currency symbol of selected source -->
+              <span>
+                {{ selectedSourceCurrency() }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
 
     <!-- Note -->
     <div class="field">

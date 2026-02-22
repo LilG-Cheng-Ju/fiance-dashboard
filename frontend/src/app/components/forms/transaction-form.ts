@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, Signal } from '@angular/core';
+import { Component, computed, effect, inject, input, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -40,6 +40,8 @@ export class TransactionFormComponent {
   asset = computed(() => this.data().asset);
   action = computed(() => this.data().action);
   
+  pendingDirection = signal<'RECEIVABLE' | 'PAYABLE'>('RECEIVABLE');
+
   // Funding Sources (Cash Assets)
   fundingSources = this.assetStore.cashAssets;
 
@@ -66,6 +68,11 @@ export class TransactionFormComponent {
       case 'WITHDRAW': return { title: `提款 - ${name}`, label: '提款金額', btn: '確認提款' };
       case 'REPAY': return { title: `還款 - ${name}`, label: '還款金額', btn: '確認還款' };
       case 'DIVIDEND': return { title: `領息 - ${name}`, label: '領取金額', btn: '確認領息' };
+      
+      case 'ADD_ITEM': 
+        const isPayable = this.pendingDirection() === 'PAYABLE';
+        return { title: isPayable ? '新增應付帳款' : '新增應收帳款', label: '金額', btn: '確認新增' };
+
       default: return { title: '新增交易', label: '金額', btn: '送出' };
     }
   });
@@ -188,6 +195,10 @@ export class TransactionFormComponent {
     this.modalService.close();
   }
 
+  setPendingDirection(dir: 'RECEIVABLE' | 'PAYABLE') {
+    this.pendingDirection.set(dir);
+  }
+
   submit() {
     if (this.form.invalid) return;
 
@@ -227,6 +238,15 @@ export class TransactionFormComponent {
         qtySign = 1;
         backendType = TransactionType.DEPOSIT; // Map REPAY to DEPOSIT for backend
         break;
+      
+      case 'ADD_ITEM':
+        if (this.pendingDirection() === 'RECEIVABLE') {
+          amountSign = 1; qtySign = 1; backendType = TransactionType.DEPOSIT;
+        } else {
+          amountSign = -1; qtySign = -1; backendType = TransactionType.WITHDRAW;
+        }
+        break;
+
       default:
         amountSign = 1;
         qtySign = 1;

@@ -50,10 +50,47 @@
 
 .row { display: flex; gap: var(--gap-md); }
 
+.amount-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
 .amount-row input {
   font-weight: 700; font-size: 1.2rem;
   &.text-success { color: #059669; background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3); }
   &.text-danger { color: #dc2626; background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.3); }
+}
+
+.segmented-control {
+  display: flex;
+  background-color: var(--color-slate-100);
+  padding: 4px;
+  border-radius: 12px;
+  height: var(--input-height);
+  align-items: center;
+  margin-left: 0;
+  flex-shrink: 0;
+
+  button {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &.active {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+  }
 }
 
 .highlight-bg {
