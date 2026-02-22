@@ -4,6 +4,7 @@ from typing import List
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src import models, schemas
+from src.database import SessionLocal
 
 from .market import get_stock_profile
 
@@ -20,7 +21,9 @@ class AssetService:
 
     @staticmethod
     def create_asset(
-        db: Session, asset_in: schemas.AssetCreate, current_user: str
+        db: Session,
+        asset_in: schemas.AssetCreate,
+        current_user: str,
     ) -> models.Asset:
         """
         Create a new asset.
@@ -94,14 +97,8 @@ class AssetService:
                         source_asset.quantity -= deduct_amount
 
                     related_tx_id = source_tx.id
-            #  [For Stocks Only] Get Website and Logo URL
+            #  [For Stocks Only] Get Website and Logo URL (Create columns only, contents wait for background tasks)
             if asset_in.symbol:
-                region = asset_in.meta_data.get("region", "US")
-                profile = get_stock_profile(asset_in.symbol, region)
-                asset_in.meta_data["website"] = profile["website"]
-                asset_in.meta_data["logo_url"] = profile["logo_url"]
-            else:
-                # If symbol isn't found
                 asset_in.meta_data["website"] = None
                 asset_in.meta_data["logo_url"] = None
 
@@ -193,3 +190,24 @@ class AssetService:
 
         db.delete(asset)
         db.commit()
+
+    @staticmethod
+    def fetch_and_update_logo(asset_id: int):
+        db = SessionLocal()
+        try:
+            asset = db.query(models.Asset).filter(models.Asset.id == asset_id).first()
+
+            if not asset:
+                return
+
+            symbol = asset.symbol
+            region = asset.meta_data.get("region", "US")
+
+            profile = get_stock_profile(symbol, region)
+
+            asset.meta_data["website"] = profile["website"]
+            asset.meta_data["logo_url"] = profile["logo_url"]
+
+            db.commit()
+        finally:
+            db.close()
