@@ -203,11 +203,19 @@ class AssetService:
             symbol = asset.symbol
             region = asset.meta_data.get("region", "US")
 
-            profile = get_stock_profile(symbol, region)
+            try:
+                profile = get_stock_profile(symbol, region)
 
-            asset.meta_data["website"] = profile["website"]
-            asset.meta_data["logo_url"] = profile["logo_url"]
+                if not profile:
+                    return
 
-            db.commit()
+                asset.meta_data["website"] = profile.get("website")
+                asset.meta_data["logo_url"] = profile.get("logo_url")
+
+                db.commit()
+
+            except Exception:
+                return
+
         finally:
             db.close()

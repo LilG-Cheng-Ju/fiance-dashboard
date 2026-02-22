@@ -26,7 +26,12 @@ def create_asset(
     db: Session = Depends(database.get_db),
     current_user: str = Depends(get_current_user),
 ):
-    return asset_service.AssetService.create_asset(db, asset_in, current_user)
+    asset = asset_service.AssetService.create_asset(db, asset_in, current_user)
+    if asset.symbol:
+        background_tasks.add_task(
+            asset_service.AssetService.fetch_and_update_logo, asset.id
+        )
+    return asset
 
 
 @router.patch("/{asset_id}", response_model=schemas.AssetResponse)
