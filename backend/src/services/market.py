@@ -55,11 +55,13 @@ def get_stock_data(ticker: str, region: str = "US") -> dict:
     """
 
     tickers_to_try = normalize_ticker(ticker, region)
-    ticker = ticker.upper().strip()
-    target_ticker = ticker
 
     for t in tickers_to_try:
         try:
+            cached_data = stock_cache.get(f"STOCK_{t}")
+            if cached_data:
+                return cached_data
+
             stock = yf.Ticker(t)
 
             price = stock.fast_info.last_price
@@ -67,7 +69,7 @@ def get_stock_data(ticker: str, region: str = "US") -> dict:
 
             if price and currency:
                 result_data = {"symbol": t, "price": price, "currency": currency}
-                stock_cache.set(f"STOCK_{target_ticker}", result_data)
+                stock_cache.set(f"STOCK_{t}", result_data)
                 return result_data
         except Exception:
             continue
