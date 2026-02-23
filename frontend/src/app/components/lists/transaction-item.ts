@@ -31,6 +31,13 @@ export class TransactionItemComponent {
   // Helper: Readable Label for Transaction Type
   typeLabel = computed(() => {
     const type = this.transaction().transaction_type;
+    const assetType = this.assetType();
+
+    if (assetType === AssetType.CREDIT_CARD) {
+      if (type === TransactionType.WITHDRAW) return '消費';
+      if (type === TransactionType.DEPOSIT) return '繳款';
+    }
+
     switch (type) {
       case TransactionType.BUY: return '買入';
       case TransactionType.SELL: return '賣出';

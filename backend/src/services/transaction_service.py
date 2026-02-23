@@ -90,7 +90,7 @@ class TransactionService:
                 transaction_type=models.TransactionType.TRANSFER_OUT,
                 amount=-deduct_amount, # Negative for deduction
                 balance_after=source_asset.book_value - deduct_amount,
-                note=f"交易扣款: {asset.name} ({tx_in.transaction_type})",
+                note=f"交易扣款: {asset.name}",
                 transaction_date=datetime.now() # Should match tx_in date ideally
             )
             db.add(source_tx)

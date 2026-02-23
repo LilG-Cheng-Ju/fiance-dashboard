@@ -42,6 +42,12 @@
                [class.text-danger]="action() === 'ADD_ITEM' ? pendingDirection() === 'PAYABLE' : !isPositiveAction()"
                placeholder="0.00">
 
+        @if (action() === 'PAY_BILL') {
+          <button type="button" class="btn-action-sm" (click)="fillMaxAmount()" title="自動填入目前欠款金額">
+            繳全額
+          </button>
+        }
+
         @if (asset().asset_type === 'PENDING') {
           <div class="segmented-control">
             <button type="button" [class.active]="pendingDirection() === 'RECEIVABLE'" (click)="setPendingDirection('RECEIVABLE')">應收</button>
@@ -56,7 +62,7 @@
     </div>
 
     <!-- Funding Source -->
-    @if (asset().asset_type !== 'PENDING') {
+    @if (asset().asset_type !== 'PENDING' && action() !== 'ADD_EXPENSE') {
       <div class="highlight-bg">
         <div class="field">
           <label>{{ isPositiveAction() ? '扣款帳戶 (來源)' : '入帳帳戶 (去向)' }}</label>

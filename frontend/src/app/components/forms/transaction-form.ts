@@ -47,7 +47,7 @@ export class TransactionFormComponent {
 
   // Logic: Is this a "Positive" action (Green) or "Negative" action (Red)?
   isPositiveAction = computed(() => {
-    return ['BUY', 'DEPOSIT', 'REPAY', 'DIVIDEND'].includes(this.action());
+    return ['BUY', 'DEPOSIT', 'REPAY', 'DIVIDEND', 'PAY_BILL'].includes(this.action());
   });
 
   // Logic: Is this a Market Asset (Stock/Crypto/Gold)?
@@ -68,6 +68,9 @@ export class TransactionFormComponent {
       case 'WITHDRAW': return { title: `提款 - ${name}`, label: '提款金額', btn: '確認提款' };
       case 'REPAY': return { title: `還款 - ${name}`, label: '還款金額', btn: '確認還款' };
       case 'DIVIDEND': return { title: `領息 - ${name}`, label: '領取金額', btn: '確認領息' };
+      
+      case 'ADD_EXPENSE': return { title: `新增消費 - ${name}`, label: '消費金額', btn: '確認消費' };
+      case 'PAY_BILL': return { title: `繳卡費 - ${name}`, label: '繳費金額', btn: '確認繳費' };
       
       case 'ADD_ITEM': 
         const isPayable = this.pendingDirection() === 'PAYABLE';
@@ -191,6 +194,19 @@ export class TransactionFormComponent {
     this.updateSourceAmountEstimate();
   }
 
+  fillMaxAmount() {
+    const currentBalance = this.asset().book_value;
+    
+    // Credit Card balance is typically negative (Liability).
+    // We want to pay it off, so we need a positive amount equal to the debt.
+    if (currentBalance >= 0) return; // No debt to pay
+    
+    const payOffAmount = Math.abs(currentBalance);
+    
+    this.form.patchValue({ amount: payOffAmount });
+    this.updateSourceAmountEstimate(); // Recalculate source deduction
+  }
+
   close() {
     this.modalService.close();
   }
@@ -232,11 +248,21 @@ export class TransactionFormComponent {
         qtySign = -1;
         backendType = TransactionType.WITHDRAW;
         break;
+      case 'ADD_EXPENSE':
+        amountSign = -1; // Liability increases (more negative)
+        qtySign = -1;
+        backendType = TransactionType.WITHDRAW;
+        break;
       case 'REPAY':
         // Repay Liability: Add positive funds to reduce negative balance (e.g. -1000 + 100 = -900)
         amountSign = 1; 
         qtySign = 1;
         backendType = TransactionType.DEPOSIT; // Map REPAY to DEPOSIT for backend
+        break;
+      case 'PAY_BILL':
+        amountSign = 1; // Liability decreases (less negative)
+        qtySign = 1;
+        backendType = TransactionType.DEPOSIT;
         break;
       
       case 'ADD_ITEM':

@@ -93,6 +93,29 @@
   }
 }
 
+.btn-action-sm {
+  background-color: var(--color-slate-100);
+  color: var(--primary);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0 12px;
+  height: var(--input-height); // Match input height
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: rgba(15, 40, 78, 0.05);
+    border-color: var(--primary);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
 .highlight-bg {
   background-color: var(--bg-main); padding: 16px; border-radius: 12px; border: 1px dashed var(--border-light);
 }
