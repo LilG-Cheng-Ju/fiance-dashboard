@@ -1,8 +1,11 @@
-import { Component, input, computed, output } from '@angular/core';
+import { Component, input, computed, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Transaction } from '../../core/models/transaction.model';
 import { AssetView, AssetType } from '../../core/models/asset.model';
 import { TransactionItemComponent } from './transaction-item';
+import { TransactionService } from '../../core/services/transaction.service';
+import { TransactionStore } from '../../core/store/transaction.store';
+import { AssetStore } from '../../core/store/asset.store';
 
 interface ActionButton {
   label: string;
@@ -25,6 +28,10 @@ export class TransactionCollectionComponent {
 
   onAction = output<string>(); // Emits action ID (e.g., 'BUY', 'DEPOSIT')
   onSettle = output<Transaction>();
+
+  private transactionService = inject(TransactionService);
+  private transactionStore = inject(TransactionStore);
+  private assetStore = inject(AssetStore);
 
   // Button Logic Configuration
   buttons = computed<ActionButton[]>(() => {
@@ -78,5 +85,20 @@ export class TransactionCollectionComponent {
 
   handleSettle(tx: Transaction) {
     this.onSettle.emit(tx);
+  }
+
+  handleDelete(id: number) {
+    const confirmDelete = confirm('確定要刪除這筆交易嗎？\n注意：相關的資產餘額與成本將會回滾。');
+    if (!confirmDelete) return;
+
+    this.transactionService.deleteTransaction(id).subscribe({
+      next: () => {
+        // 1. Refresh Transaction List
+        this.transactionStore.loadTransactionsByAsset({ assetId: this.asset().id });
+        // 2. Refresh Asset Balance (Important!)
+        this.assetStore.loadAssets();
+      },
+      error: (err) => console.error('Delete failed', err)
+    });
   }
 }

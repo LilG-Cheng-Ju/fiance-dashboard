@@ -125,31 +125,76 @@
     }
   }
 
-  // 4. Actions
-  .settle-btn {
-    // Reset & Base
-    border: none;
-    background-color: var(--primary);
-    cursor: pointer;
-    display: inline-flex;
+  // 4. Actions Group
+  .tx-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-left: 8px;
+    justify-content: center;
+  }
+
+  // Shared style for text buttons
+  .settle-btn, .delete-btn-text {
+    width: 60px; // Fixed width for alignment
+    display: flex;
+    justify-content: center;
     align-items: center;
-    
-    // Typography & Sizing
-    color: white;
+    padding: 4px 0;
+    border-radius: 6px;
     font-size: var(--fs-small);
     font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
-    white-space: nowrap;
+    cursor: pointer;
     transition: all 0.2s;
+  }
+
+  .settle-btn {
+    border: none;
+    background-color: var(--primary);
+    color: white;
     
     &:hover {
       background-color: var(--primary-hover);
     }
+  }
 
-    // Mobile Optimization
-    @media (max-width: 768px) {
-      padding: 4px 8px;
+  .delete-btn-text {
+    border: 1px solid var(--border-light);
+    background-color: white;
+    color: var(--text-sub);
+
+    &:hover {
+      background-color: #fef2f2;
+      color: #ef4444;
+      border-color: #fca5a5;
     }
   }
+
+  // 5. Delete Button
+  .icon-btn-delete {
+    background: transparent;
+    border: none;
+    color: var(--color-slate-300); // Default: very subtle
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin: auto 0; // Center vertically
+
+    &:hover {
+      color: #ef4444; // Red on hover
+      background-color: #fef2f2;
+    }
+    
+    span { font-size: 20px; }
+  }
+}
+
+.material-symbols-rounded {
+  font-variation-settings: 
+  'wght' 300,
+  'opsz' 24
 }

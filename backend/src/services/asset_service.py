@@ -48,6 +48,18 @@ class AssetService:
             else:
                 final_avg_cost = 1.0
 
+            # For CASH/LIABILITY: Book Value should be the Native Balance (Quantity)
+            # For STOCK/CRYPTO: Book Value should be the Total Cost Basis (Native Currency)
+            if asset_in.asset_type in [
+                models.AssetType.CASH,
+                models.AssetType.PENDING,
+                models.AssetType.LIABILITY,
+                models.AssetType.CREDIT_CARD
+            ]:
+                final_book_value = final_quantity
+            else:
+                final_book_value = final_current_value
+
             # 2. Prepare Source Transaction (Funding Logic)
             related_tx_id = None
 
@@ -111,7 +123,7 @@ class AssetService:
                 currency=asset_in.currency,
                 # Core Inventory Fields
                 quantity=final_quantity,
-                book_value=final_current_value,
+                book_value=final_book_value,
                 average_cost=final_avg_cost,
                 include_in_net_worth=asset_in.include_in_net_worth,
                 meta_data=asset_in.meta_data,
@@ -127,9 +139,9 @@ class AssetService:
                 initial_tx = models.Transaction(
                     asset_id=db_asset.id,
                     transaction_type=models.TransactionType.INITIAL,
-                    amount=asset_in.initial_total_cost,  # Cost basis in Native Currency
+                    amount=final_book_value,
                     quantity_change=final_quantity,  # Initial Qty
-                    balance_after=final_current_value,
+                    balance_after=final_book_value,
                     note="初始餘額",
                     transaction_date=tx_time,
                     # Link to source transaction (if any)

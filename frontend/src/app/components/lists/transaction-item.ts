@@ -16,6 +16,7 @@ export class TransactionItemComponent {
   assetType = input.required<AssetType>();
 
   onSettle = output<Transaction>();
+  onDelete = output<number>();
 
   // Logic: Is this a market-traded asset? (Stock, Crypto, Gold)
   isMarketAsset = computed(() => {

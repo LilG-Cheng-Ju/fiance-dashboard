@@ -37,10 +37,10 @@
 
     <!-- Row 2: Exchange Rates (Cost Rate & Current Rate) -->
     <!-- Condition: Foreign Asset AND Cost Rate is available -->
-    @if (isForeign() && asset().avgExchangeRate) {
+    @if (isForeign() && (asset().avgExchangeRate || asset().average_cost)) {
       <div class="stat-item">
         <div class="stat-label">成本匯率</div>
-        <div class="stat-val">{{ asset().avgExchangeRate | number:'1.2-2' }}</div>
+        <div class="stat-val">{{ (asset().avgExchangeRate || asset().average_cost) | number:'1.2-2' }}</div>
       </div>
 
       <div class="stat-item">

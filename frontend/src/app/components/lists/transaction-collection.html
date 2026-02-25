@@ -21,7 +21,8 @@
           [transaction]="tx" 
           [currency]="asset().currency"
           [assetType]="asset().asset_type"
-          (onSettle)="handleSettle($event)">
+          (onSettle)="handleSettle($event)"
+          (onDelete)="handleDelete($event)">
         </app-transaction-item>
       }
     }

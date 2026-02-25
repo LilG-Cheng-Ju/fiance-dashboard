@@ -83,6 +83,23 @@ export class TransactionFormComponent {
   form: FormGroup;
   formValues: Signal<any>;
 
+  // Logic: Should we show the exchange rate input?
+  // Condition: Asset currency != Base currency AND No Funding Source selected
+  showExchangeRate = computed(() => {
+    const isForeign = this.currentCurrency() !== this.settingsStore.baseCurrency();
+    const noSource = !this.selectedSourceId();
+    return isForeign && noSource;
+  });
+
+  // Reference rate from store
+  referenceRate = computed(() => {
+    const currency = this.currentCurrency();
+    const base = this.settingsStore.baseCurrency();
+    if (currency === base) return null;
+    const key = `${currency}-${base}`;
+    return this.rateStore.rateMap()[key] || null;
+  });
+
   // Computed Values for UI
   currentCurrency = computed(() => this.asset().currency);
   selectedSourceId = computed(() => this.formValues()?.source_asset_id || null);
@@ -92,6 +109,13 @@ export class TransactionFormComponent {
     return this.fundingSources().find(a => a.id == id)?.currency;
   });
   
+  // Estimated Cost in Base Currency (for UI display)
+  estimatedCost = computed(() => {
+    const amt = this.formValues()?.amount || 0;
+    const rate = this.formValues()?.exchange_rate || 1;
+    return Math.round(amt * rate);
+  });
+
   // Validation: Max Quantity for Sell
   maxSellQty = computed(() => this.action() === 'SELL' ? this.asset().quantity : null);
 
@@ -103,6 +127,7 @@ export class TransactionFormComponent {
       price: [null], // Unit Price
       quantity: [null], // Qty
       amount: [null, [Validators.required, Validators.min(0)]], // Total Amount
+      exchange_rate: [null], // Manual Exchange Rate
       source_asset_id: [null],
       source_amount: [null],
       note: ['']
@@ -110,29 +135,18 @@ export class TransactionFormComponent {
 
     this.formValues = toSignal(this.form.valueChanges.pipe(startWith(this.form.value)), { initialValue: this.form.value });
 
-    // Effect: Triangular Calculation (Price * Qty = Amount)
-    effect(() => {
-      if (!this.isMarketAsset()) return;
-      
-      // Read from signal (formValues) to ensure effect tracks changes
-      const vals = this.formValues();
-      const p = vals.price;
-      const q = vals.quantity;
-      
-      // Only auto-calc amount if both P and Q are present and user isn't editing amount directly
-      // (Simplified logic: if P and Q change, update Amount)
-      if (p && q) {
-        const calcAmount = parseFloat((p * q).toFixed(2));
-        if (this.form.get('amount')?.value !== calcAmount) {
-          this.form.patchValue({ amount: calcAmount }, { emitEvent: false });
-          this.updateSourceAmountEstimate();
-        }
-      }
-    });
-
     // Effect: Cross-Currency Calculation
     effect(() => {
       this.updateSourceAmountEstimate();
+    });
+
+    // Effect: Load Exchange Rate if needed
+    effect(() => {
+      const curr = this.currentCurrency();
+      const base = this.settingsStore.baseCurrency();
+      if (curr && curr !== base) {
+        this.rateStore.loadRate({ fromCurr: curr, toCurr: base });
+      }
     });
   }
 
@@ -177,6 +191,23 @@ export class TransactionFormComponent {
     }
   }
 
+  // Triangular Calc: Update Amount when Price or Qty changes
+  onPriceOrQtyChange() {
+    if (!this.isMarketAsset()) {
+        this.updateSourceAmountEstimate();
+        return;
+    }
+
+    const p = this.form.get('price')?.value;
+    const q = this.form.get('quantity')?.value;
+
+    if (p && q) {
+      const calcAmount = parseFloat((p * q).toFixed(2));
+      this.form.patchValue({ amount: calcAmount }, { emitEvent: false });
+    }
+    this.updateSourceAmountEstimate();
+  }
+
   // Triangular Calc: Update Price when Amount changes
   onAmountChange() {
     if (!this.isMarketAsset()) {
@@ -205,6 +236,14 @@ export class TransactionFormComponent {
     
     this.form.patchValue({ amount: payOffAmount });
     this.updateSourceAmountEstimate(); // Recalculate source deduction
+  }
+
+  onRateFocus() {
+    const currentVal = this.form.get('exchange_rate')?.value;
+    const ref = this.referenceRate();
+    if ((currentVal === null || currentVal === '') && ref) {
+      this.form.patchValue({ exchange_rate: ref });
+    }
   }
 
   close() {
@@ -279,20 +318,37 @@ export class TransactionFormComponent {
         backendType = TransactionType.ADJUSTMENT;
     }
 
-    // [Logic Update] Determine the final "Cost Basis" (Amount)
-    // If a funding source is selected and currencies match (e.g. TWD -> TWD),
-    // we use the "Source Amount" (Actual Deducted) as the transaction amount.
-    // This allows users to include fees in the cost basis (e.g. 520) 
-    // while keeping the Unit Price at market value (e.g. 510).
+    // Logic: Determine Final Amount, Source Amount, and Exchange Rate
     let finalAmount = val.amount;
-    if (val.source_asset_id && val.source_amount) {
+    let finalSourceAmount = val.source_amount;
+    let finalExchangeRate = 1.0;
+
+    if (val.source_asset_id) {
+        // Case A: Funding Source Selected
         const sourceAsset = this.fundingSources().find(a => a.id == val.source_asset_id);
-        if (sourceAsset && sourceAsset.currency === this.asset().currency) {
+        
+        // If currencies match, use source_amount as the authoritative amount (includes fees)
+        if (sourceAsset && sourceAsset.currency === this.asset().currency && val.source_amount) {
             finalAmount = val.source_amount;
+        }
+
+        // Calculate implied rate
+        if (val.source_amount && finalAmount) {
+            finalExchangeRate = val.source_amount / finalAmount;
+        }
+    } else {
+        // Case B: No Funding Source (Manual Input)
+        if (this.showExchangeRate()) {
+            finalExchangeRate = val.exchange_rate || 1.0;
+            
+            // Important: For Dual Track Accounting
+            // We must calculate the Base Currency Cost (source_amount)
+            // Backend uses source_amount to update the weighted average cost
+            finalSourceAmount = Math.abs(finalAmount * finalExchangeRate);
         }
     }
 
-    // [Feature] Auto-generate note if empty and source is selected
+    // Auto-generate note if empty and source is selected
     let finalNote = val.note;
     if (!finalNote && val.source_asset_id) {
         const sourceName = this.fundingSources().find(a => a.id == val.source_asset_id)?.name;
@@ -301,39 +357,26 @@ export class TransactionFormComponent {
         }
     }
 
-    // 2. Prepare Payload with strict typing
     const payload: TransactionCreate = {
       asset_id: this.asset().id,
       transaction_type: backendType, 
-      amount: finalAmount * amountSign, // Use the adjusted amount
+      amount: finalAmount * amountSign,
       quantity_change: (val.quantity || 0) * qtySign,
       price_at_transaction: val.price,
       transaction_date: `${val.date}T00:00:00`,
       note: finalNote,
+      exchange_rate: finalExchangeRate,
       
-      // Funding Source
       source_asset_id: val.source_asset_id,
-      source_amount: val.source_amount,
+      source_amount: finalSourceAmount,
       source_currency: val.source_asset_id ? 
         this.fundingSources().find(a => a.id == val.source_asset_id)?.currency : undefined
     };
 
-    // 3. Calculate Exchange Rate
-    // If source_amount exists, rate = source_amount / amount
-    // Note: If we overrode finalAmount with source_amount, rate will be 1.0, which is correct.
-    if (val.source_amount && finalAmount) {
-        payload.exchange_rate = val.source_amount / finalAmount;
-    } else {
-        payload.exchange_rate = 1.0;
-    }
-
     this.transactionService.createTransaction(payload).subscribe({
       next: () => {
-        // Refresh asset to show new balance
         this.assetStore.loadAssets();
-        // Refresh transaction list in the background modal
         this.transactionStore.loadTransactionsByAsset({ assetId: this.asset().id });
-        
         this.close();
       },
       error: (err) => console.error(err)

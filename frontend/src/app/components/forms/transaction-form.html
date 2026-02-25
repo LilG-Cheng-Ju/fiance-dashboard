@@ -19,11 +19,11 @@
       <div class="row">
         <div class="field" style="flex: 1">
           <label>單價 ({{ currentCurrency() }})</label>
-          <input type="number" formControlName="price" placeholder="0.00">
+          <input type="number" formControlName="price" (input)="onPriceOrQtyChange()" placeholder="0.00">
         </div>
         <div class="field" style="flex: 1">
           <label>數量</label>
-          <input type="number" formControlName="quantity" placeholder="0">
+          <input type="number" formControlName="quantity" (input)="onPriceOrQtyChange()" placeholder="0">
           @if (maxSellQty()) {
             <span class="hint">持有: {{ maxSellQty() | number }}</span>
           }
@@ -60,6 +60,27 @@
         <span class="error-msg">賣出數量超過持有庫存</span>
       }
     </div>
+
+    <!-- Manual Exchange Rate Input (When no source is selected for foreign asset) -->
+    @if (showExchangeRate()) {
+      <div class="highlight-bg" style="margin-bottom: 12px;">
+        <div class="field">
+          <label>估值匯率 (to {{ settingsStore.baseCurrency() }})</label>
+          <div class="input-suffix">
+            <input 
+              type="number" 
+              formControlName="exchange_rate" 
+              step="0.01" 
+              (focus)="onRateFocus()"
+              [placeholder]="referenceRate() ? '參考: ' + referenceRate() : '請輸入匯率'">
+            <span>{{ settingsStore.baseCurrency() }}</span>
+          </div>
+          <span class="hint">
+            成本預估: {{ estimatedCost() | number:'1.0-0' }} {{ settingsStore.baseCurrency() }}
+          </span>
+        </div>
+      </div>
+    }
 
     <!-- Funding Source -->
     @if (asset().asset_type !== 'PENDING' && action() !== 'ADD_EXPENSE') {

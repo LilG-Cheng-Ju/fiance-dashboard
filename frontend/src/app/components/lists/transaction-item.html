@@ -57,10 +57,19 @@
     }
   </div>
 
-  <!-- 4. Actions -->
-  @if (showSettleBtn()) {
-    <button class="settle-btn" (click)="onSettle.emit(transaction())">
-      結清
-    </button>
-  }
+  <!-- 4. Actions Group -->
+  <div class="tx-actions">
+    @if (showSettleBtn()) {
+      <button class="settle-btn" (click)="onSettle.emit(transaction())">
+        結清
+      </button>
+      <button class="delete-btn-text" (click)="onDelete.emit(transaction().id)">
+        刪除
+      </button>
+    } @else {
+      <button class="icon-btn-delete" (click)="onDelete.emit(transaction().id)" title="刪除交易">
+        <span class="material-symbols-rounded">delete</span>
+      </button>
+    }
+  </div>
 </div>

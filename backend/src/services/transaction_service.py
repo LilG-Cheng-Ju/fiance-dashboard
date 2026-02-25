@@ -161,6 +161,23 @@ class TransactionService:
         else:
             # Scenario C: CASH / PENDING / LIABILITY / CREDIT_CARD
             # Logic: Simple Accumulation
+            
+            # For Foreign Cash, update Average Exchange Rate (Weighted Average)
+            # Only update rate on INFLOW (Positive Amount)
+            if asset.asset_type == models.AssetType.CASH and tx_in.amount > 0:
+                # Current Total Base Cost (e.g. Total TWD Cost)
+                current_total_base_cost = asset.book_value * asset.average_cost
+                
+                # New Base Cost added (Use source_amount if exists, else assume 1:1 or same currency)
+                added_base_cost = tx_in.source_amount if tx_in.source_amount is not None else tx_in.amount
+                
+                new_total_base_cost = current_total_base_cost + added_base_cost
+                new_total_native_amt = asset.book_value + tx_in.amount
+                
+                # Update Average Rate (Cost / Amount)
+                if new_total_native_amt > 0:
+                    asset.average_cost = new_total_base_cost / new_total_native_amt
+
             asset.book_value += tx_in.amount
             # For cash, quantity tracks amount
             asset.quantity += (
@@ -210,6 +227,16 @@ class TransactionService:
         if not tx:
             raise HTTPException(status_code=404, detail="Transaction not found")
 
+        # Recursively delete related transaction (e.g. Source Deduction)
+        if tx.related_transaction_id:
+            related_tx = db.query(models.Transaction).filter(
+                models.Transaction.id == tx.related_transaction_id
+            ).first()
+            
+            if related_tx:
+                # Recursively call delete to ensure the source asset is also rolled back
+                TransactionService.delete(db, related_tx.id, current_user)
+
         asset = tx.asset
 
         # Reverse the impact
@@ -235,6 +262,26 @@ class TransactionService:
                 asset.average_cost = asset.book_value / asset.quantity
                 asset.status = models.AssetStatus.ACTIVE
         else:
+            # Rollback Average Exchange Rate for CASH
+            # Only recalculate if we are deleting an INFLOW (which affected the rate)
+            if asset.asset_type == models.AssetType.CASH and tx.amount > 0:
+                # 1. Calculate Current Total Base Cost (e.g. TWD)
+                current_total_base_cost = asset.book_value * asset.average_cost
+                
+                # 2. Identify the Base Cost to remove (The source_amount of this tx)
+                # If source_amount is None, it implies 1:1 rate or same currency
+                removed_base_cost = tx.source_amount if tx.source_amount is not None else tx.amount
+                
+                # 3. Calculate New Totals
+                new_total_base_cost = current_total_base_cost - removed_base_cost
+                new_total_native_amt = asset.book_value - tx.amount
+                
+                # 4. Update Rate
+                if new_total_native_amt > 0.000001:
+                    asset.average_cost = new_total_base_cost / new_total_native_amt
+                else:
+                    asset.average_cost = 0.0
+                    
             # Cash: Simple reverse
             asset.book_value -= tx.amount
             # If quantity_change was used, reverse it; otherwise reverse amount
