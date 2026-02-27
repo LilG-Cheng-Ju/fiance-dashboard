@@ -9,6 +9,7 @@ import { User, UserRole } from '../models/user.model';
 export class UserService {
   private http = inject(HttpClient);
   private readonly API_URL = '/api/users';
+  private readonly FRIEND_CODE_API_URL = '/api/friend-codes';
 
   getMe(): Observable<User> {
     return this.http.get<User>(`${this.API_URL}/me`);
@@ -44,5 +45,13 @@ export class UserService {
 
   deleteUser(uid: string): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${uid}`);
+  }
+
+  redeemFriendCode(code: string): Observable<User> {
+    return this.http.post<User>(`${this.FRIEND_CODE_API_URL}/redeem`, { code });
+  }
+
+  markPromptSeen(): Observable<User> {
+    return this.http.post<User>(`${this.API_URL}/me/mark-prompt-seen`, {});
   }
 }

@@ -10,14 +10,11 @@
         <h1>User Management</h1>
         <span class="badge">Admin Panel</span>
       </div>
-
-      <!-- Refresh Button -->
       <button class="btn-icon refresh-btn" (click)="onRefresh()" [class.spinning]="store.loading()" title="Refresh Data">
         <span class="material-symbols-rounded">sync</span>
       </button>
     </div>
-    
-    <div class="controls">
+    <div class="header-right">
       <div class="search-box">
         <span class="material-symbols-rounded icon">search</span>
         <input 
@@ -29,6 +26,13 @@
       </div>
     </div>
   </header>
+
+  <div class="page-controls">
+    <button class="btn-primary" (click)="openFriendCodeModal()">
+      <span class="material-symbols-rounded">card_membership</span>
+      管理序號
+    </button>
+  </div>
 
   <div class="filter-tabs">
     <button 

@@ -11,6 +11,10 @@
     --color-slate-500: #64748b;
     --color-slate-800: #1e293b;
     --color-white: #ffffff;
+
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-indigo: #4f46e5;
     
     // Layout
     --card-padding: 24px;
@@ -35,6 +39,10 @@
     // Semantic Variables
     --primary: var(--color-moonlight-blue);
     --primary-hover: var(--color-blue-light);
+
+    --success: var(--color-success);
+    --danger: var(--color-danger);
+    --indigo: var(--color-indigo);
 
     --bg-main: var(--color-slate-50);
     --bg-card: var(--color-white);

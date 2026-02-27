@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  appVersion: '0.4.4-beta',
+  appVersion: '0.5.0-beta',
   firebaseConfig: {
     apiKey: "AIzaSyBHKMBh7dOVQOM20TmD0qaMB1tjLKW2Cfk",
     authDomain: "finance-dashboard-487816.firebaseapp.com",

@@ -125,8 +125,18 @@ class UserService:
         1. Checks if user exists.
         2. Determines role based on config.
         3. Creates new user or updates existing one.
+        4. Handles cases where email is the same but UID changes (e.g., re-authentication).
         """
         user = cls.get_user(db, uid)
+
+        # If user not found by UID, try finding by email (if email is provided)
+        if not user and email:
+            user_by_email = db.query(models.User).filter(models.User.email == email).first()
+            if user_by_email:
+                # User exists with this email but a different UID. Update the UID.
+                user_by_email.uid = uid
+                user = user_by_email
+
         target_role = cls.determine_role(email)
 
         if not user:

@@ -134,3 +134,22 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     last_login_at = Column(DateTime, nullable=True)
+    has_seen_friend_code_prompt = Column(
+        Boolean, nullable=False, default=False, server_default="0"
+    )
+    friend_code = relationship("FriendCode", back_populates="used_by_user", uselist=False)
+
+
+class FriendCode(Base):
+    __tablename__ = "friend_codes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, unique=True, index=True, nullable=False)
+    is_used = Column(Boolean, default=False, nullable=False)
+    
+    used_by_uid = Column(String, ForeignKey("users.uid"), nullable=True)
+    used_at = Column(DateTime, nullable=True)
+    
+    created_at = Column(DateTime, default=datetime.now)
+    
+    used_by_user = relationship("User", back_populates="friend_code")

@@ -7,8 +7,10 @@ import { DesktopHeaderComponent } from '../../components/widgets/desktop-header'
 import { MobileNavComponent } from '../../components/widgets/mobile-nav';
 import { WidgetCollectionComponent } from '../../components/cards/widget-collection';
 import { ModalService } from '../../core/services/modal.service';
+import { FriendCodePromptComponent } from '../../components/modals/friend-code-prompt';
 import { AssetTypePickerComponent } from '../../components/modals/asset-type-picker';
 
+import { UserRole } from '../../core/models/user.model';
 import { AuthStore } from '../../core/store/auth.store';
 import { AssetStore } from '../../core/store/asset.store';
 import { MarketStore } from '../../core/store/market.store';
@@ -97,6 +99,23 @@ export class DashboardComponent implements OnInit {
           }
         });
       });
+    });
+
+    // 3. Show "Friend Code" prompt on first login
+    effect(() => {
+      const user = this.authStore.backendUser();
+
+      // Condition:
+      // 1. User is loaded and is a basic 'USER'.
+      // 2. Has not seen the prompt before.
+      // 3. No other modal is currently open.
+      if (user && user.role === UserRole.USER && 
+          !user.has_seen_friend_code_prompt && 
+          !this.modalService.isOpen()) {
+        untracked(() => {
+          this.modalService.open(FriendCodePromptComponent);
+        });
+      }
     });
   }
 

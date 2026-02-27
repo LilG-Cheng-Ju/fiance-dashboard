@@ -1,9 +1,10 @@
 from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from src import schemas, models, database
+from src import database, models, schemas
 from src.dependencies.auth import get_current_user
-from src.services import user_service
+from src.services import friend_code_service, user_service
 
 router = APIRouter(
     prefix="/users",
@@ -70,6 +71,16 @@ def update_user_role(
         raise HTTPException(status_code=404, detail="User not found")
         
     return updated_user
+
+
+@router.post("/me/mark-prompt-seen", response_model=schemas.UserRead)
+def mark_prompt_as_seen(
+    db: Session = Depends(database.get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """Marks that the current user has seen the friend code prompt."""
+    return friend_code_service.FriendCodeService.mark_prompt_seen(db, current_user)
+
 
 @router.delete("/{uid}", status_code=204)
 def delete_user(

@@ -124,6 +124,10 @@ export const AuthStore = signalStore(
         }
       },
 
+      updateBackendUser(user: User) {
+        patchState(store, { backendUser: user });
+      },
+
       async logout() {
         patchState(store, { loading: true });
         try {

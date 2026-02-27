@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UserProfile } from '../../core/models/user.model';
 import { ModalService } from '../../core/services/modal.service';
 import { SettingsModalComponent } from '../modals/settings-modal';
+import { FriendCodePromptComponent } from '../modals/friend-code-prompt';
 import { environment } from '../../../environments/environment';
 import { AuthStore } from '../../core/store/auth.store';
 
@@ -62,6 +63,11 @@ export class UserMenuComponent {
 
   onAdminPanel() {
     this.router.navigate(['/admin/users']);
+    this.closeMenu();
+  }
+
+  onRedeemCode() {
+    this.modalService.open(FriendCodePromptComponent);
     this.closeMenu();
   }
 }

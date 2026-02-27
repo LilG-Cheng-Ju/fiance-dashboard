@@ -134,9 +134,32 @@ class UserRead(BaseModel):
     role: models.UserRole
     created_at: datetime
     last_login_at: Optional[datetime]
+    has_seen_friend_code_prompt: bool
 
     class Config:
         orm_mode = True
 
 class UserRoleUpdate(BaseModel):
     role: models.UserRole
+
+
+class FriendCodeRedeem(BaseModel):
+    code: str = Field(..., description="The friend code to redeem")
+
+
+class FriendCodeRead(BaseModel):
+    id: int
+    code: str
+    is_used: bool
+    used_at: Optional[datetime]
+    created_at: datetime
+    
+    # Include user info if the code has been used
+    used_by_user: Optional[UserRead] = None
+
+    class Config:
+        orm_mode = True
+
+
+class FriendCodeCreate(BaseModel):
+    count: int = Field(1, gt=0, le=20, description="Number of codes to generate")

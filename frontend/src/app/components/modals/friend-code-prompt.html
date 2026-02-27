@@ -1,0 +1,47 @@
+<div class="prompt-card">
+  <header class="header">
+    <h3>成為小G之友</h3>
+    <button class="close-btn" (click)="skip()" [disabled]="isSuccess()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  @if (isSuccess()) {
+    <div class="success-body">
+      <div class="icon-hero success">
+        <span class="material-symbols-rounded">verified</span>
+      </div>
+      <h4>兌換成功！</h4>
+      <p>歡迎加入小G之友的行列！ 您的權限已更新。</p>
+    </div>
+  } @else {
+    <div class="form-body">
+      <div class="icon-hero">
+        <span class="material-symbols-rounded">card_membership</span>
+      </div>
+  
+      <p class="description">
+        輸入「小G之友」序號，解鎖更多功能與權限=D
+      </p>
+  
+      <div class="field">
+        <label for="friend-code">請輸入序號</label>
+        <input 
+          id="friend-code"
+          type="text" 
+          [formControl]="codeControl" 
+          placeholder="G-FRIEND-XXXXXXXX"
+          (keydown.enter)="redeem()">
+        
+        @if (errorMsg()) {
+          <span class="error-msg">{{ errorMsg() }}</span>
+        }
+      </div>
+  
+      <div class="actions">
+        <button class="btn-secondary" (click)="skip()">下次再說</button>
+        <button class="btn-primary" (click)="redeem()" [disabled]="codeControl.invalid || isLoading()">兌換</button>
+      </div>
+    </div>
+  }
+</div>

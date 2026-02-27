@@ -12,6 +12,7 @@ export interface User {
   role: UserRole;
   created_at: string;
   last_login_at?: string;
+  has_seen_friend_code_prompt?: boolean;
 }
 
 export interface UserProfile {

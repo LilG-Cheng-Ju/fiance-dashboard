@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { UserManagementStore } from '../../core/store/user-management.store';
 import { UserRole } from '../../core/models/user.model';
 import { AuthStore } from '../../core/store/auth.store';
+import { ModalService } from '../../core/services/modal.service';
+import { FriendCodeManagementModalComponent } from '../../components/modals/friend-code-management';
 
 @Component({
   selector: 'app-user-management',
@@ -18,6 +20,7 @@ export class UserManagementComponent implements OnInit {
   readonly store = inject(UserManagementStore);
   readonly authStore = inject(AuthStore);
   private router = inject(Router);
+  private modalService = inject(ModalService);
 
   // Expose Enum to template
   UserRole = UserRole;
@@ -36,6 +39,10 @@ export class UserManagementComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/dashboard']);
+  }
+
+  openFriendCodeModal() {
+    this.modalService.open(FriendCodeManagementModalComponent);
   }
 
   onSearch(event: Event) {

@@ -1,0 +1,57 @@
+<div class="modal-card">
+  <header class="header">
+    <h3>管理小G之友序號</h3>
+    <button class="close-btn" (click)="close()">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn-primary" (click)="createCodes()" [disabled]="store.isLoading()">
+      <span class="material-symbols-rounded">add</span>
+      產生新序號
+    </button>
+  </div>
+
+  <div class="table-container">
+    @if (store.isLoading() && store.sortedCodes().length === 0) {
+      <div class="loading-state">載入中...</div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>序號</th>
+            <th class="sortable" (click)="store.setSort('status')">
+              狀態
+              @if(store.sortBy() === 'status') { <span class="sort-icon">{{ store.sortOrder() === 'asc' ? '▲' : '▼' }}</span> }
+            </th>
+            <th class="sortable" (click)="store.setSort('created_at')">
+              建立日期
+              @if(store.sortBy() === 'created_at') { <span class="sort-icon">{{ store.sortOrder() === 'asc' ? '▲' : '▼' }}</span> }
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (code of store.sortedCodes(); track code.id) {
+            <tr>
+              <td class="code-cell">
+                <span class="code-text">{{ code.code }}</span>
+                <button class="copy-btn" (click)="copyCode(code.code)">
+                  <span class="material-symbols-rounded">
+                    {{ copiedCode() === code.code ? 'check' : 'content_copy' }}
+                  </span>
+                </button>
+              </td>
+              <td>
+                <span class="status-badge" [class.used]="code.is_used" [class.unused]="!code.is_used">
+                  {{ code.is_used ? (code.used_by_user?.email || '已使用') : '未使用' }}
+                </span>
+              </td>
+              <td class="date-cell">{{ code.created_at | date:'yyyy/MM/dd' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
