@@ -12,7 +12,10 @@
   @if (isOpen()) {
     <div class="dropdown">
       <div class="menu-header">
-        <span class="name">{{ user()?.displayName || 'User' }}</span>
+        <div class="name-row">
+          <span class="name">{{ user()?.displayName || 'User' }}</span>
+          <span class="role-badge" [attr.data-role]="authStore.role()">{{ roleLabel() }}</span>
+        </div>
         <span class="email">{{ user()?.email }}</span>
       </div>
 

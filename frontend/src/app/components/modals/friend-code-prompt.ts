@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalService } from '../../core/services/modal.service';
@@ -16,6 +16,8 @@ export class FriendCodePromptComponent {
   private modalService = inject(ModalService);
   private userService = inject(UserService);
   private authStore = inject(AuthStore);
+
+  data = input<any>(null);
 
   codeControl = new FormControl('', {
     nonNullable: true,

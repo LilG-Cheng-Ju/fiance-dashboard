@@ -4,6 +4,8 @@ import { ModalService } from '../../core/services/modal.service';
 import { getAssetRgb } from '../../core/config/asset.config';
 import { SimpleAssetFormComponent, SimpleAssetFormData } from '../forms/simple-asset-form';
 import { MarketAssetFormComponent } from '../forms/market-asset-form';
+import { AuthStore } from '../../core/store/auth.store';
+import { FriendCodePromptComponent } from './friend-code-prompt';
 
 interface AssetOption {
   type: string;
@@ -24,6 +26,7 @@ const marketAssets = ['STOCK', 'CRYPTO', 'GOLD'];
 })
 export class AssetTypePickerComponent {
   private modalService = inject(ModalService);
+  public authStore = inject(AuthStore);
 
   data = input<any>(null);
 
@@ -37,11 +40,32 @@ export class AssetTypePickerComponent {
     { type: 'CREDIT_CARD', label: '信用卡', icon: 'credit_card', rgb: getAssetRgb('CREDIT_CARD') },
   ];
 
+  // 定義鎖定的資產類型 (進階功能)
+  // CASH, STOCK, LIABILITY 是開放的
+  private readonly LOCKED_TYPES = ['CRYPTO', 'GOLD', 'PENDING', 'CREDIT_CARD'];
+
+  isLocked(type: string): boolean {
+    if (this.authStore.hasPremiumAccess()) return false;
+    return this.LOCKED_TYPES.includes(type);
+  }
+
   close() {
     this.modalService.close();
   }
 
+  openUpgrade() {
+    this.modalService.close();
+    this.modalService.open(FriendCodePromptComponent);
+  }
+
   selectType(type: string) {
+    if (this.isLocked(type)) {
+      if(confirm('此為進階資產類型 (加密貨幣、黃金、待結算、信用卡)。\n是否立即輸入序號解鎖？')) {
+         this.openUpgrade();
+      }
+      return;
+    }
+
     this.modalService.close();
     
     if (simpleAssets.includes(type)) {

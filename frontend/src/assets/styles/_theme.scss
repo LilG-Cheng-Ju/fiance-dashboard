@@ -60,6 +60,18 @@
     --header-glass-opacity: 0.6;
     --header-shadow: 0 2px 12px rgba(15, 40, 78, 0.06);
     --header-border: rgba(226, 232, 240, 0.8);
+
+    // User Roles
+    --role-owner-bg: #fef3c7;
+    --role-owner-text: #d97706;
+    --role-admin-bg: #e0e7ff;
+    --role-admin-text: #4338ca;
+    --role-friend-bg: #dcfce7;
+    --role-friend-text: #15803d;
+    --role-paid-bg: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --role-paid-text: #ffffff;
+    --role-user-bg: var(--color-slate-100);
+    --role-user-text: var(--color-slate-500);
   }
 
   @media (max-width: 768px) {

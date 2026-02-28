@@ -7,6 +7,7 @@ import { SettingsModalComponent } from '../modals/settings-modal';
 import { FriendCodePromptComponent } from '../modals/friend-code-prompt';
 import { environment } from '../../../environments/environment';
 import { AuthStore } from '../../core/store/auth.store';
+import { UserRole } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-user-menu',
@@ -40,6 +41,17 @@ export class UserMenuComponent {
   userInitial = computed(() => {
     const u = this.user();
     return u?.email?.charAt(0)?.toUpperCase() || 'U';
+  });
+
+  roleLabel = computed(() => {
+    const role = this.authStore.role();
+    switch (role) {
+      case UserRole.OWNER: return '擁有者';
+      case UserRole.ADMIN: return '管理員';
+      case UserRole.FRIEND: return '小G之友';
+      case UserRole.PAID: return 'Pro 會員';
+      default: return '一般會員';
+    }
   });
 
   // Actions

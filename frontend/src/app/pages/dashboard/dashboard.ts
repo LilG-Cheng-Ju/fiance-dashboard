@@ -46,6 +46,8 @@ export class DashboardComponent implements OnInit {
   readonly performanceService = inject(AssetPerformanceService);
 
   private readonly RATE_CACHE_DURATION = 30 * 60 * 1000;
+  
+  readonly FREE_USER_ASSET_LIMIT = 5;
 
   constructor() {
     // 1. Auto-track stock prices
@@ -174,6 +176,15 @@ export class DashboardComponent implements OnInit {
   }
 
   onAddAsset() {
+    const hasPremium = this.authStore.hasPremiumAccess();
+    const currentCount = this.assetStore.assets().length;
+
+    if (!hasPremium && currentCount >= this.FREE_USER_ASSET_LIMIT) {
+      alert(`一般會員最多只能新增 ${this.FREE_USER_ASSET_LIMIT} 筆資產。\n請輸入好友序號或升級以解鎖無限制功能！`);
+      this.modalService.open(FriendCodePromptComponent);
+      return;
+    }
+
     this.modalService.open(AssetTypePickerComponent);
   }
 }

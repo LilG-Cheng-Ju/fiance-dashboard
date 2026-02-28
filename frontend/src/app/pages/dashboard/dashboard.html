@@ -47,6 +47,7 @@
     <section class="assets-section">
       <app-asset-collection
         [assets]="assetsWithMarketValue()"
+        (addAsset)="onAddAsset()"
       >
       </app-asset-collection>
     </section>

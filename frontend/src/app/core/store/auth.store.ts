@@ -8,6 +8,7 @@ import { switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { UserProfile, User, UserRole } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 interface AuthState {
   user: UserProfile | null;
@@ -37,6 +38,16 @@ export const AuthStore = signalStore(
       return r === UserRole.ADMIN || r === UserRole.OWNER;
     }),
     isOwner: computed(() => backendUser()?.role === UserRole.OWNER),
+
+    isBeta: computed(() => environment.appVersion.toLowerCase().includes('beta')),
+
+    hasPremiumAccess: computed(() => {
+      const isBetaVersion = environment.appVersion.toLowerCase().includes('beta');
+      if (isBetaVersion) return true;
+
+      const r = backendUser()?.role;
+      return r !== UserRole.USER && !!r;
+    }),
   })),
 
   withMethods((store) => {

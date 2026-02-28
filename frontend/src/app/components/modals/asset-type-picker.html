@@ -8,15 +8,28 @@
 
   <div class="options-grid">
     @for (item of options; track item.type) {
-      <button class="option-btn" (click)="selectType(item.type)" [style.--theme-rgb]="item.rgb">
+      <button 
+        class="option-btn" 
+        [class.locked]="isLocked(item.type)"
+        (click)="selectType(item.type)" 
+        [style.--theme-rgb]="item.rgb">
         <div class="icon-box">
           <span 
             class="material-symbols-rounded"
-            style="font-variation-settings: 'wght' 600;">{{ item.icon }}</span>
+            style="font-variation-settings: 'wght' 600;">
+            {{ isLocked(item.type) ? 'lock' : item.icon }}
+          </span>
         </div>
 
         <span class="label">{{ item.label }}</span>
       </button>
     }
   </div>
+
+  @if (!authStore.hasPremiumAccess()) {
+    <div class="upgrade-hint" (click)="openUpgrade()">
+      <span class="material-symbols-rounded icon">stars</span>
+      <span>升級 Pro 或輸入序號，解鎖所有資產類型</span>
+    </div>
+  }
 </div>

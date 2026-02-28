@@ -1,9 +1,7 @@
-import { Component, input, signal, computed, inject, viewChild } from '@angular/core';
+import { Component, input, signal, computed, viewChild, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AssetCard } from '../cards/asset-card';
-import { AssetView, AssetType } from '../../core/models/asset.model';
-import { ModalService } from '../../core/services/modal.service';
-import { AssetTypePickerComponent } from '../modals/asset-type-picker';
+import { AssetView } from '../../core/models/asset.model';
 import { AssetFilterComponent, AssetFilterState } from '../widgets/asset-filter';
 
 @Component({
@@ -16,7 +14,7 @@ import { AssetFilterComponent, AssetFilterState } from '../widgets/asset-filter'
 export class AssetCollectionComponent {
   assets = input.required<AssetView[]>();
 
-  private modalService = inject(ModalService);
+  addAsset = output<void>();
 
   // Access child component to toggle panel and check state
   filterComponent = viewChild.required(AssetFilterComponent);
@@ -46,6 +44,6 @@ export class AssetCollectionComponent {
   }
 
   openAddAsset() {
-    this.modalService.open(AssetTypePickerComponent);
+    this.addAsset.emit();
   }
 }

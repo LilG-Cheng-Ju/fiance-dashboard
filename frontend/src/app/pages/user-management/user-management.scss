@@ -124,11 +124,12 @@
 
 .role-badge {
   padding: 4px 8px; border-radius: 6px; font-size: var(--fs-small); font-weight: 700;
-  background: var(--color-slate-100); color: var(--text-sub);
+  background: var(--role-user-bg); color: var(--role-user-text);
   
-  &[data-role="OWNER"] { background: #fef3c7; color: #d97706; }
-  &[data-role="ADMIN"] { background: #e0e7ff; color: #4338ca; }
-  &[data-role="PAID"] { background: #dcfce7; color: #15803d; }
+  &[data-role="OWNER"] { background: var(--role-owner-bg); color: var(--role-owner-text); }
+  &[data-role="ADMIN"] { background: var(--role-admin-bg); color: var(--role-admin-text); }
+  &[data-role="FRIEND"] { background: var(--role-friend-bg); color: var(--role-friend-text); }
+  &[data-role="PAID"] { background: var(--role-paid-bg); color: var(--role-paid-text); }
 }
 
 .view-mode-group {

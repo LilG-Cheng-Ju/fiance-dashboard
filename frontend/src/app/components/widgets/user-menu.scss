@@ -68,6 +68,13 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
   .name {
     font-weight: 600;
@@ -75,10 +82,24 @@
     font-size: 0.95rem;
   }
 
+  .role-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    background: var(--role-user-bg);
+    color: var(--role-user-text);
+    white-space: nowrap;
+
+    &[data-role="OWNER"] { background: var(--role-owner-bg); color: var(--role-owner-text); }
+    &[data-role="ADMIN"] { background: var(--role-admin-bg); color: var(--role-admin-text); }
+    &[data-role="FRIEND"] { background: var(--role-friend-bg); color: var(--role-friend-text); }
+    &[data-role="PAID"] { background: var(--role-paid-bg); color: var(--role-paid-text); }
+  }
+
   .email {
     font-size: 0.8rem;
     color: var(--text-sub);
-    margin-top: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
