@@ -1,0 +1,1 @@
+gcloud builds submit --tag gcr.io/finance-dashboard-487816/finance-backend

@@ -42,9 +42,6 @@ export const AuthStore = signalStore(
     isBeta: computed(() => environment.appVersion.toLowerCase().includes('beta')),
 
     hasPremiumAccess: computed(() => {
-      const isBetaVersion = environment.appVersion.toLowerCase().includes('beta');
-      if (isBetaVersion) return true;
-
       const r = backendUser()?.role;
       return r !== UserRole.USER && !!r;
     }),

@@ -4,11 +4,8 @@ load_dotenv()
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
-from src import database, models  # noqa: E402
 from src.api import assets, friend_codes, market, transactions, user  # noqa: E402
 from src.config import firebase  # noqa: E402
-
-models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="Finance Dashboard Backend")
 

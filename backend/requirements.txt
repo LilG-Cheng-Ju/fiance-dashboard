@@ -5,3 +5,5 @@ sqlalchemy
 requests>=2.32.0
 yfinance>=1.1.0
 firebase-admin>=7.1.0
+psycopg2-binary>=2.9.11
+alembic>=1.18.4
