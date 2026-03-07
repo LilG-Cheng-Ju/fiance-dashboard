@@ -48,30 +48,37 @@ export class TotalWealthCard {
       .reduce((sum, a) => sum + (a.baseMarketValue || 0), 0);
   });
 
-  totalCost = computed(() => {
-    return this.assets()
-      .filter((a) => a.include_in_net_worth)
-      .reduce((sum, a) => {
-        const mv = Number(a.baseMarketValue || 0);
-        const roi = Number(a.returnRate || 0);
+  private isMarketAsset(asset: AssetView): boolean {
+    return [AssetType.STOCK, AssetType.CRYPTO, AssetType.GOLD].includes(asset.asset_type);
+  }
 
-        if (mv === 0) return sum;
-        
-        const cost = mv / (1 + roi / 100);
-        return sum + cost;
-      }, 0);
+  private marketStats = computed(() => {
+    return this.assets().reduce(
+      (acc, a) => {
+        if (a.include_in_net_worth && this.isMarketAsset(a)) {
+          const mv = Number(a.baseMarketValue || 0);
+          const roi = Number(a.returnRate || 0);
+
+          const cost = mv / (1 + roi / 100);
+          
+          acc.marketValue += mv;
+          acc.cost += cost;
+        }
+        return acc;
+      },
+      { marketValue: 0, cost: 0 }
+    );
   });
 
-
   totalPnl = computed(() => {
-    return this.netWorth() - this.totalCost();
+    const stats = this.marketStats();
+    return stats.marketValue - stats.cost;
   });
 
   totalRoi = computed(() => {
-    const cost = this.totalCost();
-    const pnl = this.totalPnl();
-    if (cost === 0) return 0;
-    return (pnl / Math.abs(cost)) * 100;
+    const stats = this.marketStats();
+    if (stats.cost === 0) return 0;
+    return ((stats.marketValue - stats.cost) / Math.abs(stats.cost)) * 100;
   });
 
   netPending = computed(() => {
