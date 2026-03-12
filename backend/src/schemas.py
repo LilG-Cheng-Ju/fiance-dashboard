@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
@@ -91,6 +91,15 @@ class AssetUpdate(BaseModel):
     symbol: Optional[str] = None
     include_in_net_worth: Optional[bool] = None
     meta_data: Optional[Dict[str, Any]] = None
+
+
+class AssetSnapshotResponse(BaseModel):
+    snapshot_date: date
+    total_net_worth: float
+    breakdown: Dict[str, Any]
+
+    class Config:
+        orm_mode = True
 
 
 class AssetResponse(BaseModel):

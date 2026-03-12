@@ -5,12 +5,14 @@ from sqlalchemy import (
     JSON,
     Boolean,
     Column,
+    Date,
     DateTime,
     Enum,
     Float,
     ForeignKey,
     Integer,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.mutable import MutableDict
@@ -153,3 +155,19 @@ class FriendCode(Base):
     created_at = Column(DateTime, default=datetime.now)
     
     used_by_user = relationship("User", back_populates="friend_code")
+
+
+class AssetSnapshot(Base):
+    __tablename__ = "asset_snapshots"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String, ForeignKey("users.uid"), nullable=False, index=True)
+    snapshot_date = Column(Date, nullable=False, index=True)
+    
+    total_net_worth = Column(Float, nullable=False)
+
+    breakdown = Column(MutableDict.as_mutable(JSON), default=dict)
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'snapshot_date', name='_user_date_uc'),
+    )
